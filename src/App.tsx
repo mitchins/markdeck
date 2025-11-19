@@ -3,24 +3,27 @@ import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
-import { KanbanColumn } from '@/components/KanbanColumn'
+import { Swimlane } from '@/components/Swimlane'
 import { FileUploader } from '@/components/FileUploader'
 import { NotesPanel } from '@/components/NotesPanel'
+import { CardDetailDrawer } from '@/components/CardDetailDrawer'
 import { parseStatusMarkdown, projectToMarkdown } from '@/lib/parser'
 import type { ParsedStatus, KanbanCard, CardStatus } from '@/lib/types'
-import { Download, Eye, FileText, ArrowsClockwise } from '@phosphor-icons/react'
+import { Download, Eye, FileText, ArrowsClockwise, Kanban } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
 function App() {
   const [parsedData, setParsedData] = useKV<ParsedStatus | null>('parsed-status', null)
   const [hasChanges, setHasChanges] = useState(false)
+  const [selectedCard, setSelectedCard] = useState<KanbanCard | null>(null)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const handleFileLoad = (content: string) => {
     try {
       const parsed = parseStatusMarkdown(content)
       setParsedData(parsed)
       setHasChanges(false)
-      toast.success(`Loaded ${parsed.cards.length} cards and ${parsed.notes.length} notes`)
+      toast.success(`Loaded ${parsed.cards.length} cards across ${parsed.swimlanes.length} sections`)
     } catch (error) {
       toast.error('Failed to parse STATUS.md')
       console.error(error)
@@ -34,13 +37,33 @@ function App() {
       card.id === cardId ? { ...card, status: newStatus } : card
     )
 
-    setParsedData({
-      ...parsedData,
+    setParsedData((current) => ({
+      ...current!,
       cards: updatedCards,
-    })
+    }))
 
     setHasChanges(true)
     toast.success('Card status updated')
+  }
+
+  const handleCardClick = (card: KanbanCard) => {
+    setSelectedCard(card)
+    setDrawerOpen(true)
+  }
+
+  const handleCardSave = (updatedCard: KanbanCard) => {
+    if (!parsedData) return
+
+    const updatedCards = parsedData.cards.map((card) =>
+      card.id === updatedCard.id ? updatedCard : card
+    )
+
+    setParsedData((current) => ({
+      ...current!,
+      cards: updatedCards,
+    }))
+
+    setHasChanges(true)
   }
 
   const handleSave = () => {
@@ -62,10 +85,10 @@ function App() {
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
 
-    setParsedData({
-      ...parsedData,
+    setParsedData((current) => ({
+      ...current!,
       rawMarkdown: updated,
-    })
+    }))
 
     setHasChanges(false)
     toast.success('STATUS.md downloaded')
@@ -82,7 +105,10 @@ function App() {
       <div className="min-h-screen bg-background p-6">
         <div className="max-w-6xl mx-auto">
           <header className="mb-8 text-center">
-            <h1 className="text-2xl font-bold tracking-tight mb-2">Kanban in a Can</h1>
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Kanban size={32} className="text-primary" weight="duotone" />
+              <h1 className="text-2xl font-bold tracking-tight">Kanban in a Can</h1>
+            </div>
             <p className="text-muted-foreground text-sm">
               Visual project tracking from STATUS.md files
             </p>
@@ -94,18 +120,14 @@ function App() {
     )
   }
 
-  const doneCards = parsedData.cards.filter((c) => c.status === 'Done')
-  const inProgressCards = parsedData.cards.filter((c) => c.status === 'InProgress')
-  const blockedCards = parsedData.cards.filter((c) => c.status === 'Blocked')
-
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card sticky top-0 z-10 shadow-sm">
-        <div className="max-w-[1600px] mx-auto px-6 py-4">
+        <div className="max-w-[1800px] mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-3">
-                <FileText size={24} className="text-primary" weight="duotone" />
+                <Kanban size={24} className="text-primary" weight="duotone" />
                 <h1 className="text-xl font-bold tracking-tight">{parsedData.metadata.title}</h1>
               </div>
               <div className="flex items-center gap-4 mt-1">
@@ -119,6 +141,9 @@ function App() {
                     Updated: {parsedData.metadata.lastUpdated}
                   </span>
                 )}
+                <span className="text-xs text-muted-foreground">
+                  {parsedData.cards.length} cards · {parsedData.swimlanes.length} sections
+                </span>
               </div>
             </div>
 
@@ -140,7 +165,7 @@ function App() {
         </div>
       </header>
 
-      <main className="max-w-[1600px] mx-auto p-6">
+      <main className="max-w-[1800px] mx-auto p-6">
         <Tabs defaultValue="board" className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="board">
@@ -158,22 +183,19 @@ function App() {
           </TabsList>
 
           <TabsContent value="board" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-[calc(100vh-240px)]">
-              <KanbanColumn
-                status="Done"
-                cards={doneCards}
-                onCardDrop={handleCardMove}
-              />
-              <KanbanColumn
-                status="InProgress"
-                cards={inProgressCards}
-                onCardDrop={handleCardMove}
-              />
-              <KanbanColumn
-                status="Blocked"
-                cards={blockedCards}
-                onCardDrop={handleCardMove}
-              />
+            <div className="space-y-4">
+              {parsedData.swimlanes.map((swimlane) => {
+                const laneCards = parsedData.cards.filter(card => card.laneId === swimlane.id)
+                return (
+                  <Swimlane
+                    key={swimlane.id}
+                    swimlane={swimlane}
+                    cards={laneCards}
+                    onCardDrop={handleCardMove}
+                    onCardClick={handleCardClick}
+                  />
+                )
+              })}
             </div>
           </TabsContent>
 
@@ -192,6 +214,16 @@ function App() {
           </TabsContent>
         </Tabs>
       </main>
+
+      <CardDetailDrawer
+        card={selectedCard}
+        open={drawerOpen}
+        onClose={() => {
+          setDrawerOpen(false)
+          setSelectedCard(null)
+        }}
+        onSave={handleCardSave}
+      />
     </div>
   )
 }

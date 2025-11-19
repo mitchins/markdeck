@@ -4,7 +4,7 @@ export interface KanbanCard {
   id: string
   title: string
   status: CardStatus
-  section: string
+  laneId: string
   description?: string
   links: string[]
   tasks?: SubTask[]
@@ -17,6 +17,13 @@ export interface SubTask {
   title: string
   status: CardStatus
   completed: boolean
+}
+
+export interface Swimlane {
+  id: string
+  title: string
+  order: number
+  collapsed?: boolean
 }
 
 export interface ProjectMetadata {
@@ -34,6 +41,7 @@ export interface Note {
 export interface ParsedStatus {
   metadata: ProjectMetadata
   cards: KanbanCard[]
+  swimlanes: Swimlane[]
   notes: Note[]
   rawMarkdown: string
 }

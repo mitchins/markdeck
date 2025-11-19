@@ -1,78 +1,87 @@
 # Planning Guide
 
-A visual Kanban board that parses and manages STATUS.md files from Git repositories or local projects, transforming markdown-based project trackers into interactive boards with bidirectional sync.
+A visual Kanban board that parses and manages STATUS.md files from Git repositories or local projects, transforming markdown-based project trackers into interactive swimlane boards with bidirectional sync.
 
 **Experience Qualities**:
-1. **Efficient** - Parse complex STATUS.md files instantly and provide immediate visual feedback on status changes
-2. **Trustworthy** - Never lose data; preserve original markdown formatting and provide clear sync status
-3. **Intelligent** - Automatically extract structure from existing documents and suggest improvements
+1. **Efficient** - Parse complex STATUS.md files instantly with swimlane organization and provide immediate visual feedback on status changes
+2. **Trustworthy** - Never lose data; preserve original markdown formatting including multi-line descriptions and provide clear sync status
+3. **Focused** - Developer-centric interface with no unnecessary features—just what's needed for solo and agentic development
 
 **Complexity Level**: Light Application (multiple features with basic state)
-  - Handles markdown parsing, Kanban UI, and file/Git sync but maintains focus on a single-purpose tool without user accounts or complex workflows
+  - Handles markdown parsing with swimlanes, interactive Kanban UI with collapsible lanes, card editing drawer, and file sync workflows while maintaining focus on a single-purpose tool
 
 ## Essential Features
 
-### STATUS.md Parser
-- **Functionality**: Parse markdown files with emoji status markers (✅ ⚠️ ❌) into structured Kanban data
-- **Purpose**: Bridge human-readable markdown and visual project management
+### Swimlane-Based Board Layout
+- **Functionality**: Organize cards into horizontal swimlanes based on H2/H3 sections with collapsible lanes containing three status columns each
+- **Purpose**: Map STATUS.md structure 1:1 to visual board, making it immediately recognizable and easy to navigate by domain/subsystem
+- **Trigger**: Successfully parsed STATUS.md with H2/H3 headings creates swimlanes
+- **Progression**: Parse H2/H3 headings → Create swimlanes → Display cards in lanes by status → Allow collapse/expand per lane → Cards drag between columns within any lane
+- **Success criteria**: Each H2/H3 becomes a distinct swimlane; lanes stack vertically; columns scroll independently; collapse animation is smooth
+
+### Enhanced Card Structure with Multi-line Descriptions
+- **Functionality**: Cards parse title from bullet line and indented content as description, with expand/collapse UI
+- **Purpose**: Support rich task context without cluttering the board view
+- **Trigger**: Parser detects indented lines following a status bullet
+- **Progression**: Parse bullet title → Collect indented lines as description → Display title with expand arrow → Click arrow reveals description → Description supports markdown formatting
+- **Success criteria**: Indented content correctly parsed; expand/collapse animation smooth; round-trip preserves formatting
+
+### Card Detail Drawer
+- **Functionality**: Side drawer for editing card title, description, and status with save/cancel actions
+- **Purpose**: Enable inline editing without modal interruption to workflow
+- **Trigger**: User clicks on any card
+- **Progression**: Click card → Drawer slides from right → Edit fields → Save → Update card in-memory → Mark as changed → Enable download
+- **Success criteria**: Drawer opens smoothly; all fields editable; changes reflect immediately; original line reference preserved
+
+### STATUS.md Parser with Indentation Support
+- **Functionality**: Parse markdown with emoji status markers (✅ ⚠️ ❌) and capture multi-line indented descriptions
+- **Purpose**: Bridge human-readable markdown and visual project management with full fidelity
 - **Trigger**: User uploads/pastes STATUS.md content or connects to a Git repository
-- **Progression**: Parse markdown → Extract headings/bullets → Map emojis to statuses → Generate unique card IDs → Display in Kanban columns
-- **Success criteria**: Correctly parse example document with 100% card extraction accuracy; preserve all non-card content
+- **Progression**: Parse markdown → Extract H2/H3 as swimlanes → Map bullets to cards → Capture indented lines as descriptions → Generate unique card IDs → Display in swimlane board
+- **Success criteria**: Correctly parse example document with 100% card extraction accuracy; preserve all non-card content; handle nested bullets
 
-### Interactive Kanban Board
-- **Functionality**: Three-column board (Done, In Progress, Blocked) with drag-and-drop card movement
-- **Purpose**: Provide visual project overview and enable quick status updates
+### Interactive Kanban Board with Drag & Drop
+- **Functionality**: Swimlane-based board with drag-and-drop card movement between status columns
+- **Purpose**: Provide visual project overview and enable quick status updates across domains
 - **Trigger**: Successfully parsed STATUS.md loads
-- **Progression**: Display grouped cards by section → User drags card to new column → Update emoji in-memory → Show visual feedback → Enable batch save
-- **Success criteria**: Smooth drag operations; clear section grouping; responsive on mobile
+- **Progression**: Display cards in swimlanes by status → User drags card to new column → Update status in-memory → Show visual feedback → Enable batch save
+- **Success criteria**: Smooth drag operations; clear visual feedback; cards update across lanes; responsive on tablet/mobile
 
-### Markdown Round-Trip
-- **Functionality**: Project UI changes back to markdown while preserving formatting
-- **Purpose**: Maintain markdown as source of truth; enable Git workflows
-- **Trigger**: User clicks "Save Changes" or "Commit"
-- **Progression**: Collect schema changes → Map to original markdown locations → Replace emojis/text → Update timestamp → Generate preview → Write file
-- **Success criteria**: Zero formatting loss; headings unchanged; dates auto-updated
-
-### Local File & Git Modes
-- **Functionality**: Toggle between local file editing and Git repository sync
-- **Purpose**: Support different workflows (quick edits vs. collaborative projects)
-- **Trigger**: User selects mode at startup or switches via settings
-- **Progression**: Local: Upload file → Edit → Download | Git: Enter repo URL → Clone/fetch → Edit → Generate commit message → Push
-- **Success criteria**: Clear mode indication; Git operations show progress; error handling for auth failures
-
-### Notes Panel
-- **Functionality**: Display non-card sections (architecture, commands) as read-only reference
-- **Purpose**: Keep context accessible without cluttering the board
-- **Trigger**: Parser detects sections without status bullets
-- **Progression**: Extract markdown blocks → Render with syntax highlighting → Show in collapsible sidebar
-- **Success criteria**: Clear visual distinction from cards; preserves code blocks and tables
+### Markdown Round-Trip with Description Formatting
+- **Functionality**: Project UI changes back to markdown while preserving indentation and multi-line descriptions
+- **Purpose**: Maintain markdown as source of truth; enable Git workflows with proper formatting
+- **Trigger**: User clicks "Save Changes" or "Download"
+- **Progression**: Collect schema changes → Map to original markdown locations → Replace emojis/titles → Write indented descriptions → Update timestamp → Generate file
+- **Success criteria**: Zero formatting loss; headings unchanged; descriptions properly indented; dates auto-updated
 
 ## Edge Case Handling
 
-- **Malformed emoji**: Missing or duplicate status icons → Flag with warning badge; default to In Progress
-- **ID collisions**: Same section + title combination → Append `-1`, `-2` suffix; log for review
-- **Large files**: 100+ cards → Virtual scrolling in columns; section filters
-- **Git conflicts**: Concurrent edits to STATUS.md → Show diff view; require manual resolution
-- **Network failures**: Git clone/push errors → Cache parsed state; retry with exponential backoff
-- **Invalid markdown**: Unparseable structure → Show raw markdown view; highlight problematic lines
+- **Malformed emoji**: Missing or duplicate status icons → Flag with warning badge; default to In Progress; allow manual correction in drawer
+- **ID collisions**: Same lane + title combination → Append `-1`, `-2` suffix; maintain stable IDs across edits
+- **Large swimlanes**: 50+ cards per lane → Virtual scrolling in columns; smooth collapse animations
+- **Empty swimlanes**: No cards in a lane → Show empty state message; allow collapse to hide
+- **Multi-line descriptions**: Complex indented content → Parse all indented lines; preserve formatting in round-trip; render with expand/collapse
+- **Missing H2/H3 headers**: Bullets without section context → Group in "default" swimlane labeled "All Items"
+- **Invalid markdown**: Unparseable structure → Show raw markdown view; highlight problematic lines; allow manual correction
 
 ## Design Direction
 
-The design should feel professional and focused—like a developer tool built by developers. Favor clarity and information density over decorative elements. The interface should feel fast and direct, with subtle animations that communicate state changes (card moves, saves) rather than drawing attention to themselves.
+The design should feel professional, focused, and information-dense—like a developer tool built by developers for developers. Swimlanes create clear visual hierarchy without sacrificing information density. The interface should feel fast and direct, with purposeful animations that communicate state changes (lane collapse, card moves, drawer slide) rather than drawing attention to themselves. Cards are compact but expandable, prioritizing scanability while supporting rich context.
 
 ## Color Selection
 
-Triadic color scheme anchored by status meanings: success green, warning amber, error red. Use muted, desaturated tones for the professional developer-tool aesthetic.
+Triadic color scheme anchored by status meanings: success green, warning amber, error red. Use muted, desaturated tones for the professional developer-tool aesthetic with subtle background tints to distinguish swimlanes.
 
 - **Primary Color**: Deep slate blue `oklch(0.35 0.05 250)` — Communicates technical professionalism and focus
 - **Secondary Colors**: 
   - Success green `oklch(0.55 0.15 145)` for Done status
-  - Warning amber `oklch(0.65 0.14 75)` for In Progress
+  - Warning amber `oklch(0.65 0.14 75)` for In Progress  
   - Error red `oklch(0.55 0.18 25)` for Blocked
-- **Accent Color**: Bright cyan `oklch(0.70 0.12 200)` for interactive elements and CTAs
+- **Accent Color**: Bright cyan `oklch(0.70 0.12 200)` for interactive elements, unsaved changes indicator, and CTAs
 - **Foreground/Background Pairings**:
   - Background (White `oklch(0.98 0 0)`): Dark slate text `oklch(0.25 0.02 250)` - Ratio 11.2:1 ✓
   - Card (Light gray `oklch(0.96 0 0)`): Dark slate text `oklch(0.25 0.02 250)` - Ratio 10.5:1 ✓
+  - Muted (Swimlane header `oklch(0.94 0.01 250)`): Dark slate text `oklch(0.25 0.02 250)` - Ratio 9.8:1 ✓
   - Primary (Deep slate `oklch(0.35 0.05 250)`): White text `oklch(0.98 0 0)` - Ratio 8.9:1 ✓
   - Success (Green `oklch(0.55 0.15 145)`): White text `oklch(0.98 0 0)` - Ratio 4.7:1 ✓
   - Warning (Amber `oklch(0.65 0.14 75)`): Dark slate text `oklch(0.25 0.02 250)` - Ratio 5.2:1 ✓
@@ -83,64 +92,73 @@ Triadic color scheme anchored by status meanings: success green, warning amber, 
 Use a clean, modern sans-serif that emphasizes readability in dense information layouts, with excellent monospace support for code/markdown. Inter for UI and JetBrains Mono for code blocks.
 
 - **Typographic Hierarchy**:
-  - H1 (App Title): Inter Bold/24px/tight letter spacing (-0.02em)
-  - H2 (Section Headers): Inter Semibold/18px/normal letter spacing
-  - H3 (Column Headers): Inter Medium/14px/uppercase/wide letter spacing (0.05em)
-  - Body (Card Title): Inter Regular/14px/normal line height (1.5)
-  - Caption (Metadata): Inter Regular/12px/muted color/loose line height (1.6)
-  - Code (Markdown): JetBrains Mono Regular/13px/normal letter spacing
+  - H1 (App Title): Inter Bold/20px/tight letter spacing (-0.02em)
+  - H2 (Swimlane Titles): Inter Semibold/16px/normal letter spacing
+  - H3 (Column Headers): Inter Medium/12px/uppercase/wide letter spacing (0.05em)
+  - Body (Card Title): Inter Medium/12px/normal line height (1.4)
+  - Caption (Metadata, Counts): Inter Regular/11px/muted color/loose line height (1.6)
+  - Description (Card Body): Inter Regular/12px/relaxed line height (1.6)
+  - Code (Markdown): JetBrains Mono Regular/12px/normal letter spacing
 
 ## Animations
 
-Animations should feel instantaneous and purposeful—cards should glide smoothly between columns with slight physics-based easing, reflecting the satisfaction of completing a task.
+Animations should feel instantaneous and purposeful—swimlanes collapse smoothly with height transitions, cards glide between columns with physics-based easing, and the drawer slides elegantly from the right.
 
-- **Purposeful Meaning**: Drag operations use subtle elevation and scale to communicate "lifting" a card; successful saves pulse the affected cards briefly
+- **Purposeful Meaning**: 
+  - Swimlane collapse uses height animation (200ms) to show/hide content fluidly
+  - Card drag uses subtle elevation and scale (1.01) to communicate "lifting"
+  - Drawer slide-in (250ms) from right feels natural and non-blocking
+  - Card expand/collapse for descriptions (150ms) feels responsive
 - **Hierarchy of Movement**: 
-  1. Card drag/drop (primary interaction) - 200ms ease-out with scale 1.02
-  2. Column reflows - 150ms ease-in-out for smooth repositioning
-  3. Status badge changes - 100ms color transition
-  4. Save confirmation - 300ms fade-in toast notification
+  1. Drawer open/close (primary interaction) - 250ms ease-out slide from right
+  2. Swimlane collapse/expand - 200ms ease-in-out height transition
+  3. Card drag/drop - 150ms ease-out with scale 1.01
+  4. Card description expand - 150ms ease-in-out height reveal
+  5. Status indicator changes - 100ms color transition
 
 ## Component Selection
 
 - **Components**: 
-  - `Card` for Kanban items with custom styling for status indicators
-  - `Badge` for section tags and status labels
-  - `Button` for primary actions (Save, Commit, Upload)
-  - `Textarea` for markdown editing with monospace font
+  - `Sheet` (drawer) for card detail editing with slide-from-right animation
+  - `Card` for Kanban items with compact styling and status indicators
+  - `Button` for primary actions (Save, Download, Collapse) with icon support
+  - `Input` for card title editing in drawer
+  - `Textarea` for description editing with monospace font
+  - `Select` for status dropdown in drawer with icon rendering
   - `Tabs` for switching between Board/Raw Markdown/Notes views
-  - `Dialog` for commit messages and conflict resolution
-  - `ScrollArea` for long column lists
-  - `Separator` for visual section grouping within columns
-  - `Alert` for warnings (malformed emojis, ID collisions)
-  - `Skeleton` for loading states during parsing
+  - `ScrollArea` for column and lane scrolling with proper overflow
+  - `Label` for form fields in drawer
+  - Framer Motion for animations (AnimatePresence for collapse/expand)
 
 - **Customizations**: 
-  - Custom drag-and-drop card component (framer-motion for gestures)
-  - Markdown syntax highlighting component for notes panel
-  - Diff viewer for Git conflicts
-  - File upload drop zone with visual feedback
+  - Custom Swimlane component with collapsible lanes and embedded columns
+  - Enhanced KanbanCard with expand/collapse for descriptions
+  - CardDetailDrawer using Sheet for slide-from-right editing
+  - FileUploader with drag-and-drop visual feedback
+  - Status icons integrated into selects and cards
 
 - **States**: 
-  - Buttons: Default/Hover (scale 1.02)/Active (scale 0.98)/Disabled (opacity 0.5)
-  - Cards: Resting/Hover (shadow-lg)/Dragging (shadow-2xl + rotate-1)/Dropped (pulse animation)
-  - Inputs: Empty (border-input)/Focused (border-accent ring-2)/Error (border-destructive)
-  - Save button: Idle/Has Changes (accent color + pulse)/Saving (spinner)/Saved (checkmark 2s)
+  - Buttons: Default/Hover (scale 1.01)/Active (scale 0.98)/Disabled (opacity 0.5)
+  - Cards: Resting/Hover (shadow-md)/Dragging (shadow-2xl + rotate-1)/Expanded (description visible)
+  - Swimlanes: Expanded (full height)/Collapsed (header only with stats)
+  - Drawer: Closed (off-screen right)/Open (slide-in with overlay)
+  - Save button: Idle/Has Changes (accent color)/Saving (disabled)/Saved (success feedback)
 
 - **Icon Selection**: 
-  - `CloudArrowUp` for Git push
+  - `Kanban` for app branding and board view
   - `Download` for file download
   - `Upload` for file upload  
-  - `GitBranch` for Git mode indicator
-  - `FileText` for local file mode
-  - `Eye` for preview
-  - `CheckCircle`, `WarningCircle`, `XCircle` for status badges
-  - `DotsThreeVertical` for card menu
-  - `ArrowsClockwise` for sync/refresh
+  - `ArrowsClockwise` for reset/new file
+  - `FileText` for notes and raw markdown tabs
+  - `Eye` for board view tab
+  - `CheckCircle`, `WarningCircle`, `XCircle` for status indicators (filled weight)
+  - `CaretDown`, `CaretUp` for expand/collapse controls
+  - `FloppyDisk` for save action in drawer
+  - `Link` for card link indicators
 
-- **Spacing**: Consistent 4px grid (gap-2/4/6 for tight/normal/loose). Cards have p-4, columns gap-3, board grid gap-6
+- **Spacing**: Consistent 4px grid. Swimlanes have p-4 headers, cards p-3, columns gap-2, lanes gap-4 vertical stacking
 
 - **Mobile**: 
-  - Desktop: 3-column grid layout with fixed Notes sidebar
-  - Tablet (768px): 2-column grid, Notes in collapsible drawer
-  - Mobile (<640px): Single column with tabs for Done/In Progress/Blocked, swipe gestures for column switching, bottom sheet for Notes
+  - Desktop (1024px+): Full swimlane layout with 3 columns per lane
+  - Tablet (768px): 2 columns per lane, swimlanes stack
+  - Mobile (<768px): Single column per lane with tabs, swipe between lanes, drawer becomes full-screen modal
