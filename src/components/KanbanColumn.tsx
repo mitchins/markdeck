@@ -46,14 +46,6 @@ export function KanbanColumn({ status, cards, onCardDrop }: KanbanColumnProps) {
     }
   }
 
-  const groupedCards = cards.reduce((acc, card) => {
-    if (!acc[card.section]) {
-      acc[card.section] = []
-    }
-    acc[card.section].push(card)
-    return acc
-  }, {} as Record<string, KanbanCardType[]>)
-
   return (
     <div
       className={`flex flex-col h-full rounded-lg border border-border ${config.bgColor}`}
@@ -71,25 +63,16 @@ export function KanbanColumn({ status, cards, onCardDrop }: KanbanColumnProps) {
       </div>
 
       <ScrollArea className="flex-1">
-        <div className="p-3 space-y-3">
-          {Object.entries(groupedCards).map(([section, sectionCards]) => (
-            <div key={section} className="space-y-2">
-              {section && (
-                <div className="text-xs font-medium text-muted-foreground px-1 mt-2 first:mt-0">
-                  {section}
-                </div>
-              )}
-              {sectionCards.map((card) => (
-                <div
-                  key={card.id}
-                  draggable
-                  onDragStart={(e) => {
-                    e.dataTransfer.setData('cardId', card.id)
-                  }}
-                >
-                  <KanbanCard card={card} />
-                </div>
-              ))}
+        <div className="p-3 space-y-2">
+          {cards.map((card) => (
+            <div
+              key={card.id}
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData('cardId', card.id)
+              }}
+            >
+              <KanbanCard card={card} />
             </div>
           ))}
           

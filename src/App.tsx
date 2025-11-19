@@ -33,14 +33,18 @@ function App() {
   const handleCardMove = (cardId: string, newStatus: CardStatus) => {
     if (!parsedData) return
 
-    const updatedCards = parsedData.cards.map((card) =>
-      card.id === cardId ? { ...card, status: newStatus } : card
-    )
+    setParsedData((current) => {
+      if (!current) return null
+      
+      const updatedCards = current.cards.map((card) =>
+        card.id === cardId ? { ...card, status: newStatus } : card
+      )
 
-    setParsedData((current) => ({
-      ...current!,
-      cards: updatedCards,
-    }))
+      return {
+        ...current,
+        cards: updatedCards,
+      }
+    })
 
     setHasChanges(true)
     toast.success('Card status updated')
@@ -54,14 +58,18 @@ function App() {
   const handleCardSave = (updatedCard: KanbanCard) => {
     if (!parsedData) return
 
-    const updatedCards = parsedData.cards.map((card) =>
-      card.id === updatedCard.id ? updatedCard : card
-    )
+    setParsedData((current) => {
+      if (!current) return null
+      
+      const updatedCards = current.cards.map((card) =>
+        card.id === updatedCard.id ? updatedCard : card
+      )
 
-    setParsedData((current) => ({
-      ...current!,
-      cards: updatedCards,
-    }))
+      return {
+        ...current,
+        cards: updatedCards,
+      }
+    })
 
     setHasChanges(true)
   }
