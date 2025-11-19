@@ -18,6 +18,8 @@ function App() {
   const [selectedCard, setSelectedCard] = useState<KanbanCard | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
+  const normalizedData = parsedData && parsedData.swimlanes ? parsedData : null
+
   const handleFileLoad = (content: string) => {
     try {
       const parsed = parseStatusMarkdown(content)
@@ -31,10 +33,10 @@ function App() {
   }
 
   const handleCardMove = (cardId: string, newStatus: CardStatus) => {
-    if (!parsedData) return
+    if (!normalizedData) return
 
     setParsedData((current) => {
-      if (!current) return null
+      if (!current || !current.swimlanes) return null
       
       const updatedCards = current.cards.map((card) =>
         card.id === cardId ? { ...card, status: newStatus } : card
@@ -56,10 +58,10 @@ function App() {
   }
 
   const handleCardSave = (updatedCard: KanbanCard) => {
-    if (!parsedData) return
+    if (!normalizedData) return
 
     setParsedData((current) => {
-      if (!current) return null
+      if (!current || !current.swimlanes) return null
       
       const updatedCards = current.cards.map((card) =>
         card.id === updatedCard.id ? updatedCard : card
@@ -75,12 +77,12 @@ function App() {
   }
 
   const handleSave = () => {
-    if (!parsedData) return
+    if (!normalizedData) return
 
     const updated = projectToMarkdown(
-      parsedData.metadata,
-      parsedData.cards,
-      parsedData.rawMarkdown
+      normalizedData.metadata,
+      normalizedData.cards,
+      normalizedData.rawMarkdown
     )
 
     const blob = new Blob([updated], { type: 'text/markdown' })
@@ -93,10 +95,13 @@ function App() {
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
 
-    setParsedData((current) => ({
-      ...current!,
-      rawMarkdown: updated,
-    }))
+    setParsedData((current) => {
+      if (!current || !current.swimlanes) return null
+      return {
+        ...current,
+        rawMarkdown: updated,
+      }
+    })
 
     setHasChanges(false)
     toast.success('STATUS.md downloaded')
@@ -108,7 +113,7 @@ function App() {
     toast.info('Reset to file upload')
   }
 
-  if (!parsedData) {
+  if (!normalizedData) {
     return (
       <div className="min-h-screen bg-background p-6">
         <div className="max-w-6xl mx-auto">
@@ -136,21 +141,21 @@ function App() {
             <div>
               <div className="flex items-center gap-3">
                 <Kanban size={24} className="text-primary" weight="duotone" />
-                <h1 className="text-xl font-bold tracking-tight">{parsedData.metadata.title}</h1>
+                <h1 className="text-xl font-bold tracking-tight">{normalizedData.metadata.title}</h1>
               </div>
               <div className="flex items-center gap-4 mt-1">
-                {parsedData.metadata.version && (
+                {normalizedData.metadata.version && (
                   <span className="text-xs text-muted-foreground">
-                    v{parsedData.metadata.version}
+                    v{normalizedData.metadata.version}
                   </span>
                 )}
-                {parsedData.metadata.lastUpdated && (
+                {normalizedData.metadata.lastUpdated && (
                   <span className="text-xs text-muted-foreground">
-                    Updated: {parsedData.metadata.lastUpdated}
+                    Updated: {normalizedData.metadata.lastUpdated}
                   </span>
                 )}
                 <span className="text-xs text-muted-foreground">
-                  {parsedData.cards.length} cards · {parsedData.swimlanes.length} sections
+                  {normalizedData.cards.length} cards · {normalizedData.swimlanes.length} sections
                 </span>
               </div>
             </div>
@@ -182,7 +187,7 @@ function App() {
             </TabsTrigger>
             <TabsTrigger value="notes">
               <FileText className="mr-2" size={16} />
-              Notes ({parsedData.notes.length})
+              Notes ({normalizedData.notes.length})
             </TabsTrigger>
             <TabsTrigger value="raw">
               <FileText className="mr-2" size={16} />
@@ -192,8 +197,8 @@ function App() {
 
           <TabsContent value="board" className="mt-0">
             <div className="space-y-4">
-              {parsedData.swimlanes.map((swimlane) => {
-                const laneCards = parsedData.cards.filter(card => card.laneId === swimlane.id)
+              {normalizedData.swimlanes.map((swimlane) => {
+                const laneCards = normalizedData.cards.filter(card => card.laneId === swimlane.id)
                 return (
                   <Swimlane
                     key={swimlane.id}
@@ -209,13 +214,13 @@ function App() {
 
           <TabsContent value="notes" className="mt-0">
             <div className="max-w-4xl">
-              <NotesPanel notes={parsedData.notes} />
+              <NotesPanel notes={normalizedData.notes} />
             </div>
           </TabsContent>
 
           <TabsContent value="raw" className="mt-0">
             <Textarea
-              value={parsedData.rawMarkdown}
+              value={normalizedData.rawMarkdown}
               readOnly
               className="font-mono text-sm h-[calc(100vh-240px)] resize-none"
             />
