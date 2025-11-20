@@ -42,7 +42,7 @@ const columnConfig: Record<CardStatus, {
 }
 
 export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCollapse }: SwimlaneProps) {
-  const [isCollapsed, setIsCollapsed] = useState(swimlane.collapsed || false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   const handleToggle = () => {
     const newCollapsed = !isCollapsed

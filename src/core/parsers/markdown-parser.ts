@@ -4,7 +4,7 @@
  * Main parser that converts STATUS.md markdown to domain model.
  */
 
-import type { Project, Note } from '../domain/types'
+import type { Project, Note, Card } from '../domain/types'
 import { extractMetadata } from './metadata-extractor'
 import { parseSwimlanes, getCurrentSwimlane } from './swimlane-parser'
 import { parseCard } from './card-parser'
@@ -21,7 +21,7 @@ export function parseStatusMarkdown(markdown: string): Project {
   const swimlanes = parseSwimlanes(lines)
   
   // Parse cards and notes
-  const cards = []
+  const cards: Card[] = []
   const notes: Note[] = []
   
   let inCodeBlock = false

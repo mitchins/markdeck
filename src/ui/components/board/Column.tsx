@@ -1,5 +1,5 @@
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { KanbanCard } from './KanbanCard'
+import { KanbanCard } from './Card'
 import type { KanbanCard as KanbanCardType, CardStatus } from '@/lib/types'
 import { CheckCircle, WarningCircle, XCircle } from '@phosphor-icons/react'
 
