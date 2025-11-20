@@ -37,3 +37,11 @@ MarkDeck turns a `STATUS.md` file into a focused, three-column Kanban board. It 
 - Coverage + Sonar reports: `npm run test:coverage` generates `coverage/lcov.info` and `test-results/junit.xml` for SonarCloud.
 
 CI runs the lint/typecheck/test suite, uploads coverage and test results, and then triggers SonarCloud analysis using `sonar-project.properties`.
+
+## Documentation
+- [STATUS.md](STATUS.md) - Live project roadmap (viewable with MarkDeck itself!)
+- [docs/](docs/) - Architecture, UX specifications, and implementation details
+- [SECURITY.md](SECURITY.md) - Security policies and vulnerability reporting
+
+## Live demo
+Coming soon! Cloudflare Pages deployment in progress.
