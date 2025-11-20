@@ -3,7 +3,6 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { KanbanCard as KanbanCardType } from '@/lib/types'
-import { STATUS_COLUMNS } from '@/lib/types'
 import { XCircle, CaretDown, CaretUp, Link as LinkIcon } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -12,23 +11,8 @@ interface KanbanCardProps {
   isDragging?: boolean
 }
 
-const statusConfig: Record<string, {
-  iconColor: string
-}> = {
-  todo: {
-    iconColor: 'text-accent',
-  },
-  in_progress: {
-    iconColor: 'text-warning',
-  },
-  done: {
-    iconColor: 'text-success',
-  },
-}
-
 export function KanbanCard({ card, isDragging }: KanbanCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const config = statusConfig[card.status]
   const hasDescription = card.description && card.description.trim().length > 0
 
   return (

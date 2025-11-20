@@ -5,8 +5,8 @@
  */
 
 import { useCallback } from 'react'
-import { useAppStore, selectCards, selectCardsByLane, selectCardsByStatus } from '../state/app-store'
-import type { CardStatus } from '@/core'
+import { useAppStore, selectCards } from '../state/app-store'
+import type { CardStatus, Card } from '@/core'
 
 export function useCards() {
   const cards = useAppStore(selectCards)
@@ -24,7 +24,7 @@ export function useCards() {
     actions.moveCard(cardId, newStatus)
   }, [actions])
   
-  const updateCard = useCallback((cardId: string, updates: any) => {
+  const updateCard = useCallback((cardId: string, updates: Partial<Card>) => {
     actions.updateCard(cardId, updates)
   }, [actions])
   

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Select,
   SelectContent,
@@ -18,6 +18,15 @@ interface Repository {
   default_branch: string
 }
 
+interface GitHubRepositoryResponse {
+  name: string
+  full_name: string
+  owner: {
+    login: string
+  }
+  default_branch: string
+}
+
 interface ProjectSelectorProps {
   githubToken: string | null
   onDisconnect: () => void
@@ -29,13 +38,7 @@ export function ProjectSelector({ githubToken, onDisconnect, onProjectSelect }: 
   const [isLoading, setIsLoading] = useState(false)
   const [selectedRepo, setSelectedRepo] = useState<string>('')
 
-  useEffect(() => {
-    if (githubToken) {
-      loadRepositories()
-    }
-  }, [githubToken])
-
-  const loadRepositories = async () => {
+  const loadRepositories = useCallback(async () => {
     if (!githubToken) return
 
     setIsLoading(true)
@@ -51,10 +54,10 @@ export function ProjectSelector({ githubToken, onDisconnect, onProjectSelect }: 
         throw new Error('Failed to fetch repositories')
       }
 
-      const allRepos = await response.json()
+      const allRepos = await response.json() as GitHubRepositoryResponse[]
       
       const reposWithStatus = await Promise.all(
-        allRepos.map(async (repo: any) => {
+        allRepos.map(async (repo: GitHubRepositoryResponse) => {
           try {
             const statusResponse = await fetch(
               `https://api.github.com/repos/${repo.full_name}/contents/STATUS.md`,
@@ -65,7 +68,7 @@ export function ProjectSelector({ githubToken, onDisconnect, onProjectSelect }: 
                 },
               }
             )
-            
+
             if (statusResponse.ok) {
               return {
                 name: repo.name,
@@ -74,7 +77,7 @@ export function ProjectSelector({ githubToken, onDisconnect, onProjectSelect }: 
                 default_branch: repo.default_branch,
               }
             }
-          } catch (error) {
+          } catch {
             return null
           }
           return null
@@ -96,7 +99,13 @@ export function ProjectSelector({ githubToken, onDisconnect, onProjectSelect }: 
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [githubToken])
+
+  useEffect(() => {
+    if (githubToken) {
+      void loadRepositories()
+    }
+  }, [githubToken, loadRepositories])
 
   const handleRepoChange = (fullName: string) => {
     setSelectedRepo(fullName)
