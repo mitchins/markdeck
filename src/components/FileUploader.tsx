@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Card } from '@/components/ui/card'
-import { Upload, FileText } from '@phosphor-icons/react'
+import { Upload, FileText, Sparkle } from '@phosphor-icons/react'
+import { DEMO_STATUS_MD } from '@/lib/demo-data'
 
 interface FileUploaderProps {
   onFileLoad: (content: string) => void
@@ -45,6 +46,10 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
     }
   }
 
+  const handleLoadDemo = () => {
+    onFileLoad(DEMO_STATUS_MD)
+  }
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <Card
@@ -72,7 +77,7 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
             </p>
           </div>
 
-          <div>
+          <div className="flex gap-3 justify-center">
             <input
               type="file"
               accept=".md"
@@ -88,6 +93,11 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
                 </span>
               </Button>
             </label>
+            
+            <Button variant="outline" onClick={handleLoadDemo}>
+              <Sparkle className="mr-2" size={16} weight="duotone" />
+              Try Demo
+            </Button>
           </div>
         </div>
       </Card>

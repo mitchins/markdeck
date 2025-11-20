@@ -3,13 +3,14 @@ import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Swimlane } from '@/components/Swimlane'
 import { FileUploader } from '@/components/FileUploader'
 import { NotesPanel } from '@/components/NotesPanel'
 import { CardDetailDrawer } from '@/components/CardDetailDrawer'
 import { parseStatusMarkdown, projectToMarkdown } from '@/lib/parser'
 import type { ParsedStatus, KanbanCard, CardStatus } from '@/lib/types'
-import { Download, Eye, FileText, ArrowsClockwise, Kanban } from '@phosphor-icons/react'
+import { Download, Eye, FileText, ArrowsClockwise, Kanban, Info } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
 function App() {
@@ -22,13 +23,30 @@ function App() {
 
   const handleFileLoad = (content: string) => {
     try {
+      if (!content || content.trim().length === 0) {
+        toast.error('File is empty - please provide valid STATUS.md content')
+        return
+      }
+
       const parsed = parseStatusMarkdown(content)
+      
+      if (!parsed.cards || parsed.cards.length === 0) {
+        toast.error('No cards found! Make sure your file includes items with ✅ ⚠️ or ❌ emoji', {
+          description: 'Try the demo to see the expected format',
+          duration: 6000,
+        })
+        return
+      }
+
       setParsedData(parsed)
       setHasChanges(false)
       toast.success(`Loaded ${parsed.cards.length} cards across ${parsed.swimlanes.length} sections`)
     } catch (error) {
-      toast.error('Failed to parse STATUS.md')
-      console.error(error)
+      toast.error('Failed to parse STATUS.md', {
+        description: error instanceof Error ? error.message : 'Unknown parsing error',
+        duration: 5000,
+      })
+      console.error('Parse error:', error)
     }
   }
 
@@ -196,20 +214,43 @@ function App() {
           </TabsList>
 
           <TabsContent value="board" className="mt-0">
-            <div className="space-y-4">
-              {normalizedData.swimlanes.map((swimlane) => {
-                const laneCards = normalizedData.cards.filter(card => card.laneId === swimlane.id)
-                return (
-                  <Swimlane
-                    key={swimlane.id}
-                    swimlane={swimlane}
-                    cards={laneCards}
-                    onCardDrop={handleCardMove}
-                    onCardClick={handleCardClick}
-                  />
-                )
-              })}
-            </div>
+            {normalizedData.cards.length === 0 ? (
+              <Alert>
+                <Info />
+                <AlertTitle>No cards found in this file</AlertTitle>
+                <AlertDescription>
+                  <p className="mb-2">
+                    Your STATUS.md file was parsed, but no Kanban cards were detected.
+                  </p>
+                  <p className="mb-2">
+                    Cards must be markdown list items with status emojis:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 font-mono text-xs">
+                    <li>✅ for Done items</li>
+                    <li>⚠️ for In Progress items</li>
+                    <li>❌ for Blocked items</li>
+                  </ul>
+                  <p className="mt-3">
+                    Try the <Button variant="link" className="h-auto p-0 text-sm" onClick={handleReset}>Demo file</Button> to see the expected format.
+                  </p>
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <div className="space-y-4">
+                {normalizedData.swimlanes.map((swimlane) => {
+                  const laneCards = normalizedData.cards.filter(card => card.laneId === swimlane.id)
+                  return (
+                    <Swimlane
+                      key={swimlane.id}
+                      swimlane={swimlane}
+                      cards={laneCards}
+                      onCardDrop={handleCardMove}
+                      onCardClick={handleCardClick}
+                    />
+                  )
+                })}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="notes" className="mt-0">
