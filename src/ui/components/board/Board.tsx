@@ -1,0 +1,33 @@
+/**
+ * Board component
+ * 
+ * Main Kanban board that displays swimlanes with columns and cards.
+ */
+
+import { Swimlane } from './Swimlane'
+import { useSwimlanes, useCards } from '@/application'
+
+export function Board() {
+  const { swimlanes } = useSwimlanes()
+  const { cards } = useCards()
+  
+  if (swimlanes.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-64 text-muted-foreground">
+        <p>No swimlanes found. Upload a STATUS.md file to get started.</p>
+      </div>
+    )
+  }
+  
+  return (
+    <div className="space-y-4 pb-8">
+      {swimlanes.map((swimlane) => (
+        <Swimlane
+          key={swimlane.id}
+          swimlane={swimlane}
+          cards={cards.filter(card => card.laneId === swimlane.id)}
+        />
+      ))}
+    </div>
+  )
+}
