@@ -31,11 +31,13 @@ interface ProjectMetadata {
   lastUpdated?: string
 }
 
+type Note = Record<string, unknown>
+
 interface Project {
   metadata: ProjectMetadata
   cards: Card[]
   swimlanes: Swimlane[]
-  notes: any[]
+  notes: Note[]
   rawMarkdown: string
 }
 

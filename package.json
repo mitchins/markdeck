@@ -1,8 +1,9 @@
 {
-    "name": "spark-template",
+    "name": "markdeck",
     "private": true,
-    "version": "0.0.0",
+    "version": "0.2.0",
     "type": "module",
+    "description": "Visual Kanban board for STATUS.md files with GitHub sync",
     "scripts": {
         "dev": "vite",
         "kill": "fuser -k 5000/tcp",
@@ -80,7 +81,8 @@
         "tw-animate-css": "^1.2.4",
         "uuid": "^11.1.0",
         "vaul": "^1.1.2",
-        "zod": "^3.25.76"
+        "zod": "^3.25.76",
+        "zustand": "^5.0.8"
     },
     "devDependencies": {
         "@eslint/js": "^9.21.0",
