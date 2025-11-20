@@ -1,23 +1,39 @@
-# ✨ Welcome to Your Spark Template!
-You've just launched your brand-new Spark Template Codespace — everything’s fired up and ready for you to explore, build, and create with Spark!
+# MarkDeck
 
-This template is your blank canvas. It comes with a minimal setup to help you get started quickly with Spark development.
+MarkDeck turns a `STATUS.md` file into a focused, three-column Kanban board. It preserves the Markdown source of each project lane, lets you drag cards between TODO/IN PROGRESS/DONE, and syncs changes back to GitHub or local files without losing formatting.
 
-🚀 What's Inside?
-- A clean, minimal Spark environment
-- Pre-configured for local development
-- Ready to scale with your ideas
-  
-🧠 What Can You Do?
+## Key features
+- Parse H2/H3 headings into swimlanes with TODO → IN PROGRESS → DONE columns and a separate blocked flag.
+- Round-trip safe serialization that keeps non-card Markdown intact when saving.
+- GitHub provider for pulling and pushing `STATUS.md` content with personal access tokens alongside local file support.
+- Keyboard-friendly, accessible React UI with card drawers, drag-and-drop, and inline editing.
 
-Right now, this is just a starting point — the perfect place to begin building and testing your Spark applications.
+## Tech stack
+- React 19 + TypeScript, Vite, TailwindCSS 4
+- State management with Zustand and React Query for async data
+- Markdown parsing/serialization in `src/core/parsers` and adapters in `src/adapters`
+- Testing with Vitest, Testing Library, and Happy DOM
 
-🧹 Just Exploring?
-No problem! If you were just checking things out and don’t need to keep this code:
+## Getting started
+1. Install dependencies (Node.js 20+):
+   ```bash
+   npm ci
+   ```
+2. Start the dev server:
+   ```bash
+   npm run dev
+   ```
+3. Build for production:
+   ```bash
+   npm run build
+   ```
 
-- Simply delete your Spark.
-- Everything will be cleaned up — no traces left behind.
+## Testing and quality
+- Lint: `npm run lint`
+- Type check: `npx tsc --noEmit`
+- Unit tests: `npm run test:unit -- --run`
+- Integration tests: `npm run test:integration -- --run`
+- End-to-end tests: `npm run test:e2e -- --run`
+- Coverage + Sonar reports: `npm run test:coverage` generates `coverage/lcov.info` and `test-results/junit.xml` for SonarCloud.
 
-📄 License For Spark Template Resources 
-
-The Spark Template files and resources from GitHub are licensed under the terms of the MIT license, Copyright GitHub, Inc.
+CI runs the lint/typecheck/test suite, uploads coverage and test results, and then triggers SonarCloud analysis using `sonar-project.properties`.
