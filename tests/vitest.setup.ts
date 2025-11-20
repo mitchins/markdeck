@@ -36,10 +36,10 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock IntersectionObserver for lazy loading
 global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  disconnect() {}
-  observe() {}
-  unobserve() {}
+  constructor() { /* noop */ }
+  disconnect(): void { /* noop */ }
+  observe(): void { /* noop */ }
+  unobserve(): void { /* noop */ }
   takeRecords() {
     return []
   }
@@ -47,10 +47,10 @@ global.IntersectionObserver = class IntersectionObserver {
 
 // Mock ResizeObserver for responsive layouts
 global.ResizeObserver = class ResizeObserver {
-  constructor() {}
-  disconnect() {}
-  observe() {}
-  unobserve() {}
+  constructor() { /* noop */ }
+  disconnect(): void { /* noop */ }
+  observe(): void { /* noop */ }
+  unobserve(): void { /* noop */ }
 }
 
 // Mock scrollIntoView (not implemented in happy-dom)

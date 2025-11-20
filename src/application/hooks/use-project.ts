@@ -7,7 +7,7 @@
 import { useCallback } from 'react'
 import { toast } from 'sonner'
 import { useAppStore, selectProject, selectHasUnsavedChanges, selectIsLoading } from '../state/app-store'
-import { createProvider, type ProviderType } from '@/adapters'
+import { createProvider, type ProviderConfig, type ProviderType } from '@/adapters'
 import { loadProject } from '../use-cases/load-project'
 import { saveProject } from '../use-cases/save-project'
 
@@ -18,7 +18,7 @@ export function useProject() {
   const provider = useAppStore(state => state.provider)
   const actions = useAppStore(state => state.actions)
   
-  const load = useCallback(async (providerType?: ProviderType, config?: any) => {
+  const load = useCallback(async (providerType?: ProviderType, config?: ProviderConfig) => {
     actions.setProviderStatus('loading')
     
     try {

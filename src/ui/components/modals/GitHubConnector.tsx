@@ -47,7 +47,7 @@ export function GitHubConnector({ open, onConnect, onClose }: GitHubConnectorPro
       toast.success(`Connected as ${user.login}`)
       onConnect(token)
       setToken('')
-    } catch (error) {
+    } catch {
       toast.error('Failed to validate GitHub token', {
         description: 'Please check your token and try again',
       })

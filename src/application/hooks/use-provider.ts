@@ -6,13 +6,13 @@
 
 import { useCallback } from 'react'
 import { useAppStore } from '../state/app-store'
-import type { ProviderType } from '@/adapters'
+import type { ProviderConfig, ProviderType } from '@/adapters'
 
 export function useProvider() {
   const provider = useAppStore(state => state.provider)
   const actions = useAppStore(state => state.actions)
   
-  const setProvider = useCallback((type: ProviderType, config: any) => {
+  const setProvider = useCallback((type: ProviderType, config: ProviderConfig) => {
     actions.setProvider(type, config)
   }, [actions])
   
