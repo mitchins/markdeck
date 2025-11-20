@@ -8,19 +8,12 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { Project, Card, CardStatus } from '@/core'
-import type { StatusProvider, ProviderType } from '@/adapters'
+import type { ProviderConfig, ProviderType } from '@/adapters'
 
 // Provider configuration state
 export interface ProviderState {
   type: ProviderType
-  config: {
-    github?: {
-      token: string
-      owner?: string
-      repo?: string
-      branch?: string
-    }
-  } | null
+  config: ProviderConfig | null
   status: 'idle' | 'loading' | 'saving' | 'error'
 }
 
