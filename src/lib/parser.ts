@@ -1,5 +1,5 @@
 import type { ParsedStatus, KanbanCard, Note, ProjectMetadata, CardStatus, Swimlane } from './types'
-import { EMOJI_TO_STATUS } from './types'
+import { EMOJI_TO_STATUS, BLOCKED_EMOJI, STATUS_COLUMNS } from './types'
 
 function slugify(text: string): string {
   return text
@@ -10,18 +10,32 @@ function slugify(text: string): string {
     .trim()
 }
 
-function extractEmoji(text: string): { emoji: string | null; remaining: string } {
-  const emojiRegex = /(✅|⚠️|❌)/
-  const match = text.match(emojiRegex)
+function extractEmoji(text: string): { 
+  statusEmoji: string | null
+  blockedEmoji: string | null
+  remaining: string 
+} {
+  const statusEmojiRegex = /(✅|⚠️|❗)/
+  const blockedEmojiRegex = /(❌)/
   
-  if (match) {
-    return {
-      emoji: match[1],
-      remaining: text.replace(emojiRegex, '').trim(),
-    }
+  const statusMatch = text.match(statusEmojiRegex)
+  const blockedMatch = text.match(blockedEmojiRegex)
+  
+  let remaining = text
+  
+  if (statusMatch) {
+    remaining = remaining.replace(statusEmojiRegex, '').trim()
   }
   
-  return { emoji: null, remaining: text.trim() }
+  if (blockedMatch) {
+    remaining = remaining.replace(blockedEmojiRegex, '').trim()
+  }
+  
+  return {
+    statusEmoji: statusMatch ? statusMatch[1] : null,
+    blockedEmoji: blockedMatch ? blockedMatch[1] : null,
+    remaining: remaining.trim(),
+  }
 }
 
 function extractLinks(text: string): string[] {
@@ -139,9 +153,9 @@ export function parseStatusMarkdown(markdown: string): ParsedStatus {
     if (bulletMatch) {
       const indent = bulletMatch[1]
       const bulletText = bulletMatch[2]
-      const { emoji, remaining } = extractEmoji(bulletText)
+      const { statusEmoji, blockedEmoji, remaining } = extractEmoji(bulletText)
       
-      if (emoji && EMOJI_TO_STATUS[emoji]) {
+      if (statusEmoji && EMOJI_TO_STATUS[statusEmoji]) {
         const title = remaining.trim()
         
         const descriptionLines: string[] = []
@@ -182,13 +196,14 @@ export function parseStatusMarkdown(markdown: string): ParsedStatus {
         cards.push({
           id,
           title,
-          status: EMOJI_TO_STATUS[emoji],
+          status: EMOJI_TO_STATUS[statusEmoji],
           laneId: currentLaneId,
+          blocked: !!blockedEmoji,
           description: descriptionLines.length > 0 ? descriptionLines.join('\n') : undefined,
           links,
           originalLine: i,
         })
-      } else if (emoji === null && remaining.length > 0) {
+      } else if (statusEmoji === null && remaining.length > 0) {
         if (currentNoteTitle) {
           currentNoteContent.push(line)
         } else {
@@ -252,17 +267,18 @@ export function projectToMarkdown(
       continue
     }
     
-    const { emoji } = extractEmoji(line)
-    if (!emoji) {
+    const { statusEmoji } = extractEmoji(line)
+    if (!statusEmoji) {
       updatedLines.push(line)
       i++
       continue
     }
     
     const newEmoji = getEmojiForStatus(card.status)
+    const blockedEmoji = card.blocked ? ` ${BLOCKED_EMOJI}` : ''
     const indent = line.match(/^\s*/)?.[0] || ''
     
-    updatedLines.push(`${indent}- ${newEmoji} ${card.title}`)
+    updatedLines.push(`${indent}- ${newEmoji}${blockedEmoji} ${card.title}`)
     
     if (card.description && card.description.trim()) {
       const descLines = card.description.split('\n')
@@ -303,10 +319,6 @@ export function projectToMarkdown(
 }
 
 function getEmojiForStatus(status: CardStatus): string {
-  const map: Record<CardStatus, string> = {
-    Done: '✅',
-    InProgress: '⚠️',
-    Blocked: '❌',
-  }
-  return map[status]
+  const statusColumn = STATUS_COLUMNS.find(col => col.key === status)
+  return statusColumn?.emoji || '❗'
 }

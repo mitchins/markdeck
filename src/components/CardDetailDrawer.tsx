@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import {
   Select,
   SelectContent,
@@ -18,7 +19,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { KanbanCard, CardStatus } from '@/lib/types'
-import { CheckCircle, WarningCircle, XCircle, FloppyDisk } from '@phosphor-icons/react'
+import { STATUS_COLUMNS } from '@/lib/types'
+import { ListChecks, WarningCircle, CheckCircle, FloppyDisk, XCircle } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
 interface CardDetailDrawerProps {
@@ -28,22 +30,30 @@ interface CardDetailDrawerProps {
   onSave: (updatedCard: KanbanCard) => void
 }
 
-const statusOptions: { value: CardStatus; label: string; icon: typeof CheckCircle; color: string }[] = [
-  { value: 'Done', label: 'Done', icon: CheckCircle, color: 'text-success' },
-  { value: 'InProgress', label: 'In Progress', icon: WarningCircle, color: 'text-warning' },
-  { value: 'Blocked', label: 'Blocked', icon: XCircle, color: 'text-destructive' },
-]
+const statusIconMap = {
+  todo: ListChecks,
+  in_progress: WarningCircle,
+  done: CheckCircle,
+}
+
+const statusColorMap = {
+  todo: 'text-accent',
+  in_progress: 'text-warning',
+  done: 'text-success',
+}
 
 export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDrawerProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [status, setStatus] = useState<CardStatus>('InProgress')
+  const [status, setStatus] = useState<CardStatus>('in_progress')
+  const [blocked, setBlocked] = useState(false)
 
   useEffect(() => {
     if (card) {
       setTitle(card.title)
       setDescription(card.description || '')
       setStatus(card.status)
+      setBlocked(card.blocked || false)
     }
   }, [card])
 
@@ -60,6 +70,7 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
       title: title.trim(),
       description: description.trim() || undefined,
       status,
+      blocked,
     }
 
     onSave(updatedCard)
@@ -97,19 +108,37 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {statusOptions.map((option) => {
-                  const Icon = option.icon
+                {STATUS_COLUMNS.map((col) => {
+                  const Icon = statusIconMap[col.key]
+                  const color = statusColorMap[col.key]
                   return (
-                    <SelectItem key={option.value} value={option.value}>
+                    <SelectItem key={col.key} value={col.key}>
                       <div className="flex items-center gap-2">
-                        <Icon className={option.color} size={16} weight="fill" />
-                        {option.label}
+                        <Icon className={color} size={16} weight="fill" />
+                        {col.label}
                       </div>
                     </SelectItem>
                   )
                 })}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="flex items-center justify-between rounded-lg border border-border p-4">
+            <div className="space-y-0.5">
+              <Label htmlFor="blocked" className="text-sm font-medium flex items-center gap-2">
+                <XCircle size={16} className="text-destructive" weight="fill" />
+                Blocked
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Mark this card as blocked regardless of current workflow status
+              </p>
+            </div>
+            <Switch
+              id="blocked"
+              checked={blocked}
+              onCheckedChange={setBlocked}
+            />
           </div>
 
           <div className="space-y-2">
