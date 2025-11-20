@@ -9,6 +9,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
     
     strategy:
       matrix:
@@ -58,9 +63,9 @@ jobs:
         with:
           name: coverage-report
           path: coverage/
-      
+
       - name: Comment PR with coverage
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         uses: romeovs/lcov-reporter-action@v0.3.1
         with:
           lcov-file: ./coverage/lcov.info
