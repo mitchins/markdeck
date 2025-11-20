@@ -9,10 +9,8 @@ import type {
   ProviderResult,
   LoadContext,
   SaveContext,
-  ListContext,
   ProjectInfo,
 } from './base-provider'
-import { ProviderError } from './base-provider'
 
 const DEMO_STATUS_MD = `# Sample Project - Kanban Board
 **Last Updated:** 2024-01-15
@@ -82,6 +80,7 @@ export class StaticProvider implements StatusProvider {
   private content: string = DEMO_STATUS_MD
 
   async load(context: LoadContext): Promise<ProviderResult<string>> {
+    void context
     // Simulate async operation
     await new Promise(resolve => setTimeout(resolve, 100))
 
@@ -89,6 +88,7 @@ export class StaticProvider implements StatusProvider {
   }
 
   async save(content: string, context: SaveContext): Promise<ProviderResult<void>> {
+    void context
     // Store in memory only
     this.content = content
 
@@ -98,7 +98,7 @@ export class StaticProvider implements StatusProvider {
     return { success: true, data: undefined }
   }
 
-  async list(context: ListContext): Promise<ProviderResult<ProjectInfo[]>> {
+  async list(): Promise<ProviderResult<ProjectInfo[]>> {
     return {
       success: true,
       data: [

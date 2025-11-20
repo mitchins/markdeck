@@ -5,7 +5,7 @@
  */
 
 import type { Card } from '../domain/types'
-import { emojiToStatus, isStatusEmoji, isBlockedEmoji } from '../utils/emoji-mapper'
+import { emojiToStatus, isStatusEmoji } from '../utils/emoji-mapper'
 import { IdGenerator } from '../utils/id-generator'
 
 export interface ParsedEmoji {

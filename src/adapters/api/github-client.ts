@@ -6,6 +6,14 @@
 
 import { Octokit } from 'octokit'
 
+type OctokitError = {
+  status?: number
+}
+
+function isOctokitError(error: unknown): error is OctokitError {
+  return typeof error === 'object' && error !== null && 'status' in error
+}
+
 export interface GitHubConfig {
   token: string
   owner?: string
@@ -62,8 +70,8 @@ export class GitHubClient {
       }
 
       throw new Error('File not found or is a directory')
-    } catch (error: any) {
-      if (error.status === 404) {
+    } catch (error: unknown) {
+      if (isOctokitError(error) && error.status === 404) {
         throw new Error('File not found')
       }
       throw error
@@ -94,7 +102,7 @@ export class GitHubClient {
     return { sha: response.data.content?.sha || sha }
   }
 
-  async listRepos(limit: number = 100): Promise<GitHubRepo[]> {
+  async listRepos(limit = 100): Promise<GitHubRepo[]> {
     const response = await this.octokit.rest.repos.listForAuthenticatedUser({
       per_page: limit,
       sort: 'updated',
@@ -123,8 +131,8 @@ export class GitHubClient {
         path,
       })
       return true
-    } catch (error: any) {
-      if (error.status === 404) {
+    } catch (error: unknown) {
+      if (isOctokitError(error) && error.status === 404) {
         return false
       }
       throw error

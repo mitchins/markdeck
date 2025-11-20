@@ -51,7 +51,7 @@ export const handlers = [
 
   // GitHub API: Update file contents
   http.put('https://api.github.com/repos/:owner/:repo/contents/:path', async ({ request }) => {
-    const body = await request.json() as any
+    const body = await request.json() as UpdateFileRequestBody
     
     return HttpResponse.json({
       content: {
@@ -99,6 +99,12 @@ export function createErrorHandler(status: number, message: string) {
   return http.get('https://api.github.com/repos/:owner/:repo/contents/:path', () => {
     return HttpResponse.json({ message }, { status })
   })
+}
+
+interface UpdateFileRequestBody {
+  path?: string
+  content?: string
+  message?: string
 }
 
 /**

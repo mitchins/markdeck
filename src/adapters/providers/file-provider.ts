@@ -9,8 +9,6 @@ import type {
   ProviderResult,
   LoadContext,
   SaveContext,
-  ListContext,
-  ProjectInfo,
 } from './base-provider'
 import { ProviderError } from './base-provider'
 
