@@ -14,7 +14,7 @@
         "test": "vitest",
         "test:ui": "vitest --ui",
         "test:run": "vitest run",
-        "test:coverage": "vitest run --coverage",
+        "test:coverage": "mkdir -p test-results && vitest run --coverage --reporter=junit --outputFile=test-results/junit.xml",
         "test:unit": "vitest run tests/unit",
         "test:integration": "vitest run tests/integration",
         "test:e2e": "vitest run tests/e2e",
