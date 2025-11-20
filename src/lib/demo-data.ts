@@ -12,9 +12,13 @@ export const DEMO_STATUS_MD = `# Sample Project - Kanban Board
     Working on new card-based layout with responsive grid
     Need to finalize mobile breakpoints
 
-- ❌ Dark mode support
+- ⚠️ ❌ Dark mode support
     Blocked waiting for design system updates
     https://www.figma.com/design-system
+
+- ❗ Component library setup
+    Need to choose between Material-UI and Chakra UI
+    Evaluate bundle size and performance
 
 ## Backend API
 
@@ -29,6 +33,10 @@ export const DEMO_STATUS_MD = `# Sample Project - Kanban Board
 - ✅ Authentication middleware
     JWT-based auth with refresh tokens implemented
 
+- ❗ ❌ PayPal verification incomplete
+    Needs callback validation
+    Needs audit logs
+
 ## DevOps & Infrastructure
 
 - ✅ CI/CD pipeline
@@ -38,7 +46,7 @@ export const DEMO_STATUS_MD = `# Sample Project - Kanban Board
 - ⚠️ Docker containerization
     Base images configured, optimizing layer caching
 
-- ❌ Load balancing setup
+- ❗ ❌ Load balancing setup
     Waiting for infrastructure approval from ops team
 
 ## Documentation

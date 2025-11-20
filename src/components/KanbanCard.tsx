@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import type { KanbanCard as KanbanCardType } from '@/lib/types'
-import { CheckCircle, WarningCircle, XCircle, CaretDown, CaretUp, Link as LinkIcon } from '@phosphor-icons/react'
+import { STATUS_COLUMNS } from '@/lib/types'
+import { XCircle, CaretDown, CaretUp, Link as LinkIcon } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface KanbanCardProps {
@@ -10,28 +12,23 @@ interface KanbanCardProps {
   isDragging?: boolean
 }
 
-const statusConfig = {
-  Done: {
-    icon: CheckCircle,
-    color: 'bg-success/10 text-success-foreground border-success/20',
-    iconColor: 'text-success',
+const statusConfig: Record<string, {
+  iconColor: string
+}> = {
+  todo: {
+    iconColor: 'text-accent',
   },
-  InProgress: {
-    icon: WarningCircle,
-    color: 'bg-warning/10 text-warning-foreground border-warning/20',
+  in_progress: {
     iconColor: 'text-warning',
   },
-  Blocked: {
-    icon: XCircle,
-    color: 'bg-destructive/10 text-destructive-foreground border-destructive/20',
-    iconColor: 'text-destructive',
+  done: {
+    iconColor: 'text-success',
   },
 }
 
 export function KanbanCard({ card, isDragging }: KanbanCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const config = statusConfig[card.status]
-  const Icon = config.icon
   const hasDescription = card.description && card.description.trim().length > 0
 
   return (
@@ -46,20 +43,29 @@ export function KanbanCard({ card, isDragging }: KanbanCardProps) {
       <Card
         className={`p-3 cursor-pointer transition-shadow hover:shadow-md ${
           isDragging ? 'shadow-2xl rotate-1 opacity-50' : ''
-        }`}
+        } ${card.blocked ? 'border-destructive/40' : ''}`}
       >
         <div className="flex items-start gap-2">
-          <Icon className={`${config.iconColor} mt-0.5 flex-shrink-0`} size={16} weight="fill" />
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <h4 className="font-medium text-xs text-card-foreground leading-snug flex-1">
-                {card.title}
-              </h4>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="font-medium text-xs text-card-foreground leading-snug">
+                    {card.title}
+                  </h4>
+                  {card.blocked && (
+                    <Badge variant="destructive" className="h-5 px-1.5 text-[10px] font-medium flex items-center gap-1">
+                      <XCircle size={10} weight="fill" />
+                      Blocked
+                    </Badge>
+                  )}
+                </div>
+              </div>
               {hasDescription && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-5 w-5 p-0 hover:bg-muted"
+                  className="h-5 w-5 p-0 hover:bg-muted flex-shrink-0"
                   onClick={(e) => {
                     e.stopPropagation()
                     setIsExpanded(!isExpanded)

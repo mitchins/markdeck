@@ -8,18 +8,68 @@ import { Swimlane } from '@/components/Swimlane'
 import { FileUploader } from '@/components/FileUploader'
 import { NotesPanel } from '@/components/NotesPanel'
 import { CardDetailDrawer } from '@/components/CardDetailDrawer'
+import { GitHubConnector } from '@/components/GitHubConnector'
+import { ProjectSelector } from '@/components/ProjectSelector'
 import { parseStatusMarkdown, projectToMarkdown } from '@/lib/parser'
 import type { ParsedStatus, KanbanCard, CardStatus } from '@/lib/types'
-import { Download, Eye, FileText, ArrowsClockwise, Kanban, Info } from '@phosphor-icons/react'
+import { Download, Eye, FileText, ArrowsClockwise, Kanban, Info, GithubLogo, Upload } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
 function App() {
   const [parsedData, setParsedData] = useKV<ParsedStatus | null>('parsed-status', null)
+  const [githubToken, setGithubToken] = useKV<string | null>('github-token', null)
+  const [currentRepo, setCurrentRepo] = useKV<{ name: string; full_name: string; owner: string; default_branch: string } | null>('current-repo', null)
   const [hasChanges, setHasChanges] = useState(false)
   const [selectedCard, setSelectedCard] = useState<KanbanCard | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [showGitHubConnector, setShowGitHubConnector] = useState(false)
 
   const normalizedData = parsedData && parsedData.swimlanes ? parsedData : null
+
+  const handleGitHubConnect = (token: string) => {
+    setGithubToken(token)
+    setShowGitHubConnector(false)
+  }
+
+  const handleGitHubDisconnect = () => {
+    setGithubToken(null)
+    setCurrentRepo(null)
+    setParsedData(null)
+  }
+
+  const handleProjectSelect = async (repo: { name: string; full_name: string; owner: string; default_branch: string }) => {
+    if (!githubToken) return
+
+    setCurrentRepo(repo)
+
+    try {
+      const response = await fetch(
+        `https://api.github.com/repos/${repo.full_name}/contents/STATUS.md`,
+        {
+          headers: {
+            'Authorization': `token ${githubToken}`,
+            'Accept': 'application/vnd.github.v3+json',
+          },
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch STATUS.md')
+      }
+
+      const data = await response.json()
+      const content = atob(data.content)
+      
+      const parsed = parseStatusMarkdown(content)
+      setParsedData(parsed)
+      setHasChanges(false)
+      toast.success(`Loaded ${parsed.cards.length} cards from ${repo.full_name}`)
+    } catch (error) {
+      toast.error('Failed to load STATUS.md from GitHub', {
+        description: error instanceof Error ? error.message : 'Unknown error',
+      })
+    }
+  }
 
   const handleFileLoad = (content: string) => {
     try {
@@ -31,7 +81,7 @@ function App() {
       const parsed = parseStatusMarkdown(content)
       
       if (!parsed.cards || parsed.cards.length === 0) {
-        toast.error('No cards found! Make sure your file includes items with ✅ ⚠️ or ❌ emoji', {
+        toast.error('No cards found! Make sure your file includes items with ✅ ⚠️ or ❗ emoji', {
           description: 'Try the demo to see the expected format',
           duration: 6000,
         })
@@ -39,6 +89,7 @@ function App() {
       }
 
       setParsedData(parsed)
+      setCurrentRepo(null)
       setHasChanges(false)
       toast.success(`Loaded ${parsed.cards.length} cards across ${parsed.swimlanes.length} sections`)
     } catch (error) {
@@ -94,7 +145,7 @@ function App() {
     setHasChanges(true)
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!normalizedData) return
 
     const updated = projectToMarkdown(
@@ -103,30 +154,87 @@ function App() {
       normalizedData.rawMarkdown
     )
 
-    const blob = new Blob([updated], { type: 'text/markdown' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'STATUS.md'
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+    if (currentRepo && githubToken) {
+      try {
+        const fileResponse = await fetch(
+          `https://api.github.com/repos/${currentRepo.full_name}/contents/STATUS.md`,
+          {
+            headers: {
+              'Authorization': `token ${githubToken}`,
+              'Accept': 'application/vnd.github.v3+json',
+            },
+          }
+        )
 
-    setParsedData((current) => {
-      if (!current || !current.swimlanes) return null
-      return {
-        ...current,
-        rawMarkdown: updated,
+        if (!fileResponse.ok) {
+          throw new Error('Failed to fetch current file')
+        }
+
+        const fileData = await fileResponse.json()
+        
+        const updateResponse = await fetch(
+          `https://api.github.com/repos/${currentRepo.full_name}/contents/STATUS.md`,
+          {
+            method: 'PUT',
+            headers: {
+              'Authorization': `token ${githubToken}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              message: 'Update STATUS.md via Kanban in a Can',
+              content: btoa(updated),
+              sha: fileData.sha,
+            }),
+          }
+        )
+
+        if (!updateResponse.ok) {
+          throw new Error('Failed to update file on GitHub')
+        }
+
+        setParsedData((current) => {
+          if (!current || !current.swimlanes) return null
+          return {
+            ...current,
+            rawMarkdown: updated,
+          }
+        })
+
+        setHasChanges(false)
+        toast.success('STATUS.md updated on GitHub')
+      } catch (error) {
+        toast.error('Failed to save to GitHub', {
+          description: error instanceof Error ? error.message : 'Unknown error',
+        })
       }
-    })
+    } else {
+      const blob = new Blob([updated], { type: 'text/markdown' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'STATUS.md'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
 
-    setHasChanges(false)
-    toast.success('STATUS.md downloaded')
+      setParsedData((current) => {
+        if (!current || !current.swimlanes) return null
+        return {
+          ...current,
+          rawMarkdown: updated,
+        }
+      })
+
+      setHasChanges(false)
+      toast.success('STATUS.md downloaded')
+    }
   }
 
   const handleReset = () => {
     setParsedData(null)
+    setCurrentRepo(null)
     setHasChanges(false)
     toast.info('Reset to file upload')
   }
@@ -145,8 +253,29 @@ function App() {
             </p>
           </header>
 
+          <div className="mb-6 flex items-center justify-center gap-2">
+            {githubToken ? (
+              <ProjectSelector
+                githubToken={githubToken}
+                onDisconnect={handleGitHubDisconnect}
+                onProjectSelect={handleProjectSelect}
+              />
+            ) : (
+              <Button onClick={() => setShowGitHubConnector(true)} variant="outline">
+                <GithubLogo className="mr-2" size={16} weight="fill" />
+                Connect GitHub
+              </Button>
+            )}
+          </div>
+
           <FileUploader onFileLoad={handleFileLoad} />
         </div>
+
+        <GitHubConnector
+          open={showGitHubConnector}
+          onConnect={handleGitHubConnect}
+          onClose={() => setShowGitHubConnector(false)}
+        />
       </div>
     )
   }
@@ -179,6 +308,13 @@ function App() {
             </div>
 
             <div className="flex items-center gap-2">
+              {githubToken && (
+                <ProjectSelector
+                  githubToken={githubToken}
+                  onDisconnect={handleGitHubDisconnect}
+                  onProjectSelect={handleProjectSelect}
+                />
+              )}
               <Button variant="outline" size="sm" onClick={handleReset}>
                 <ArrowsClockwise className="mr-2" size={16} />
                 New File
@@ -188,8 +324,17 @@ function App() {
                 size="sm"
                 className={hasChanges ? 'bg-accent text-accent-foreground hover:bg-accent/90' : ''}
               >
-                <Download className="mr-2" size={16} />
-                {hasChanges ? 'Save Changes' : 'Download'}
+                {currentRepo ? (
+                  <>
+                    <Upload className="mr-2" size={16} />
+                    {hasChanges ? 'Push to GitHub' : 'Update GitHub'}
+                  </>
+                ) : (
+                  <>
+                    <Download className="mr-2" size={16} />
+                    {hasChanges ? 'Save Changes' : 'Download'}
+                  </>
+                )}
               </Button>
             </div>
           </div>
@@ -228,7 +373,8 @@ function App() {
                   <ul className="list-disc list-inside space-y-1 font-mono text-xs">
                     <li>✅ for Done items</li>
                     <li>⚠️ for In Progress items</li>
-                    <li>❌ for Blocked items</li>
+                    <li>❗ for TODO items</li>
+                    <li>❌ for Blocked flag (can be combined with any status)</li>
                   </ul>
                   <p className="mt-3">
                     Try the <Button variant="link" className="h-auto p-0 text-sm" onClick={handleReset}>Demo file</Button> to see the expected format.
@@ -277,6 +423,12 @@ function App() {
           setSelectedCard(null)
         }}
         onSave={handleCardSave}
+      />
+
+      <GitHubConnector
+        open={showGitHubConnector}
+        onConnect={handleGitHubConnect}
+        onClose={() => setShowGitHubConnector(false)}
       />
     </div>
   )
