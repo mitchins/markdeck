@@ -6,10 +6,22 @@
 
 import { Swimlane } from './Swimlane'
 import { useSwimlanes, useCards } from '@/application'
+import { useAppStore } from '@/application/state/app-store'
+import type { Card, CardStatus } from '@/core'
 
 export function Board() {
   const { swimlanes } = useSwimlanes()
-  const { cards } = useCards()
+  const { cards, moveCard } = useCards()
+  const actions = useAppStore(state => state.actions)
+  
+  const handleCardDrop = (cardId: string, newStatus: CardStatus) => {
+    moveCard(cardId, newStatus)
+  }
+  
+  const handleCardClick = (card: Card) => {
+    actions.setSelectedCard(card.id)
+    actions.setDrawerOpen(true)
+  }
   
   if (swimlanes.length === 0) {
     return (
@@ -26,6 +38,8 @@ export function Board() {
           key={swimlane.id}
           swimlane={swimlane}
           cards={cards.filter(card => card.laneId === swimlane.id)}
+          onCardDrop={handleCardDrop}
+          onCardClick={handleCardClick}
         />
       ))}
     </div>
