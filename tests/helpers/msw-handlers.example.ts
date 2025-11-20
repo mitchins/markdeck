@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw'
 export const handlers = [
   // GitHub API: Get file contents
   http.get('https://api.github.com/repos/:owner/:repo/contents/:path', ({ params }) => {
-    const { owner, repo, path } = params
+    const { path } = params
     
     // Default mock response for STATUS.md
     if (path === 'STATUS.md') {

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
-import { KanbanCard } from './KanbanCard'
+import { KanbanCard } from './Card'
 import type { KanbanCard as KanbanCardType, CardStatus, Swimlane as SwimlaneType } from '@/lib/types'
 import { STATUS_COLUMNS } from '@/lib/types'
 import { ListChecks, WarningCircle, CheckCircle, XCircle, CaretDown, CaretUp } from '@phosphor-icons/react'
