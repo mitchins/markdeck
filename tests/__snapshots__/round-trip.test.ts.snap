@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Round-trip Fidelity > Snapshot tests > should match markdown output snapshot 1`] = `
+"# Test Project
+
+**Last Updated:** 2025-11-20
+**Version:** v1.0
+
+## Test Lane
+
+- ✅ Test Card
+    Test description
+
+## Notes
+
+This is preserved content.
+"
+`;
