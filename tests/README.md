@@ -45,6 +45,30 @@ npm run test:e2e
 npm run test:ui
 ```
 
+## ⚠️ Current Status
+
+**Test scaffolding is complete, but test implementations are pending.**
+
+All test files currently contain placeholder tests (`expect(true).toBe(true)`) that pass by default. These need to be implemented with actual test logic during the refactoring phases (Phase 1-5).
+
+### What's Ready
+
+✅ Vitest configuration (`vitest.config.ts`)  
+✅ Test setup file (`tests/vitest.setup.ts`)  
+✅ MSW handlers for GitHub API (`tests/helpers/msw-handlers.ts`)  
+✅ Test factories (`tests/helpers/factories.ts`)  
+✅ Test fixtures (valid, invalid, complex STATUS.md)  
+✅ Empty test files organized by layer  
+✅ Snapshot infrastructure (`tests/__snapshots__/`)  
+✅ GitHub Actions CI workflow (`.github/workflows/test.yml`)  
+
+### What's Pending
+
+❌ Actual test implementations (all marked with `// TODO: Implement test`)  
+❌ React Testing Library render utilities  
+❌ Custom test matchers  
+❌ Performance benchmarking harness  
+
 ## Test Levels
 
 ### Unit Tests (`unit/`)
