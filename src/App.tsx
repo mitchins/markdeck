@@ -81,7 +81,7 @@ function App() {
       const parsed = parseStatusMarkdown(content)
       
       if (!parsed.cards || parsed.cards.length === 0) {
-        toast.error('No cards found! Make sure your file includes items with ✅ ⚠️ or ❗ emoji', {
+        toast.error('No cards found! Make sure your file includes items with 🔵 🟡 🔴 or 🟢 emoji', {
           description: 'Try the demo to see the expected format',
           duration: 6000,
         })
@@ -371,10 +371,10 @@ function App() {
                     Cards must be markdown list items with status emojis:
                   </p>
                   <ul className="list-disc list-inside space-y-1 font-mono text-xs">
-                    <li>✅ for Done items</li>
-                    <li>⚠️ for In Progress items</li>
-                    <li>❗ for TODO items</li>
-                    <li>❌ for Blocked flag (can be combined with any status)</li>
+                    <li>🔵 TODO (default)</li>
+                    <li>🟡 IN PROGRESS</li>
+                    <li>🔴 BLOCKED</li>
+                    <li>🟢 DONE</li>
                   </ul>
                   <p className="mt-3">
                     Try the <Button variant="link" className="h-auto p-0 text-sm" onClick={handleReset}>Demo file</Button> to see the expected format.

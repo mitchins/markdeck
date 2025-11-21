@@ -65,9 +65,7 @@ describe('State Management', () => {
             id: 'card-1',
             title: 'Task',
             status: 'todo',
-            laneId: 'lane-1',
-            blocked: false,
-            links: [],
+            laneId: 'lane-1',            links: [],
             originalLine: 0
           }
         ],
@@ -100,9 +98,7 @@ describe('State Management', () => {
             id: 'card-1',
             title: 'Task',
             status: 'todo',
-            laneId: 'lane-1',
-            blocked: false,
-            links: [],
+            laneId: 'lane-1',            links: [],
             originalLine: 0
           }
         ],
@@ -299,18 +295,14 @@ describe('State Management', () => {
             id: 'card-1',
             title: 'Task 1',
             status: 'todo',
-            laneId: 'lane-1',
-            blocked: false,
-            links: [],
+            laneId: 'lane-1',            links: [],
             originalLine: 0
           },
           {
             id: 'card-2',
             title: 'Task 2',
             status: 'todo',
-            laneId: 'lane-2',
-            blocked: false,
-            links: [],
+            laneId: 'lane-2',            links: [],
             originalLine: 1
           }
         ],
@@ -375,18 +367,14 @@ describe('State Management', () => {
             id: 'card-1',
             title: 'Task 1',
             status: 'done',
-            laneId: 'lane-1',
-            blocked: false,
-            links: [],
+            laneId: 'lane-1',            links: [],
             originalLine: 0
           },
           {
             id: 'card-2',
             title: 'Task 2',
             status: 'todo',
-            laneId: 'lane-1',
-            blocked: false,
-            links: [],
+            laneId: 'lane-1',            links: [],
             originalLine: 1
           }
         ],
@@ -444,9 +432,7 @@ describe('State Management', () => {
             id: 'card-1',
             title: 'Task 1',
             status: 'todo',
-            laneId: 'lane-1',
-            blocked: false,
-            links: [],
+            laneId: 'lane-1',            links: [],
             originalLine: 0
           }
         ],
@@ -483,9 +469,7 @@ describe('State Management', () => {
             id: 'card-1',
             title: 'Task 1',
             status: 'todo',
-            laneId: 'lane-1',
-            blocked: false,
-            links: [],
+            laneId: 'lane-1',            links: [],
             originalLine: 0
           }
         ],

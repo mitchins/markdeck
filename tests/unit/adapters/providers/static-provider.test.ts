@@ -30,9 +30,9 @@ describe('Static Provider', () => {
         expect(result.data).toContain('Sample Project')
         expect(result.data).toContain('Frontend Development')
         expect(result.data).toContain('Backend API')
-        expect(result.data).toContain('✅')
-        expect(result.data).toContain('⚠️')
-        expect(result.data).toContain('❗')
+        expect(result.data).toContain('🟢')
+        expect(result.data).toContain('🟡')
+        expect(result.data).toContain('🔵')
       }
     })
 
@@ -50,7 +50,7 @@ describe('Static Provider', () => {
 
   describe('save', () => {
     it('should store content in memory', async () => {
-      const newContent = '# Updated Project\n\n- ✅ New task'
+      const newContent = '# Updated Project\n\n- 🟢 New task'
       const context: SaveContext = {}
       
       const saveResult = await provider.save(newContent, context)

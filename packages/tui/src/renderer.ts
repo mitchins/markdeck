@@ -158,13 +158,13 @@ function renderSwimlaneColumns(lane: Swimlane, allCards: Card[], width: number, 
 function renderCardCompact(card: Card, maxWidth: number, highlightedCard?: string): string[] {
   const lines: string[] = []
   const emoji = STATUS_TO_EMOJI[card.status]
-  const blockedIndicator = card.status === 'blocked' ? ' 🔴' : ''
   
   // Determine if this card is highlighted
   const isHighlighted = highlightedCard === card.id
   
   // Build title without ANSI codes first to check length
-  const plainTitle = `${emoji}${blockedIndicator} ${card.title}`
+  const blockedLabel = card.status === 'blocked' ? ' (BLOCKED)' : ''
+  const plainTitle = `${emoji} ${card.title}${blockedLabel}`
   let displayTitle = plainTitle
   
   // Truncate if necessary (based on plain text length)
@@ -196,7 +196,7 @@ function renderCard(card: Card, highlightedCard?: string): string[] {
   
   // Card title with emoji indicator
   const emoji = STATUS_TO_EMOJI[card.status]
-  const blockedIndicator = card.status === 'blocked' ? ' 🔴 BLOCKED' : ''
+  const blockedIndicator = card.status === 'blocked' ? ' (BLOCKED)' : ''
   const titleColor = card.status === 'blocked' ? 'red' : 'white'
   const isHighlighted = highlightedCard === card.id
   
