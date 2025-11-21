@@ -44,7 +44,7 @@ export class GitHubClient {
 
   constructor(private config: GitHubConfig) {
     // Token is optional - allows read access to public repos without authentication
-    this.octokit = new Octokit({ auth: config.token || undefined })
+    this.octokit = new Octokit({ auth: config.token })
   }
 
   async getFile(
