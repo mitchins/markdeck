@@ -16,6 +16,8 @@ dist-ssr
 # Test artifacts
 coverage/
 test-results/
+playwright-report/
+.playwright/
 
 # Editor directories and files
 .vscode/*
