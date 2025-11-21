@@ -12,6 +12,8 @@ jobs:
   build-binaries:
     name: Build ${{ matrix.os }} binaries
     runs-on: ${{ matrix.runner }}
+    # Always build Linux, but only use macOS/Windows runners for tagged releases
+    if: matrix.os == 'linux' || startsWith(github.ref, 'refs/tags/v')
     permissions:
       contents: read
     
