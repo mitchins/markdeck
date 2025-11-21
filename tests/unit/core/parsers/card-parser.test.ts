@@ -183,5 +183,30 @@ describe('Card Parser', () => {
       
       expect(card).toBeNull()
     })
+
+    it('should default to TODO for blocked-only emoji (❌ without status)', () => {
+      const line = '- ❌ Task with only blocked emoji'
+      const card = parseCard(line, 0, [line], 'lane-1', idGenerator)
+      
+      expect(card).not.toBeNull()
+      expect(card?.status).toBe('todo')
+      expect(card?.blocked).toBe(true)
+      expect(card?.title).toBe('Task with only blocked emoji')
+    })
+
+    it('should handle ❌-only with description', () => {
+      const lines = [
+        '- ❌ Blocked task without status',
+        '  Description of blocked task',
+        '  Additional context'
+      ]
+      const card = parseCard(lines[0], 0, lines, 'lane-1', idGenerator)
+      
+      expect(card).not.toBeNull()
+      expect(card?.status).toBe('todo')
+      expect(card?.blocked).toBe(true)
+      expect(card?.title).toBe('Blocked task without status')
+      expect(card?.description).toBe('Description of blocked task\nAdditional context')
+    })
   })
 })
