@@ -9,7 +9,7 @@ export default defineConfig({
     environment: 'happy-dom',
     setupFiles: ['./tests/vitest.setup.ts'],
     include: ['tests/**/*.{test,spec}.{ts,tsx}'],
-    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
+    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'tests/e2e-playwright/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
@@ -19,8 +19,10 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.config.*',
         '**/mockData.ts',
-        'src/components/ui/', // shadcn/ui components
-        'src/main.tsx',       // Entry point
+        'src/components/ui/',    // shadcn/ui components
+        'src/ui/primitives/',    // UI primitives
+        'src/main.tsx',          // Entry point
+        'src/lib/demo-data.ts',  // Demo data
       ],
       thresholds: {
         global: {

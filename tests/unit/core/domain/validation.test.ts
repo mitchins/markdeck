@@ -3,39 +3,284 @@
  */
 
 import { describe, it, expect } from 'vitest'
+import { 
+  validateCard, 
+  validateProject,
+  CardSchema,
+  SwimlaneSchema,
+  ProjectMetadataSchema,
+  NoteSchema,
+  ProjectSchema
+} from '@/core/domain/validation'
 
 describe('Domain Validation', () => {
   describe('Card validation', () => {
     it('should validate valid card', () => {
-      // TODO: Implement test
-      expect(true).toBe(true)
+      const validCard = {
+        id: 'card-1',
+        title: 'Test Card',
+        status: 'todo',
+        laneId: 'lane-1',
+        blocked: false,
+        links: [],
+        originalLine: 0
+      }
+      
+      const result = validateCard(validCard)
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data).toEqual(validCard)
+      }
+    })
+
+    it('should validate card with optional description', () => {
+      const card = {
+        id: 'card-1',
+        title: 'Test Card',
+        status: 'in_progress',
+        laneId: 'lane-1',
+        blocked: false,
+        description: 'This is a description',
+        links: ['https://example.com'],
+        originalLine: 5
+      }
+      
+      const result = validateCard(card)
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.description).toBe('This is a description')
+      }
     })
 
     it('should reject card with missing required fields', () => {
-      // TODO: Implement test
-      expect(true).toBe(true)
+      const invalidCard = {
+        id: 'card-1',
+        title: 'Test Card'
+        // Missing status, laneId, blocked, links, originalLine
+      }
+      
+      const result = validateCard(invalidCard)
+      expect(result.success).toBe(false)
+    })
+
+    it('should reject card with empty title', () => {
+      const invalidCard = {
+        id: 'card-1',
+        title: '',
+        status: 'todo',
+        laneId: 'lane-1',
+        blocked: false,
+        links: [],
+        originalLine: 0
+      }
+      
+      const result = validateCard(invalidCard)
+      expect(result.success).toBe(false)
     })
 
     it('should reject card with invalid status', () => {
-      // TODO: Implement test
-      expect(true).toBe(true)
+      const invalidCard = {
+        id: 'card-1',
+        title: 'Test Card',
+        status: 'invalid_status',
+        laneId: 'lane-1',
+        blocked: false,
+        links: [],
+        originalLine: 0
+      }
+      
+      const result = validateCard(invalidCard)
+      expect(result.success).toBe(false)
     })
 
     it('should reject card with invalid URL in links', () => {
-      // TODO: Implement test
-      expect(true).toBe(true)
+      const invalidCard = {
+        id: 'card-1',
+        title: 'Test Card',
+        status: 'todo',
+        laneId: 'lane-1',
+        blocked: false,
+        links: ['not-a-url'],
+        originalLine: 0
+      }
+      
+      const result = validateCard(invalidCard)
+      expect(result.success).toBe(false)
+    })
+
+    it('should reject card with negative originalLine', () => {
+      const invalidCard = {
+        id: 'card-1',
+        title: 'Test Card',
+        status: 'todo',
+        laneId: 'lane-1',
+        blocked: false,
+        links: [],
+        originalLine: -1
+      }
+      
+      const result = validateCard(invalidCard)
+      expect(result.success).toBe(false)
+    })
+  })
+
+  describe('Swimlane validation', () => {
+    it('should validate valid swimlane', () => {
+      const validLane = {
+        id: 'lane-1',
+        title: 'Backend Tasks',
+        order: 0
+      }
+      
+      const result = SwimlaneSchema.safeParse(validLane)
+      expect(result.success).toBe(true)
+    })
+
+    it('should reject swimlane with empty title', () => {
+      const invalidLane = {
+        id: 'lane-1',
+        title: '',
+        order: 0
+      }
+      
+      const result = SwimlaneSchema.safeParse(invalidLane)
+      expect(result.success).toBe(false)
+    })
+
+    it('should reject swimlane with negative order', () => {
+      const invalidLane = {
+        id: 'lane-1',
+        title: 'Test',
+        order: -1
+      }
+      
+      const result = SwimlaneSchema.safeParse(invalidLane)
+      expect(result.success).toBe(false)
+    })
+  })
+
+  describe('ProjectMetadata validation', () => {
+    it('should validate metadata with required fields only', () => {
+      const metadata = {
+        title: 'My Project'
+      }
+      
+      const result = ProjectMetadataSchema.safeParse(metadata)
+      expect(result.success).toBe(true)
+    })
+
+    it('should validate metadata with optional fields', () => {
+      const metadata = {
+        title: 'My Project',
+        version: '1.0.0',
+        lastUpdated: '2024-01-01'
+      }
+      
+      const result = ProjectMetadataSchema.safeParse(metadata)
+      expect(result.success).toBe(true)
+    })
+
+    it('should reject metadata with empty title', () => {
+      const metadata = {
+        title: ''
+      }
+      
+      const result = ProjectMetadataSchema.safeParse(metadata)
+      expect(result.success).toBe(false)
+    })
+  })
+
+  describe('Note validation', () => {
+    it('should validate valid note', () => {
+      const note = {
+        title: 'Important Note',
+        content: 'This is the note content',
+        section: 'Notes'
+      }
+      
+      const result = NoteSchema.safeParse(note)
+      expect(result.success).toBe(true)
+    })
+
+    it('should reject note with empty title', () => {
+      const note = {
+        title: '',
+        content: 'Content',
+        section: 'Notes'
+      }
+      
+      const result = NoteSchema.safeParse(note)
+      expect(result.success).toBe(false)
     })
   })
 
   describe('Project validation', () => {
     it('should validate valid project', () => {
-      // TODO: Implement test
-      expect(true).toBe(true)
+      const validProject = {
+        metadata: {
+          title: 'Test Project'
+        },
+        cards: [
+          {
+            id: 'card-1',
+            title: 'Task 1',
+            status: 'todo',
+            laneId: 'lane-1',
+            blocked: false,
+            links: [],
+            originalLine: 0
+          }
+        ],
+        swimlanes: [
+          {
+            id: 'lane-1',
+            title: 'Backend',
+            order: 0
+          }
+        ],
+        notes: [],
+        rawMarkdown: '# Project\n\n- ❗ Task 1'
+      }
+      
+      const result = validateProject(validProject)
+      expect(result.success).toBe(true)
     })
 
     it('should reject project with invalid nested cards', () => {
-      // TODO: Implement test
-      expect(true).toBe(true)
+      const invalidProject = {
+        metadata: {
+          title: 'Test Project'
+        },
+        cards: [
+          {
+            id: 'card-1',
+            title: '',  // Invalid: empty title
+            status: 'todo',
+            laneId: 'lane-1',
+            blocked: false,
+            links: [],
+            originalLine: 0
+          }
+        ],
+        swimlanes: [],
+        notes: [],
+        rawMarkdown: ''
+      }
+      
+      const result = validateProject(invalidProject)
+      expect(result.success).toBe(false)
+    })
+
+    it('should reject project with missing metadata', () => {
+      const invalidProject = {
+        cards: [],
+        swimlanes: [],
+        notes: [],
+        rawMarkdown: ''
+      }
+      
+      const result = validateProject(invalidProject)
+      expect(result.success).toBe(false)
     })
   })
 })
