@@ -4,7 +4,7 @@
  * These types define the pure domain model without any UI or framework dependencies.
  */
 
-export type CardStatus = 'todo' | 'in_progress' | 'done'
+export type CardStatus = 'todo' | 'in_progress' | 'blocked' | 'done'
 
 export interface StatusColumn {
   key: CardStatus
@@ -13,9 +13,10 @@ export interface StatusColumn {
 }
 
 export const STATUS_COLUMNS: StatusColumn[] = [
-  { key: 'todo', label: 'TODO', emoji: '❗' },
-  { key: 'in_progress', label: 'IN PROGRESS', emoji: '⚠️' },
-  { key: 'done', label: 'DONE', emoji: '✅' },
+  { key: 'todo', label: 'TODO', emoji: '🔵' },
+  { key: 'in_progress', label: 'IN PROGRESS', emoji: '🟡' },
+  { key: 'blocked', label: 'BLOCKED', emoji: '🔴' },
+  { key: 'done', label: 'DONE', emoji: '🟢' },
 ]
 
 export interface Card {
@@ -23,7 +24,6 @@ export interface Card {
   title: string
   status: CardStatus
   laneId: string
-  blocked: boolean
   description?: string
   links: string[]
   originalLine: number
@@ -56,15 +56,15 @@ export interface Project {
 }
 
 export const EMOJI_TO_STATUS: Record<string, CardStatus> = {
-  '❗': 'todo',
-  '⚠️': 'in_progress',
-  '✅': 'done',
+  '🔵': 'todo',
+  '🟡': 'in_progress',
+  '🔴': 'blocked',
+  '🟢': 'done',
 }
 
 export const STATUS_TO_EMOJI: Record<CardStatus, string> = {
-  todo: '❗',
-  in_progress: '⚠️',
-  done: '✅',
+  todo: '🔵',
+  in_progress: '🟡',
+  blocked: '🔴',
+  done: '🟢',
 }
-
-export const BLOCKED_EMOJI = '❌'

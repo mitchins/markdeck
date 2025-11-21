@@ -1,7 +1,7 @@
 /**
  * Unit tests for card parser
  * 
- * Tests parsing individual cards from bullet points
+ * Tests parsing individual cards from bullet points with RAGB emojis
  */
 
 import { describe, it, expect, beforeEach } from 'vitest'
@@ -22,25 +22,40 @@ describe('Card Parser', () => {
   })
 
   describe('extractEmojis', () => {
-    it('should extract status emoji', () => {
-      const result = extractEmojis('✅ Complete task')
-      expect(result.statusEmoji).toBe('✅')
-      expect(result.blockedEmoji).toBe(null)
+    it('should extract RAGB status emoji - done', () => {
+      const result = extractEmojis('🟢 Complete task')
+      expect(result.statusEmoji).toBe('🟢')
       expect(result.remaining).toBe('Complete task')
     })
 
-    it('should extract blocked emoji', () => {
-      const result = extractEmojis('❌ ⚠️ Blocked task')
-      expect(result.statusEmoji).toBe('⚠️')
-      expect(result.blockedEmoji).toBe('❌')
+    it('should extract RAGB status emoji - todo', () => {
+      const result = extractEmojis('🔵 TODO task')
+      expect(result.statusEmoji).toBe('🔵')
+      expect(result.remaining).toBe('TODO task')
+    })
+
+    it('should extract RAGB status emoji - in progress', () => {
+      const result = extractEmojis('🟡 In progress task')
+      expect(result.statusEmoji).toBe('🟡')
+      expect(result.remaining).toBe('In progress task')
+    })
+
+    it('should extract RAGB status emoji - blocked', () => {
+      const result = extractEmojis('🔴 Blocked task')
+      expect(result.statusEmoji).toBe('🔴')
       expect(result.remaining).toBe('Blocked task')
     })
 
     it('should handle text without emojis', () => {
       const result = extractEmojis('Normal text')
       expect(result.statusEmoji).toBe(null)
-      expect(result.blockedEmoji).toBe(null)
       expect(result.remaining).toBe('Normal text')
+    })
+
+    it('should not extract legacy emojis', () => {
+      const result = extractEmojis('✅ Legacy emoji')
+      expect(result.statusEmoji).toBe(null)
+      expect(result.remaining).toBe('✅ Legacy emoji')
     })
   })
 
@@ -75,7 +90,7 @@ describe('Card Parser', () => {
   describe('extractDescription', () => {
     it('should extract indented description lines', () => {
       const lines = [
-        '- ✅ Task',
+        '- 🟢 Task',
         '  Description line 1',
         '  Description line 2',
         '- Next task'
@@ -87,7 +102,7 @@ describe('Card Parser', () => {
 
     it('should skip empty lines', () => {
       const lines = [
-        '- ✅ Task',
+        '- 🟢 Task',
         '  Description line 1',
         '',
         '  Description line 2',
@@ -99,7 +114,7 @@ describe('Card Parser', () => {
 
     it('should stop at headers', () => {
       const lines = [
-        '- ✅ Task',
+        '- 🟢 Task',
         '  Description',
         '## Header',
         '  More text'
@@ -111,30 +126,55 @@ describe('Card Parser', () => {
   })
 
   describe('parseCard', () => {
-    it('should parse card with status emoji', () => {
-      const line = '- ✅ Complete task'
+    it('should parse card with DONE status', () => {
+      const line = '- 🟢 Complete task'
       const card = parseCard(line, 0, [line], 'lane-1', idGenerator)
       
       expect(card).not.toBeNull()
       expect(card?.title).toBe('Complete task')
       expect(card?.status).toBe('done')
       expect(card?.laneId).toBe('lane-1')
-      expect(card?.blocked).toBe(false)
     })
 
-    it('should parse blocked card (with ❌ emoji)', () => {
-      const line = '- ❌ ⚠️ Blocked task'
+    it('should parse card with TODO status', () => {
+      const line = '- 🔵 TODO task'
+      const card = parseCard(line, 0, [line], 'lane-1', idGenerator)
+      
+      expect(card).not.toBeNull()
+      expect(card?.title).toBe('TODO task')
+      expect(card?.status).toBe('todo')
+    })
+
+    it('should parse card with IN PROGRESS status', () => {
+      const line = '- 🟡 In progress task'
+      const card = parseCard(line, 0, [line], 'lane-1', idGenerator)
+      
+      expect(card).not.toBeNull()
+      expect(card?.title).toBe('In progress task')
+      expect(card?.status).toBe('in_progress')
+    })
+
+    it('should parse card with BLOCKED status', () => {
+      const line = '- 🔴 Blocked task'
       const card = parseCard(line, 0, [line], 'lane-1', idGenerator)
       
       expect(card).not.toBeNull()
       expect(card?.title).toBe('Blocked task')
-      expect(card?.status).toBe('in_progress')
-      expect(card?.blocked).toBe(true)
+      expect(card?.status).toBe('blocked')
+    })
+
+    it('should default to TODO when no emoji present', () => {
+      const line = '- Task without emoji'
+      const card = parseCard(line, 0, [line], 'lane-1', idGenerator)
+      
+      expect(card).not.toBeNull()
+      expect(card?.title).toBe('Task without emoji')
+      expect(card?.status).toBe('todo')
     })
 
     it('should parse multi-line description', () => {
       const lines = [
-        '- ✅ Task with description',
+        '- 🟢 Task with description',
         '  This is a description',
         '  With multiple lines'
       ]
@@ -146,7 +186,7 @@ describe('Card Parser', () => {
 
     it('should extract links from description', () => {
       const lines = [
-        '- ✅ Task with link https://example.com',
+        '- 🟢 Task with link https://example.com',
         '  See also http://test.com'
       ]
       const card = parseCard(lines[0], 0, lines, 'lane-1', idGenerator)
@@ -156,7 +196,7 @@ describe('Card Parser', () => {
     })
 
     it('should handle card without description', () => {
-      const line = '- ✅ Simple task'
+      const line = '- 🟢 Simple task'
       const card = parseCard(line, 0, [line], 'lane-1', idGenerator)
       
       expect(card).not.toBeNull()
@@ -170,43 +210,45 @@ describe('Card Parser', () => {
       expect(card).toBeNull()
     })
 
-    it('should return null for bullet without status emoji', () => {
-      const line = '- Task without emoji'
-      const card = parseCard(line, 0, [line], 'lane-1', idGenerator)
-      
-      expect(card).toBeNull()
-    })
-
-    it('should handle unknown emoji gracefully', () => {
-      const line = '- 🔥 Task with unknown emoji'
-      const card = parseCard(line, 0, [line], 'lane-1', idGenerator)
-      
-      expect(card).toBeNull()
-    })
-
-    it('should default to TODO for blocked-only emoji (❌ without status)', () => {
-      const line = '- ❌ Task with only blocked emoji'
+    it('should default to TODO for legacy emoji markers', () => {
+      const line = '- ✅ Task with legacy emoji'
       const card = parseCard(line, 0, [line], 'lane-1', idGenerator)
       
       expect(card).not.toBeNull()
       expect(card?.status).toBe('todo')
-      expect(card?.blocked).toBe(true)
-      expect(card?.title).toBe('Task with only blocked emoji')
+      expect(card?.title).toBe('✅ Task with legacy emoji')
     })
 
-    it('should handle ❌-only with description', () => {
+    it('should handle unknown emoji gracefully by defaulting to TODO', () => {
+      const line = '- 🔥 Task with unknown emoji'
+      const card = parseCard(line, 0, [line], 'lane-1', idGenerator)
+      
+      expect(card).not.toBeNull()
+      expect(card?.status).toBe('todo')
+      expect(card?.title).toBe('🔥 Task with unknown emoji')
+    })
+
+    it('should parse card with text markers like "x" or "!" as part of title', () => {
+      const line = '- 🔵 x Task with x marker'
+      const card = parseCard(line, 0, [line], 'lane-1', idGenerator)
+      
+      expect(card).not.toBeNull()
+      expect(card?.title).toBe('x Task with x marker')
+      expect(card?.status).toBe('todo')
+    })
+
+    it('should handle description with special characters', () => {
       const lines = [
-        '- ❌ Blocked task without status',
-        '  Description of blocked task',
-        '  Additional context'
+        '- 🔴 Blocked task',
+        '  Description with ! and x',
+        '  And [ ] checkboxes'
       ]
       const card = parseCard(lines[0], 0, lines, 'lane-1', idGenerator)
       
       expect(card).not.toBeNull()
-      expect(card?.status).toBe('todo')
-      expect(card?.blocked).toBe(true)
-      expect(card?.title).toBe('Blocked task without status')
-      expect(card?.description).toBe('Description of blocked task\nAdditional context')
+      expect(card?.status).toBe('blocked')
+      expect(card?.title).toBe('Blocked task')
+      expect(card?.description).toBe('Description with ! and x\nAnd [ ] checkboxes')
     })
   })
 })
