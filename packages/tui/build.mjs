@@ -6,7 +6,7 @@
  */
 
 import { execSync } from 'node:child_process'
-import { cpSync, mkdirSync, rmSync, readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs'
+import { cpSync, mkdirSync, rmSync, readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs'
 import { dirname, join, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -21,7 +21,46 @@ mkdirSync(distDir, { recursive: true })
 
 // Compile TypeScript (this includes core module as it's in tsconfig includes)
 console.log('Compiling TypeScript...')
-execSync('npx tsc', { cwd: __dirname, stdio: 'inherit' })
+
+// Prefer local tsc binary (package or hoisted), fall back to npm exec without installing remote packages.
+// This avoids npx prompting to install unrelated packages called `tsc`.
+const localTscPaths = [
+  join(__dirname, 'node_modules', '.bin', 'tsc'),
+  join(rootDir, 'node_modules', '.bin', 'tsc'),
+  join(__dirname, 'node_modules', '.bin', 'tsc.cmd'),
+  join(rootDir, 'node_modules', '.bin', 'tsc.cmd')
+]
+
+let tscCmd = null
+for (const p of localTscPaths) {
+  if (existsSync(p)) {
+    tscCmd = p
+    break
+  }
+}
+
+// If not found in node_modules, check for a globally available 'tsc' on PATH
+if (!tscCmd) {
+  try {
+    // If this succeeds, `tsc` exists in path and can be used.
+    execSync('tsc --version', { stdio: 'ignore' })
+    tscCmd = 'tsc'
+  } catch {
+    // ignore: we'll fallback to npm exec
+  }
+}
+
+// If no local tsc binary, try `npm exec --no-install tsc` which will error rather than prompting to install remote packages
+if (!tscCmd) tscCmd = 'npm exec --no-install tsc'
+
+try {
+  execSync(`${tscCmd} --project tsconfig.json`, { cwd: __dirname, stdio: 'inherit' })
+} catch {
+  console.error('\nFailed to run TypeScript compiler.');
+  console.error('Make sure you have installed dependencies (run `npm install` at the repository root) and that TypeScript is available as a devDependency.');
+  console.error('If you are running in CI, ensure dependencies are installed and avoid using `npx` in non-interactive environments.');
+  process.exit(1)
+}
 
 // Move compiled TUI files from nested structure to dist root
 console.log('Reorganizing output...')
@@ -46,15 +85,15 @@ function fixImportsInFile(filePath) {
   
   // Replace imports that point to ../../../src/core with ./core
   if (content.includes('../../../src/core/')) {
-    content = content.replace(/from ['"]\.\.\/\.\.\/\.\.\/src\/core\//g, 'from \'./core/')
+     content = content.replaceAll(/from ['"]\.\.\/\.\.\/\.\.\/src\/core\//g, 'from \'./core/')
     // Also handle 'import type' statements in declaration files
-    content = content.replace(/import type \{([^}]+)\} from ['"]\.\.\/\.\.\/\.\.\/src\/core\//g, 'import type {$1} from \'./core/')
+  content = content.replaceAll(/import type \{([^}]+)\} from ['"]\.\.\/\.\.\/\.\.\/src\/core\//g, 'import type {$1} from \'./core/')
   }
   
   // Add .js extensions to relative imports that don't have them
   // Match: from './something' or from '../something'
-  content = content.replace(/from ['"](\.\.?\/[^'"]+?)['"];?/g, (match, path) => {
-    if (!path.endsWith('.js') && !path.includes('.json')) {
+    content = content.replaceAll(/from ['"](\.\.?\/[^'"]+?)['"];?/g, (match, path) => {
+      if (!path.endsWith('.js') && !path.includes('.json')) {
       return `from '${path}.js';`
     }
     return match
@@ -62,7 +101,7 @@ function fixImportsInFile(filePath) {
   
   // Also fix 'import type' statements in declaration files
   if (isDeclaration) {
-    content = content.replace(/import type \{([^}]+)\} from ['"](\.\.?\/[^'"]+?)['"];?/g, (match, types, path) => {
+  content = content.replaceAll(/import type \{([^}]+)\} from ['"](\.\.?\/[^'"]+?)['"];?/g, (match, types, path) => {
       if (!path.endsWith('.js') && !path.includes('.json')) {
         return `import type {${types}} from '${path}.js';`
       }
