@@ -14,7 +14,7 @@ export interface ParsedEmoji {
 }
 
 export function extractEmojis(text: string): ParsedEmoji {
-  // RAGB emojis: 🔵 TODO, 🟡 IN PROGRESS, 🔴 BLOCKED, 🟢 DONE
+  // RAGB emojis: 🔵 todo, 🟡 in_progress, 🔴 blocked, 🟢 done
   const statusEmojiRegex = /(🔵|🟡|🔴|🟢)/
   
   const statusMatch = text.match(statusEmojiRegex)
@@ -89,7 +89,7 @@ export function parseCard(
   const bulletText = bulletMatch[2]
   const { statusEmoji, remaining } = extractEmojis(bulletText)
   
-  // Determine status: if no emoji, default to TODO (🔵)
+  // Determine status: if no emoji, default to todo (🔵)
   let status: CardStatus
   if (!statusEmoji || !isStatusEmoji(statusEmoji)) {
     status = 'todo'
