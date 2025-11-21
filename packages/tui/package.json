@@ -13,9 +13,23 @@
   ],
   "scripts": {
     "build": "node build.mjs",
+    "bundle": "node bundle.mjs",
+    "build:bin": "npm run build && npm run bundle && pkg dist/bundle/cli.cjs --compress Brotli -t node20-linux-x64,node20-macos-x64,node20-macos-arm64,node20-win-x64 -o dist/bin/markdeck",
     "test": "vitest run",
-  "test:watch": "vitest",
+    "test:watch": "vitest",
     "lint": "eslint src"
+  },
+  "pkg": {
+    "assets": [
+      "dist/bundle/cli-esm.js"
+    ],
+    "targets": [
+      "node20-linux-x64",
+      "node20-macos-x64",
+      "node20-macos-arm64",
+      "node20-win-x64"
+    ],
+    "outputPath": "dist/bin"
   },
   "devDependencies": {
     "@types/node": "^20.19.25",
