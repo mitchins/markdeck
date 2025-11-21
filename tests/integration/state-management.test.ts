@@ -126,7 +126,7 @@ describe('State Management', () => {
       expect(result.current.project?.cards[0].title).toBe('Updated Task')
     })
 
-    it('should toggle blocked status', () => {
+    it('should update card status including blocked', () => {
       const { result } = renderHook(() => useAppStore())
       
       const mockProject: Project = {
@@ -137,7 +137,6 @@ describe('State Management', () => {
             title: 'Task',
             status: 'todo',
             laneId: 'lane-1',
-            blocked: false,
             links: [],
             originalLine: 0
           }
@@ -151,19 +150,21 @@ describe('State Management', () => {
         result.current.actions.setProject(mockProject)
       })
       
-      expect(result.current.project?.cards[0].blocked).toBe(false)
+      expect(result.current.project?.cards[0].status).toBe('todo')
       
+      // Change status to blocked
       act(() => {
-        result.current.actions.toggleBlocked('card-1')
+        result.current.actions.updateCard('card-1', { status: 'blocked' })
       })
       
-      expect(result.current.project?.cards[0].blocked).toBe(true)
+      expect(result.current.project?.cards[0].status).toBe('blocked')
       
+      // Change status back to todo
       act(() => {
-        result.current.actions.toggleBlocked('card-1')
+        result.current.actions.updateCard('card-1', { status: 'todo' })
       })
       
-      expect(result.current.project?.cards[0].blocked).toBe(false)
+      expect(result.current.project?.cards[0].status).toBe('todo')
     })
 
     it('should update UI state', () => {
@@ -336,9 +337,8 @@ describe('State Management', () => {
           {
             id: 'card-1',
             title: 'Task 1',
-            status: 'todo',
+            status: 'blocked',
             laneId: 'lane-1',
-            blocked: true,
             links: [],
             originalLine: 0
           },
@@ -347,7 +347,6 @@ describe('State Management', () => {
             title: 'Task 2',
             status: 'todo',
             laneId: 'lane-1',
-            blocked: false,
             links: [],
             originalLine: 1
           }

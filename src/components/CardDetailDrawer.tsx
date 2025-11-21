@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import {
   Select,
   SelectContent,
@@ -33,12 +32,14 @@ interface CardDetailDrawerProps {
 const statusIconMap = {
   todo: ListChecks,
   in_progress: WarningCircle,
+  blocked: XCircle,
   done: CheckCircle,
 }
 
 const statusColorMap = {
   todo: 'text-accent',
   in_progress: 'text-warning',
+  blocked: 'text-destructive',
   done: 'text-success',
 }
 
@@ -46,14 +47,12 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [status, setStatus] = useState<CardStatus>('in_progress')
-  const [blocked, setBlocked] = useState(false)
 
   useEffect(() => {
     if (card) {
       setTitle(card.title)
       setDescription(card.description || '')
       setStatus(card.status)
-      setBlocked(card.blocked || false)
     }
   }, [card])
 
@@ -70,7 +69,6 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
       title: title.trim(),
       description: description.trim() || undefined,
       status,
-      blocked,
     }
 
     onSave(updatedCard)
@@ -122,23 +120,6 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
                 })}
               </SelectContent>
             </Select>
-          </div>
-
-          <div className="flex items-center justify-between rounded-lg border border-border p-4">
-            <div className="space-y-0.5">
-              <Label htmlFor="blocked" className="text-sm font-medium flex items-center gap-2">
-                <XCircle size={16} className="text-destructive" weight="fill" />
-                Blocked
-              </Label>
-              <p className="text-xs text-muted-foreground">
-                Mark this card as blocked regardless of current workflow status
-              </p>
-            </div>
-            <Switch
-              id="blocked"
-              checked={blocked}
-              onCheckedChange={setBlocked}
-            />
           </div>
 
           <div className="space-y-2">
