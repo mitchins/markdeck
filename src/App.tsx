@@ -182,7 +182,7 @@ function App() {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              message: 'Update STATUS.md via Kanban in a Can',
+              message: 'Update STATUS.md via MarkDeck',
               content: btoa(updated),
               sha: fileData.sha,
             }),
@@ -246,7 +246,7 @@ function App() {
           <header className="mb-8 text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Kanban size={32} className="text-primary" weight="duotone" />
-              <h1 className="text-2xl font-bold tracking-tight">Kanban in a Can</h1>
+              <h1 className="text-2xl font-bold tracking-tight">MarkDeck</h1>
             </div>
             <p className="text-muted-foreground text-sm">
               Visual project tracking from STATUS.md files
