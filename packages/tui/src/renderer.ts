@@ -84,7 +84,7 @@ export function renderProject(project: Project, options: RenderOptions = {}): st
     (stats.blocked > 0 ? colorize(' • ', 'gray') + colorize(`${stats.blocked} BLOCKED`, 'red') : '')
   )
   lines.push('')
-  lines.push(colorize('Controls: ', 'cyan', 'bold') + colorize('↑↓=move card  ←→=navigate lanes  ⇧←⇧→=move to lane  b=toggle block  q=quit', 'gray'))
+  lines.push(colorize('Controls: ', 'cyan', 'bold') + colorize('↑↓=navigate  ⇧←⇧→=move to lane  b=toggle block  q=quit', 'gray'))
   
   return lines.join('\n')
 }

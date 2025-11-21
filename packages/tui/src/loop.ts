@@ -16,6 +16,7 @@ interface LoopState {
   filePath: string
   selectedCardId: string | null
   running: boolean
+  pendingSave: Promise<void> | null
 }
 
 /**
@@ -27,6 +28,7 @@ export async function startLoop(project: Project, filePath: string): Promise<voi
     filePath,
     selectedCardId: null,
     running: true,
+    pendingSave: null,
   }
   
   // Select first card by default
@@ -51,6 +53,11 @@ export async function startLoop(project: Project, filePath: string): Promise<voi
       }
     }, 100)
   })
+  
+  // Await any pending save before exiting
+  if (state.pendingSave) {
+    await state.pendingSave
+  }
 }
 
 /**
@@ -116,9 +123,11 @@ function render(state: LoopState): void {
  * Save changes to file and re-render
  */
 function saveAndRender(state: LoopState): void {
-  // Serialize and save asynchronously
+  // Serialize and save
   const markdown = serializeProject(state.project)
-  writeFile(state.filePath, markdown, 'utf-8').catch((error) => {
+  
+  // Track the save promise
+  state.pendingSave = writeFile(state.filePath, markdown, 'utf-8').catch((error) => {
     // Show error but don't crash
     console.error(`Error saving file ${state.filePath}:`, error.message || error)
   })
