@@ -125,9 +125,14 @@ export const useAppStore = create<AppState>()(
           const { project } = get()
           if (!project) return
           
-          const updatedCards = project.cards.map(card =>
-            card.id === cardId ? { ...card, status: newStatus } : card
-          )
+          const updatedCards = project.cards.map(card => {
+            if (card.id !== cardId) return card
+            
+            // When moving to DONE, always clear blocked flag
+            const blocked = newStatus === 'done' ? false : card.blocked
+            
+            return { ...card, status: newStatus, blocked }
+          })
           
           set({
             project: { ...project, cards: updatedCards },
@@ -139,9 +144,18 @@ export const useAppStore = create<AppState>()(
           const { project } = get()
           if (!project) return
           
-          const updatedCards = project.cards.map(card =>
-            card.id === cardId ? { ...card, ...updates } : card
-          )
+          const updatedCards = project.cards.map(card => {
+            if (card.id !== cardId) return card
+            
+            const newCard = { ...card, ...updates }
+            
+            // Normalize: DONE cards can never be blocked
+            if (newCard.status === 'done') {
+              newCard.blocked = false
+            }
+            
+            return newCard
+          })
           
           set({
             project: { ...project, cards: updatedCards },
@@ -251,7 +265,7 @@ export const selectCardsByStatus = (status: CardStatus) => (state: AppState) =>
   state.project?.cards.filter(card => card.status === status) ?? []
 
 export const selectBlockedCards = (state: AppState) =>
-  state.project?.cards.filter(card => card.status === 'blocked') ?? []
+  state.project?.cards.filter(card => card.blocked) ?? []
 
 export const selectHasUnsavedChanges = (state: AppState) =>
   state.sync.hasChanges

@@ -21,6 +21,7 @@ const createCard = (
   id: 'card-1',
   title: 'Task',
   status: 'todo',
+  blocked: false,
   laneId: 'lane-1',
   links: [],
   originalLine: 0,
@@ -288,7 +289,7 @@ describe('State Management', () => {
       
       const mockProject = createProject({
         cards: [
-          createCard({ id: 'card-1', title: 'Task 1', status: 'blocked' }),
+          createCard({ id: 'card-1', title: 'Task 1', status: 'todo', blocked: true }),
           createCard({ id: 'card-2', title: 'Task 2', originalLine: 1 })
         ]
       })

@@ -5,13 +5,22 @@
  */
 
 import type { CardStatus } from '../domain/types'
-import { EMOJI_TO_STATUS_BLOCKED, statusToEmoji as coreStatusToEmoji } from '../domain/types'
+import { EMOJI_TO_STATUS_BLOCKED } from '../domain/types'
 
 /**
  * Convert status and blocked state to emoji
  */
 export function statusToEmoji(status: CardStatus, blocked: boolean = false): string {
-  return coreStatusToEmoji(status, blocked)
+  if (status === 'done') {
+    return '🟢' // DONE is always green, never blocked
+  }
+  if (status === 'todo') {
+    return blocked ? '🔴' : '🔵'
+  }
+  if (status === 'in_progress') {
+    return blocked ? '🟧' : '🟡'
+  }
+  return '🔵' // Default fallback
 }
 
 /**

@@ -25,9 +25,11 @@ export function moveCardToLane(project: Project, cardId: string, direction: 'lef
   const newStatus = STATUS_COLUMNS[newIndex].key
   
   // Create updated card
+  // When moving to DONE, always clear blocked flag
   const updatedCard: Card = {
     ...card,
     status: newStatus,
+    blocked: newStatus === 'done' ? false : card.blocked,
   }
   
   // Return updated project
@@ -44,13 +46,13 @@ export function toggleCardBlocked(project: Project, cardId: string): Project {
   const card = project.cards.find(c => c.id === cardId)
   if (!card) return project
   
-  // Toggle between blocked and previous non-blocked status
-  const newStatus: CardStatus = card.status === 'blocked' ? 'todo' : 'blocked'
+  // DONE cards cannot be blocked - ignore toggle request
+  if (card.status === 'done') return project
   
-  // Create updated card
+  // Toggle the blocked flag (only affects TODO and IN_PROGRESS)
   const updatedCard: Card = {
     ...card,
-    status: newStatus,
+    blocked: !card.blocked,
   }
   
   // Return updated project
