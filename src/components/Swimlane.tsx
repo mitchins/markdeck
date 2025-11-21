@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { KanbanCard } from './KanbanCard'
 import type { KanbanCard as KanbanCardType, CardStatus, Swimlane as SwimlaneType } from '@/lib/types'
 import { STATUS_COLUMNS } from '@/lib/types'
-import { ListChecks, WarningCircle, CheckCircle, XCircle, CaretDown, CaretUp } from '@phosphor-icons/react'
+import { ListChecks, WarningCircle, CheckCircle, Prohibit, CaretDown, CaretUp } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface SwimlaneProps {
@@ -34,7 +34,7 @@ const columnConfig: Record<CardStatus, {
     borderColor: 'border-warning/20',
   },
   blocked: {
-    icon: XCircle,
+    icon: Prohibit,
     color: 'text-destructive',
     bgColor: 'bg-destructive/5',
     borderColor: 'border-destructive/20',
@@ -102,7 +102,7 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
           </span>
           {blockedCount > 0 && (
             <span className="flex items-center gap-1">
-              <XCircle size={14} className="text-destructive" weight="fill" />
+              <Prohibit size={14} className="text-destructive" weight="fill" />
               {blockedCount}
             </span>
           )}

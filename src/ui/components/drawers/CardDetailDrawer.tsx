@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/select'
 import type { KanbanCard, CardStatus } from '@/lib/types'
 import { STATUS_COLUMNS } from '@/lib/types'
-import { ListChecks, WarningCircle, CheckCircle, FloppyDisk, XCircle } from '@phosphor-icons/react'
+import { ListChecks, WarningCircle, CheckCircle, FloppyDisk, Prohibit } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
 interface CardDetailDrawerProps {
@@ -32,7 +32,7 @@ interface CardDetailDrawerProps {
 const statusIconMap = {
   todo: ListChecks,
   in_progress: WarningCircle,
-  blocked: XCircle,
+  blocked: Prohibit,
   done: CheckCircle,
 }
 
