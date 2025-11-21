@@ -10,7 +10,8 @@ import {
   selectBlockedCards,
   selectCardsByStatus,
   selectHasUnsavedChanges,
-  selectIsLoading
+  selectIsLoading,
+  selectSelectedCard
 } from '@/application/state/app-store'
 import type { Project } from '@/core/domain/types'
 
@@ -244,6 +245,46 @@ describe('State Management', () => {
       
       expect(result.current.sync.remoteHash).toBe('abc123')
     })
+
+    it('should update project with updater function', () => {
+      const { result } = renderHook(() => useAppStore())
+      
+      const mockProject: Project = {
+        metadata: { title: 'Test' },
+        cards: [],
+        swimlanes: [],
+        notes: [],
+        rawMarkdown: ''
+      }
+      
+      act(() => {
+        result.current.actions.setProject(mockProject)
+      })
+      
+      act(() => {
+        result.current.actions.updateProject((project) => ({
+          ...project,
+          metadata: { ...project.metadata, title: 'Updated Test' }
+        }))
+      })
+      
+      expect(result.current.project?.metadata.title).toBe('Updated Test')
+      expect(result.current.sync.hasChanges).toBe(true)
+    })
+
+    it('should not update project if no project exists', () => {
+      const { result } = renderHook(() => useAppStore())
+      
+      // No project set, so updateProject should do nothing
+      act(() => {
+        result.current.actions.updateProject((project) => ({
+          ...project,
+          metadata: { ...project.metadata, title: 'Updated Test' }
+        }))
+      })
+      
+      expect(result.current.project).toBeNull()
+    })
   })
 
   describe('State selectors', () => {
@@ -392,6 +433,84 @@ describe('State Management', () => {
       })
       
       expect(selectIsLoading(result.current)).toBe(true)
+    })
+
+    it('should select selected card', () => {
+      const { result } = renderHook(() => useAppStore())
+      
+      const mockProject: Project = {
+        metadata: { title: 'Test' },
+        cards: [
+          {
+            id: 'card-1',
+            title: 'Task 1',
+            status: 'todo',
+            laneId: 'lane-1',
+            blocked: false,
+            links: [],
+            originalLine: 0
+          }
+        ],
+        swimlanes: [],
+        notes: [],
+        rawMarkdown: ''
+      }
+      
+      act(() => {
+        result.current.actions.setProject(mockProject)
+      })
+      
+      // No card selected initially
+      expect(selectSelectedCard(result.current)).toBeNull()
+      
+      // Select a card
+      act(() => {
+        result.current.actions.setSelectedCard('card-1')
+      })
+      
+      const selectedCard = selectSelectedCard(result.current)
+      expect(selectedCard).not.toBeNull()
+      expect(selectedCard?.id).toBe('card-1')
+      expect(selectedCard?.title).toBe('Task 1')
+    })
+
+    it('should return null for selected card when card not found', () => {
+      const { result } = renderHook(() => useAppStore())
+      
+      const mockProject: Project = {
+        metadata: { title: 'Test' },
+        cards: [
+          {
+            id: 'card-1',
+            title: 'Task 1',
+            status: 'todo',
+            laneId: 'lane-1',
+            blocked: false,
+            links: [],
+            originalLine: 0
+          }
+        ],
+        swimlanes: [],
+        notes: [],
+        rawMarkdown: ''
+      }
+      
+      act(() => {
+        result.current.actions.setProject(mockProject)
+        result.current.actions.setSelectedCard('non-existent-card')
+      })
+      
+      expect(selectSelectedCard(result.current)).toBeNull()
+    })
+
+    it('should return null for selected card when no project', () => {
+      const { result } = renderHook(() => useAppStore())
+      
+      act(() => {
+        result.current.actions.setSelectedCard('card-1')
+      })
+      
+      expect(selectSelectedCard(result.current)).toBeNull()
     })
   })
 })

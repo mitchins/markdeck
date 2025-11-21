@@ -112,6 +112,26 @@ describe('File Provider', () => {
       createObjectURLSpy.mockRestore()
       revokeObjectURLSpy.mockRestore()
     })
+
+    it('should handle errors during save', async () => {
+      const content = '# Test'
+      const context: SaveContext = {}
+      
+      // Mock URL.createObjectURL to throw an error
+      const createObjectURLSpy = vi.spyOn(URL, 'createObjectURL').mockImplementation(() => {
+        throw new Error('Failed to create object URL')
+      })
+      
+      const result = await provider.save(content, context)
+      
+      expect(result.success).toBe(false)
+      if (!result.success) {
+        expect(result.error.code).toBe('FILE_SAVE_ERROR')
+        expect(result.error.message).toContain('Failed to download file')
+      }
+      
+      createObjectURLSpy.mockRestore()
+    })
   })
 
   describe('isConfigured', () => {
