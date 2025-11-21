@@ -25,7 +25,6 @@ const VERSION = packageJson.version
 
 interface CliOptions {
   file: string
-  watch: boolean
   help: boolean
 }
 
@@ -35,7 +34,6 @@ interface CliOptions {
 function parseArgs(args: string[]): CliOptions {
   const options: CliOptions = {
     file: 'STATUS.md',
-    watch: false,
     help: false,
   }
   
@@ -46,11 +44,6 @@ function parseArgs(args: string[]): CliOptions {
       case '--help':
       case '-h':
         options.help = true
-        break
-      
-      case '--watch':
-      case '-w':
-        options.watch = true
         break
         
       case '--file':
@@ -94,7 +87,6 @@ USAGE:
 
 OPTIONS:
   --file <path>    Path to STATUS.md file (default: ./STATUS.md)
-  --watch, -w      Interactive mode with editing (default)
   --help, -h       Show this help message
 
 INTERACTIVE CONTROLS:

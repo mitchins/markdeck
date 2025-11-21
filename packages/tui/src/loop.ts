@@ -120,7 +120,7 @@ function saveAndRender(state: LoopState): void {
   const markdown = serializeProject(state.project)
   writeFile(state.filePath, markdown, 'utf-8').catch((error) => {
     // Show error but don't crash
-    console.error('Error saving file:', error)
+    console.error(`Error saving file ${state.filePath}:`, error.message || error)
   })
   
   // Update the rawMarkdown in project
