@@ -126,7 +126,6 @@ describe('MCP Server Operations', () => {
     it('should update card status', async () => {
       const project = await readTestFile()
       const card = project.cards[0] // "Implement feature A"
-      const originalId = card.id
 
       // Update status to in_progress
       card.status = 'in_progress'
@@ -214,7 +213,6 @@ describe('MCP Server Operations', () => {
     it('should add a new card to existing markdown', async () => {
       const project = await readTestFile()
       const initialCount = project.cards.length
-      const lane = project.swimlanes[0]
 
       // Add new card by appending to the raw markdown
       const newCardMarkdown = '\n- 🔵 New task\n    Task description'
@@ -263,7 +261,6 @@ describe('MCP Server Operations', () => {
       const project = await readTestFile()
       const initialCount = project.cards.length
       const cardToDelete = project.cards[0]
-      const titleToDelete = cardToDelete.title
 
       // Filter out the card
       project.cards = project.cards.filter(c => c.id !== cardToDelete.id)

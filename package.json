@@ -11,8 +11,10 @@
         "build:tui": "cd packages/tui && npm run build",
         "build:tui:bin": "cd packages/tui && npm run build:bin",
         "build:tui:all": "npm run build:tui && npm run build:tui:bin",
+        "build:mcp": "cd mcp && npm run build",
         "lint": "eslint . && cd packages/tui && npm run lint",
         "markdeck-tui": "node packages/tui/dist/cli.js",
+        "markdeck-mcp": "node mcp/dist/index.js",
         "optimize": "vite optimize",
         "preview": "vite preview",
         "test": "vitest",
@@ -25,6 +27,7 @@
         "test:e2e:playwright": "playwright test",
         "test:e2e:playwright:ui": "playwright test --ui",
         "test:tui": "cd packages/tui && npm run test",
+        "test:mcp": "cd mcp && npm test",
         "test:watch": "vitest watch"
     },
     "dependencies": {
