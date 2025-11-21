@@ -58,7 +58,7 @@ describe('Markdown Parser', () => {
       expect(project.swimlanes[1].title).toBe('Backend')
     })
 
-    it('should parse cards with RAGB status emojis', () => {
+    it('should parse cards with RYGBO status emojis', () => {
       const markdown = `# Project
 
 ## Tasks
@@ -66,15 +66,22 @@ describe('Markdown Parser', () => {
 - 🟢 Completed task
 - 🟡 In progress task
 - 🔵 Todo task
-- 🔴 Blocked task`
+- 🔴 Blocked todo task
+- 🟧 Blocked in progress task`
 
       const project = parseStatusMarkdown(markdown)
       
-      expect(project.cards).toHaveLength(4)
+      expect(project.cards).toHaveLength(5)
       expect(project.cards[0].status).toBe('done')
+      expect(project.cards[0].blocked).toBe(false)
       expect(project.cards[1].status).toBe('in_progress')
+      expect(project.cards[1].blocked).toBe(false)
       expect(project.cards[2].status).toBe('todo')
-      expect(project.cards[3].status).toBe('blocked')
+      expect(project.cards[2].blocked).toBe(false)
+      expect(project.cards[3].status).toBe('todo')
+      expect(project.cards[3].blocked).toBe(true)
+      expect(project.cards[4].status).toBe('in_progress')
+      expect(project.cards[4].blocked).toBe(true)
     })
 
     it('should handle malformed markdown gracefully', () => {

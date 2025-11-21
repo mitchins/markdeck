@@ -73,12 +73,50 @@ Some notes here.`
 
       const project = parseStatusMarkdown(originalMarkdown)
       
-      // Change task to blocked status
-      project.cards[0].status = 'blocked'
+      // Change task to blocked todo
+      project.cards[0].status = 'todo'
+      project.cards[0].blocked = true
       
       const serialized = serializeProject(project)
       
       expect(serialized).toContain('- 🔴 Normal task')
+    })
+
+    it('should handle blocked in_progress with 🟧 emoji', () => {
+      const originalMarkdown = `# Project
+
+## Tasks
+
+- 🟡 Normal task`
+
+      const project = parseStatusMarkdown(originalMarkdown)
+      
+      // Change task to blocked in_progress
+      project.cards[0].status = 'in_progress'
+      project.cards[0].blocked = true
+      
+      const serialized = serializeProject(project)
+      
+      expect(serialized).toContain('- 🟧 Normal task')
+    })
+
+    it('should normalize blocked done to unblocked done', () => {
+      const originalMarkdown = `# Project
+
+## Tasks
+
+- 🟡 Task`
+
+      const project = parseStatusMarkdown(originalMarkdown)
+      
+      // Try to set as blocked done (should be normalized)
+      project.cards[0].status = 'done'
+      project.cards[0].blocked = true // This should be ignored
+      
+      const serialized = serializeProject(project)
+      
+      // Should emit green emoji (unblocked done)
+      expect(serialized).toContain('- 🟢 Task')
     })
 
     it('should preserve card descriptions', () => {
