@@ -33,6 +33,12 @@ const columnConfig: Record<CardStatus, {
     bgColor: 'bg-warning/5',
     borderColor: 'border-warning/20',
   },
+  blocked: {
+    icon: XCircle,
+    color: 'text-destructive',
+    bgColor: 'bg-destructive/5',
+    borderColor: 'border-destructive/20',
+  },
   done: {
     icon: CheckCircle,
     color: 'text-success',
@@ -56,7 +62,7 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
   }, {} as Record<CardStatus, KanbanCardType[]>)
 
   const totalCards = cards.length
-  const blockedCount = cards.filter(card => card.blocked).length
+  const blockedCount = cards.filter(card => card.status === 'blocked').length
 
   return (
     <div className="border border-border rounded-lg bg-card overflow-hidden">

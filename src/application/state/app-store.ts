@@ -55,7 +55,6 @@ export interface AppState {
     // Card operations
     moveCard: (cardId: string, newStatus: CardStatus) => void
     updateCard: (cardId: string, updates: Partial<Card>) => void
-    toggleBlocked: (cardId: string) => void
     
     // Provider operations
     setProvider: (type: ProviderType, config: ProviderState['config']) => void
@@ -142,20 +141,6 @@ export const useAppStore = create<AppState>()(
           
           const updatedCards = project.cards.map(card =>
             card.id === cardId ? { ...card, ...updates } : card
-          )
-          
-          set({
-            project: { ...project, cards: updatedCards },
-            sync: { ...get().sync, hasChanges: true },
-          })
-        },
-        
-        toggleBlocked: (cardId) => {
-          const { project } = get()
-          if (!project) return
-          
-          const updatedCards = project.cards.map(card =>
-            card.id === cardId ? { ...card, blocked: !card.blocked } : card
           )
           
           set({
@@ -266,7 +251,7 @@ export const selectCardsByStatus = (status: CardStatus) => (state: AppState) =>
   state.project?.cards.filter(card => card.status === status) ?? []
 
 export const selectBlockedCards = (state: AppState) =>
-  state.project?.cards.filter(card => card.blocked) ?? []
+  state.project?.cards.filter(card => card.status === 'blocked') ?? []
 
 export const selectHasUnsavedChanges = (state: AppState) =>
   state.sync.hasChanges
