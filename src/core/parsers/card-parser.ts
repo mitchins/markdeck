@@ -4,7 +4,7 @@
  * Extracts cards from bullet points with status emojis.
  */
 
-import type { Card } from '../domain/types'
+import type { Card, CardStatus } from '../domain/types'
 import { emojiToStatus, isStatusEmoji } from '../utils/emoji-mapper'
 import { IdGenerator } from '../utils/id-generator'
 
@@ -96,13 +96,22 @@ export function parseCard(
   const bulletText = bulletMatch[2]
   const { statusEmoji, blockedEmoji, remaining } = extractEmojis(bulletText)
   
-  // Must have a valid status emoji to be a card
+  // Edge case: Only blocked emoji (❌) without status emoji -> default to TODO
+  // This handles malformed entries as per PRD spec
+  let status: CardStatus
   if (!statusEmoji || !isStatusEmoji(statusEmoji)) {
-    return null
+    // If we have a blocked emoji but no status emoji, default to TODO
+    if (blockedEmoji) {
+      status = 'todo'
+    } else {
+      // No valid emoji at all, not a card
+      return null
+    }
+  } else {
+    const mappedStatus = emojiToStatus(statusEmoji)
+    if (!mappedStatus) return null
+    status = mappedStatus
   }
-  
-  const status = emojiToStatus(statusEmoji)
-  if (!status) return null
   
   const title = remaining.trim()
   if (!title) return null
