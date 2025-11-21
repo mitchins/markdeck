@@ -57,8 +57,8 @@ export interface Project {
 
 // RYGBO emoji mappings - emojis map to (status, blocked) tuples
 export const EMOJI_TO_STATUS_BLOCKED: Record<string, { status: CardStatus; blocked: boolean }> = {
-  '🔵': { status: 'todo', blocked: false },       // Blue - TODO
-  '🔴': { status: 'todo', blocked: true },        // Red - Blocked TODO
+  '🔵': { status: 'todo', blocked: false },       // Blue - Not started
+  '🔴': { status: 'todo', blocked: true },        // Red - Blocked (not started)
   '🟡': { status: 'in_progress', blocked: false }, // Yellow - IN PROGRESS
   '🟧': { status: 'in_progress', blocked: true },  // Orange - Blocked IN PROGRESS
   '🟢': { status: 'done', blocked: false },       // Green - DONE
@@ -68,7 +68,7 @@ export const EMOJI_TO_STATUS_BLOCKED: Record<string, { status: CardStatus; block
 export const EMOJI_TO_STATUS: Record<string, CardStatus> = {
   '🔵': 'todo',
   '🟡': 'in_progress',
-  '🔴': 'todo',  // Legacy: mapped to todo
+  '🔴': 'todo',  // Legacy: mapped to 'todo' status
   '🟧': 'in_progress',  // Legacy: mapped to in_progress
   '🟢': 'done',
 }
