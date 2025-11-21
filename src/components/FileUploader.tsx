@@ -20,18 +20,18 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
   const [githubUrl, setGithubUrl] = useState('')
 
   const handleFileSelect = (file: File) => {
-    // Check file size
-    if (file.size > MAX_FILE_SIZE) {
-      toast.error('File too large', {
-        description: `Maximum file size is ${MAX_FILE_SIZE / 1024 / 1024}MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)}MB.`,
+    // Check file type - both extension and MIME type for security
+    if (!file.name.endsWith('.md') || (file.type && !file.type.includes('text') && file.type !== '')) {
+      toast.error('Invalid file type', {
+        description: 'Please upload a Markdown (.md) file',
       })
       return
     }
 
-    // Check file type
-    if (!file.name.endsWith('.md')) {
-      toast.error('Invalid file type', {
-        description: 'Please upload a Markdown (.md) file',
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error('File too large', {
+        description: `Maximum file size is ${MAX_FILE_SIZE / 1024 / 1024}MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)}MB.`,
       })
       return
     }
@@ -115,7 +115,14 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
       }
 
       const data = await response.json()
-      const content = atob(data.content)
+      
+      // Safely decode base64 content
+      let content: string
+      try {
+        content = atob(data.content)
+      } catch (decodeError) {
+        throw new Error('Failed to decode file content - file may be corrupted')
+      }
       
       onFileLoad(content)
       toast.success(`Loaded STATUS.md from ${owner}/${repo}`)
