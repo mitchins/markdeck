@@ -64,20 +64,6 @@ export const EMOJI_TO_STATUS_BLOCKED: Record<string, { status: CardStatus; block
   '🟢': { status: 'done', blocked: false },       // Green - DONE
 }
 
-// Status to emoji mapping - requires both status and blocked state
-export function statusToEmoji(status: CardStatus, blocked: boolean): string {
-  if (status === 'done') {
-    return '🟢' // DONE is always green, never blocked
-  }
-  if (status === 'todo') {
-    return blocked ? '🔴' : '🔵'
-  }
-  if (status === 'in_progress') {
-    return blocked ? '🟧' : '🟡'
-  }
-  return '🔵' // Default fallback
-}
-
 // Legacy mappings for backward compatibility (deprecated)
 export const EMOJI_TO_STATUS: Record<string, CardStatus> = {
   '🔵': 'todo',

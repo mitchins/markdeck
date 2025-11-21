@@ -27,7 +27,7 @@ export function KanbanCard({ card, isDragging }: KanbanCardProps) {
       <Card
         className={`p-3 cursor-pointer transition-shadow hover:shadow-md ${
           isDragging ? 'shadow-2xl rotate-1 opacity-50' : ''
-        } ${card.status === 'blocked' ? 'border-destructive/40' : ''}`}
+        } ${card.blocked ? 'border-destructive/40' : ''}`}
       >
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0">
@@ -37,7 +37,7 @@ export function KanbanCard({ card, isDragging }: KanbanCardProps) {
                   <h4 className="font-medium text-xs text-card-foreground leading-snug">
                     {card.title}
                   </h4>
-                  {card.status === 'blocked' && (
+                  {card.blocked && (
                     <Badge variant="destructive" className="h-5 px-1.5 text-[10px] font-medium flex items-center gap-1">
                       <Slash size={12} />
                       Blocked
