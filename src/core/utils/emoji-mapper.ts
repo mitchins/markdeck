@@ -10,7 +10,7 @@ import { EMOJI_TO_STATUS_BLOCKED } from '../domain/types'
 /**
  * Convert status and blocked state to emoji
  */
-export function statusToEmoji(status: CardStatus, blocked: boolean = false): string {
+export function statusToEmoji(status: CardStatus, blocked = false): string {
   if (status === 'done') {
     return '🟢' // DONE is always green, never blocked
   }
