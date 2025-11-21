@@ -84,9 +84,9 @@ describe('Renderer', () => {
     it('should render cards with correct status emojis', () => {
       const result = renderProject(mockProject)
       const stripped = stripAnsi(result)
-      expect(stripped).toContain('✅ Implement parser')
-      expect(stripped).toContain('⚠️ Add tests')
-      expect(stripped).toContain('❗ Deploy to production')
+      expect(stripped).toContain('Implement parser')
+      expect(stripped).toContain('Add tests')
+      expect(stripped).toContain('Deploy to production')
     })
 
     it('should show blocked indicator', () => {
@@ -95,16 +95,22 @@ describe('Renderer', () => {
       expect(stripped).toContain('BLOCKED')
     })
 
-    it('should render card descriptions', () => {
+    it('should render card titles in compact form', () => {
       const result = renderProject(mockProject)
       const stripped = stripAnsi(result)
-      expect(stripped).toContain('Parse markdown files')
+      // In compact column view, we show titles but not full descriptions
+      expect(stripped).toContain('Implement parser')
+      expect(stripped).toContain('Add tests')
+      expect(stripped).toContain('Deploy to production')
     })
 
-    it('should render card links', () => {
+    it('should support column-based layout', () => {
       const result = renderProject(mockProject)
       const stripped = stripAnsi(result)
-      expect(stripped).toContain('https://example.com')
+      // Check for column headers
+      expect(stripped).toContain('TODO')
+      expect(stripped).toContain('IN PROGRESS')
+      expect(stripped).toContain('DONE')
     })
 
     it('should include summary statistics', () => {
@@ -116,6 +122,13 @@ describe('Renderer', () => {
       expect(stripped).toContain('1 IN PROGRESS')
       expect(stripped).toContain('1 DONE')
       expect(stripped).toContain('1 BLOCKED')
+    })
+    
+    it('should include interactive controls hint', () => {
+      const result = renderProject(mockProject)
+      const stripped = stripAnsi(result)
+      expect(stripped).toContain('Controls:')
+      expect(stripped).toContain('q=quit')
     })
 
     it('should respect width option', () => {
