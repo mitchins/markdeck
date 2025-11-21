@@ -6,7 +6,7 @@
 
 import type { Project, Card, Swimlane, CardStatus } from '../../../src/core/domain/types.js'
 import { STATUS_COLUMNS, STATUS_TO_EMOJI } from '../../../src/core/domain/types.js'
-import { colorize, separator, ANSI } from './ansi.js'
+import { colorize, separator, ANSI, stripAnsi } from './ansi.js'
 
 interface RenderOptions {
   width?: number
@@ -153,14 +153,6 @@ function renderSwimlaneColumns(lane: Swimlane, allCards: Card[], width: number, 
 }
 
 /**
- * Strip ANSI codes for length calculation
- */
-function stripAnsi(text: string): string {
-  // eslint-disable-next-line no-control-regex
-  return text.replace(/\x1b\[[0-9;]*m/g, '')
-}
-
-/**
  * Render a card in compact form (for columns)
  */
 function renderCardCompact(card: Card, maxWidth: number, highlightedCard?: string): string[] {
@@ -171,19 +163,22 @@ function renderCardCompact(card: Card, maxWidth: number, highlightedCard?: strin
   // Determine if this card is highlighted
   const isHighlighted = highlightedCard === card.id
   
-  // Card title (truncate if too long)
-  let titleText = `${emoji}${blockedIndicator} ${card.title}`
-  if (stripAnsi(titleText).length > maxWidth) {
-    titleText = titleText.substring(0, maxWidth - 3) + '...'
+  // Build title without ANSI codes first to check length
+  const plainTitle = `${emoji}${blockedIndicator} ${card.title}`
+  let displayTitle = plainTitle
+  
+  // Truncate if necessary (based on plain text length)
+  if (plainTitle.length > maxWidth) {
+    displayTitle = plainTitle.substring(0, maxWidth - 3) + '...'
   }
   
-  // Highlight with background color
+  // Apply styling after truncation
   if (isHighlighted) {
-    lines.push(ANSI.bg.blue + colorize(titleText, 'white', 'bold') + ANSI.reset)
+    lines.push(ANSI.bg.blue + colorize(displayTitle, 'white', 'bold') + ANSI.reset)
   } else if (card.blocked) {
-    lines.push(colorize(titleText, 'red'))
+    lines.push(colorize(displayTitle, 'red'))
   } else {
-    lines.push(colorize(titleText, 'white'))
+    lines.push(colorize(displayTitle, 'white'))
   }
   
   lines.push('') // Empty line between cards
