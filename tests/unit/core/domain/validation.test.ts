@@ -28,7 +28,45 @@ describe('Domain Validation', () => {
       const result = validateCard(validCard)
       expect(result.success).toBe(true)
       if (result.success) {
-        expect(result.data).toEqual(validCard)
+        expect(result.data).toEqual({
+          ...validCard,
+          blocked: false // Default value added by schema
+        })
+      }
+    })
+
+    it('should validate card with blocked field', () => {
+      const card = {
+        id: 'card-1',
+        title: 'Test Card',
+        status: 'todo',
+        blocked: true,
+        laneId: 'lane-1',
+        links: [],
+        originalLine: 0
+      }
+      
+      const result = validateCard(card)
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.blocked).toBe(true)
+      }
+    })
+
+    it('should default blocked to false when not provided', () => {
+      const card = {
+        id: 'card-1',
+        title: 'Test Card',
+        status: 'in_progress',
+        laneId: 'lane-1',
+        links: [],
+        originalLine: 0
+      }
+      
+      const result = validateCard(card)
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.blocked).toBe(false)
       }
     })
 
@@ -80,6 +118,20 @@ describe('Domain Validation', () => {
         id: 'card-1',
         title: 'Test Card',
         status: 'invalid_status',
+        laneId: 'lane-1',
+        links: [],
+        originalLine: 0
+      }
+      
+      const result = validateCard(invalidCard)
+      expect(result.success).toBe(false)
+    })
+
+    it('should reject old blocked status value', () => {
+      const invalidCard = {
+        id: 'card-1',
+        title: 'Test Card',
+        status: 'blocked', // Old status value, no longer valid
         laneId: 'lane-1',
         links: [],
         originalLine: 0

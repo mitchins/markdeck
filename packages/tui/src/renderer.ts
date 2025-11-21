@@ -5,7 +5,8 @@
  */
 
 import type { Project, Card, Swimlane, CardStatus } from '../../../src/core/domain/types.js'
-import { STATUS_COLUMNS, STATUS_TO_EMOJI } from '../../../src/core/domain/types.js'
+import { STATUS_COLUMNS } from '../../../src/core/domain/types.js'
+import { statusToEmoji } from '../../../src/core/utils/emoji-mapper.js'
 import { colorize, separator, ANSI, stripAnsi } from './ansi.js'
 
 interface RenderOptions {
@@ -69,7 +70,7 @@ export function renderProject(project: Project, options: RenderOptions = {}): st
     lines.push('') // Spacing between swimlanes
   }
   
-  // Summary statistics
+  // Summary statistics - count blocked cards separately
   const stats = getProjectStats(project)
   lines.push(separator('─', width))
   lines.push(
@@ -100,7 +101,7 @@ function renderSwimlaneColumns(lane: Swimlane, allCards: Card[], width: number, 
   lines.push(colorize(`▓▓ ${lane.title.toUpperCase()}`, 'blue', 'bold'))
   lines.push(separator('─', width))
   
-  // Group cards by status
+  // Group cards by status (3 columns: todo, in_progress, done)
   const cardsByStatus = STATUS_COLUMNS.reduce((acc, column) => {
     acc[column.key] = []
     return acc
@@ -157,13 +158,13 @@ function renderSwimlaneColumns(lane: Swimlane, allCards: Card[], width: number, 
  */
 function renderCardCompact(card: Card, maxWidth: number, highlightedCard?: string): string[] {
   const lines: string[] = []
-  const emoji = STATUS_TO_EMOJI[card.status]
+  const emoji = statusToEmoji(card.status, card.blocked)
   
   // Determine if this card is highlighted
   const isHighlighted = highlightedCard === card.id
   
   // Build title without ANSI codes first to check length
-  const blockedLabel = card.status === 'blocked' ? ' (BLOCKED)' : ''
+  const blockedLabel = card.blocked ? ' (BLOCKED)' : ''
   const plainTitle = `${emoji} ${card.title}${blockedLabel}`
   let displayTitle = plainTitle
   
@@ -175,7 +176,7 @@ function renderCardCompact(card: Card, maxWidth: number, highlightedCard?: strin
   // Apply styling after truncation
   if (isHighlighted) {
     lines.push(ANSI.bg.blue + colorize(displayTitle, 'white', 'bold') + ANSI.reset)
-  } else if (card.status === 'blocked') {
+  } else if (card.blocked) {
     lines.push(colorize(displayTitle, 'red'))
   } else {
     lines.push(colorize(displayTitle, 'white'))
@@ -195,9 +196,9 @@ function renderCard(card: Card, highlightedCard?: string): string[] {
   const indent = '    '
   
   // Card title with emoji indicator
-  const emoji = STATUS_TO_EMOJI[card.status]
-  const blockedIndicator = card.status === 'blocked' ? ' (BLOCKED)' : ''
-  const titleColor = card.status === 'blocked' ? 'red' : 'white'
+  const emoji = statusToEmoji(card.status, card.blocked)
+  const blockedIndicator = card.blocked ? ' (BLOCKED)' : ''
+  const titleColor = card.blocked ? 'red' : 'white'
   const isHighlighted = highlightedCard === card.id
   
   if (isHighlighted) {
@@ -251,6 +252,6 @@ function getProjectStats(project: Project) {
     todo: project.cards.filter(c => c.status === 'todo').length,
     inProgress: project.cards.filter(c => c.status === 'in_progress').length,
     done: project.cards.filter(c => c.status === 'done').length,
-    blocked: project.cards.filter(c => c.status === 'blocked').length,
+    blocked: project.cards.filter(c => c.blocked).length,
   }
 }

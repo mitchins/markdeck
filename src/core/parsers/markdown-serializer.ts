@@ -1,7 +1,7 @@
 /**
  * Markdown serializer for STATUS.md files
  * 
- * Converts domain model back to STATUS.md markdown with round-trip fidelity using RAGB emojis.
+ * Converts domain model back to STATUS.md markdown with round-trip fidelity using RYGBO emojis.
  */
 
 import type { Project, Card } from '../domain/types'
@@ -32,8 +32,10 @@ export function serializeProject(project: Project): string {
       continue
     }
     
-    // Serialize the card with RAGB emoji
-    const statusEmoji = statusToEmoji(card.status)
+    // Serialize the card with RYGBO emoji based on (status, blocked)
+    // DONE cards are never blocked (normalize if needed)
+    const blocked = card.status === 'done' ? false : card.blocked
+    const statusEmoji = statusToEmoji(card.status, blocked)
     const indent = line.match(/^\s*/)?.[0] || ''
     
     // Add card title line with status

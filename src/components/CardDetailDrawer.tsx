@@ -20,7 +20,7 @@ import {
 import type { KanbanCard, CardStatus } from '@/lib/types'
 import { STATUS_COLUMNS } from '@/lib/types'
 import type { LucideIcon } from 'lucide-react'
-import { BadgeCheck, CircleAlert, CircleSlash, ListChecks, Save } from 'lucide-react'
+import { BadgeCheck, CircleAlert, ListChecks, Save } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface CardDetailDrawerProps {
@@ -33,14 +33,12 @@ interface CardDetailDrawerProps {
 const statusIconMap: Record<CardStatus, LucideIcon> = {
   todo: ListChecks,
   in_progress: CircleAlert,
-  blocked: CircleSlash,
   done: BadgeCheck,
 }
 
-const statusColorMap = {
+const statusColorMap: Record<CardStatus, string> = {
   todo: 'text-accent',
   in_progress: 'text-warning',
-  blocked: 'text-destructive',
   done: 'text-success',
 }
 
