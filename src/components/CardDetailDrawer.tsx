@@ -19,7 +19,8 @@ import {
 } from '@/components/ui/select'
 import type { KanbanCard, CardStatus } from '@/lib/types'
 import { STATUS_COLUMNS } from '@/lib/types'
-import { ListChecks, WarningCircle, CheckCircle, FloppyDisk, Prohibit } from '@phosphor-icons/react'
+import type { LucideIcon } from 'lucide-react'
+import { BadgeCheck, CircleAlert, CircleSlash, ListChecks, Save } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface CardDetailDrawerProps {
@@ -29,11 +30,11 @@ interface CardDetailDrawerProps {
   onSave: (updatedCard: KanbanCard) => void
 }
 
-const statusIconMap = {
+const statusIconMap: Record<CardStatus, LucideIcon> = {
   todo: ListChecks,
-  in_progress: WarningCircle,
-  blocked: Prohibit,
-  done: CheckCircle,
+  in_progress: CircleAlert,
+  blocked: CircleSlash,
+  done: BadgeCheck,
 }
 
 const statusColorMap = {
@@ -112,7 +113,7 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
                   return (
                     <SelectItem key={col.key} value={col.key}>
                       <div className="flex items-center gap-2">
-                        <Icon className={color} size={16} weight="fill" />
+                        <Icon className={color} size={16} />
                         {col.label}
                       </div>
                     </SelectItem>
@@ -157,7 +158,7 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
 
           <div className="flex gap-2 pt-4">
             <Button onClick={handleSave} className="flex-1">
-              <FloppyDisk className="mr-2" size={16} />
+              <Save className="mr-2" size={16} />
               Save Changes
             </Button>
             <Button variant="outline" onClick={onClose}>
