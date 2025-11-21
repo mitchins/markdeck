@@ -135,6 +135,8 @@ The workflow will:
 3. Create a GitHub Release
 4. Attach all binaries and checksums to the release
 
+> **Why build on each OS?** pkg ships prebuilt Node runtimes per platform and does not reliably cross-compile macOS and Windows targets from Linux. The GitHub Actions matrix builds on macOS, Windows, and Linux runners to keep outputs reproducible and avoid cross-platform quirks. Local `npm run build:tui:all` will attempt all targets from your host, but CI guarantees platform-native binaries for releases.
+
 ### Nightly Builds
 
 Nightly builds run automatically at 3 AM UTC via cron schedule:
