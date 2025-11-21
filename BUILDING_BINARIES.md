@@ -140,7 +140,7 @@ The workflow will:
 ### Nightly Builds
 
 Nightly builds run automatically at 3 AM UTC via cron schedule:
-- Binaries are built but **not** published as a release
+- Linux binaries are built but **not** published as a release (macOS/Windows are skipped to save runner minutes)
 - Available as workflow artifacts for testing
 - Useful for catching integration issues early
 
@@ -150,7 +150,7 @@ You can manually trigger a build via GitHub Actions:
 1. Go to Actions tab
 2. Select "Build and Release Binaries" workflow
 3. Click "Run workflow"
-4. Binaries will be available as artifacts (no release created)
+4. Linux binaries will be available as artifacts (macOS/Windows runners only run for tagged releases)
 
 ## Build Process Details
 
