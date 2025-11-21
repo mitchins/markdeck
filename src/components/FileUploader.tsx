@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
-import { UploadSimple, FileDoc, Sparkles, Folder } from '@phosphor-icons/react'
+import { UploadSimple, FileDoc, Sparkle, Folder } from '@phosphor-icons/react'
 import { DEMO_STATUS_MD, MARKDECK_STATUS_MD } from '@/lib/demo-data'
 import { toast } from 'sonner'
 
@@ -189,7 +189,7 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
             </label>
             
             <Button variant="outline" onClick={handleLoadDemo}>
-              <Sparkles className="mr-2" size={16} weight="duotone" />
+              <Sparkle className="mr-2" size={16} weight="duotone" />
               Try Demo
             </Button>
 
