@@ -42,10 +42,13 @@ console.log('Fixing import paths...')
 
 function fixImportsInFile(filePath) {
   let content = readFileSync(filePath, 'utf-8')
+  const isDeclaration = filePath.endsWith('.d.ts')
   
   // Replace imports that point to ../../../src/core with ./core
   if (content.includes('../../../src/core/')) {
     content = content.replace(/from ['"]\.\.\/\.\.\/\.\.\/src\/core\//g, 'from \'./core/')
+    // Also handle 'import type' statements in declaration files
+    content = content.replace(/import type \{([^}]+)\} from ['"]\.\.\/\.\.\/\.\.\/src\/core\//g, 'import type {$1} from \'./core/')
   }
   
   // Add .js extensions to relative imports that don't have them
@@ -56,6 +59,16 @@ function fixImportsInFile(filePath) {
     }
     return match
   })
+  
+  // Also fix 'import type' statements in declaration files
+  if (isDeclaration) {
+    content = content.replace(/import type \{([^}]+)\} from ['"](\.\.?\/[^'"]+?)['"];?/g, (match, types, path) => {
+      if (!path.endsWith('.js') && !path.includes('.json')) {
+        return `import type {${types}} from '${path}.js';`
+      }
+      return match
+    })
+  }
   
   writeFileSync(filePath, content, 'utf-8')
 }
@@ -69,7 +82,7 @@ function fixImportsRecursive(dir) {
     
     if (stat.isDirectory()) {
       fixImportsRecursive(fullPath)
-    } else if (extname(entry) === '.js') {
+    } else if (extname(entry) === '.js' || entry.endsWith('.d.ts')) {
       fixImportsInFile(fullPath)
     }
   }

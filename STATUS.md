@@ -73,6 +73,10 @@
     System design documented
     ADRs for key decisions
     UX specifications
+- ✅ Terminal TUI viewer
+    Lightweight CLI for viewing STATUS.md
+    Zero dependencies, pure ANSI rendering
+    Works with any terminal
 - ⚠️ Contributing guide
     Need CONTRIBUTING.md
     Issue templates needed
