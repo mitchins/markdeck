@@ -28,6 +28,26 @@ MarkDeck turns a `STATUS.md` file into a focused, three-column Kanban board. It 
    npm run build
    ```
 
+### Terminal Viewer (Developer Easter Egg!)
+
+View your STATUS.md directly in the terminal with the built-in TUI viewer:
+
+```bash
+# Build the TUI package (one-time setup)
+npm run build:tui
+
+# View STATUS.md in current directory
+npm run markdeck-tui
+
+# View a specific file
+npm run markdeck-tui -- --file path/to/STATUS.md
+
+# Show help
+npm run markdeck-tui -- --help
+```
+
+The TUI viewer is a lightweight, zero-dependency terminal tool that renders your STATUS.md as a colorful Kanban board right in your terminal - perfect for quick status checks without leaving the command line!
+
 ## Testing and quality
 - Lint: `npm run lint`
 - Type check: `npx tsc --noEmit`
