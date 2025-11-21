@@ -55,8 +55,3 @@ if (bundleContent.startsWith('#!')) {
 console.log('Bundle complete!')
 console.log(`Version: ${VERSION}`)
 console.log(`Output: ${bundlePath}`)
-
-
-
-
-

@@ -20,9 +20,7 @@
     "lint": "eslint src"
   },
   "pkg": {
-    "assets": [
-      "dist/bundle/cli-esm.js"
-    ],
+    "assets": [],
     "targets": [
       "node20-linux-x64",
       "node20-macos-x64",
