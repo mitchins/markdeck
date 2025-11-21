@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { KanbanCard as KanbanCardType } from '@/lib/types'
-import { XCircle, CaretDown, CaretUp, Link as LinkIcon } from '@phosphor-icons/react'
+import { Prohibit, CaretDown, CaretUp, Link as LinkIcon } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface KanbanCardProps {
@@ -39,7 +39,7 @@ export function KanbanCard({ card, isDragging }: KanbanCardProps) {
                   </h4>
                   {card.status === 'blocked' && (
                     <Badge variant="destructive" className="h-5 px-1.5 text-[10px] font-medium flex items-center gap-1">
-                      <XCircle size={10} weight="fill" />
+                      <Prohibit size={10} weight="fill" />
                       Blocked
                     </Badge>
                   )}
