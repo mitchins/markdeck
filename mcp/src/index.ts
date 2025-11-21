@@ -62,6 +62,15 @@ async function getBoard(statusPath: string) {
 }
 
 /**
+ * Normalize card state - DONE cards cannot be blocked
+ */
+function normalizeCardState(card: Card): void {
+  if (card.status === 'done') {
+    card.blocked = false
+  }
+}
+
+/**
  * Update an existing card
  */
 async function updateCard(
@@ -89,10 +98,8 @@ async function updateCard(
   if (changes.title !== undefined) card.title = changes.title
   if (changes.description !== undefined) card.description = changes.description
   
-  // Normalize: DONE cards cannot be blocked
-  if (card.status === 'done') {
-    card.blocked = false
-  }
+  // Normalize state
+  normalizeCardState(card)
   
   await writeStatusFile(statusPath, project)
   return project
@@ -123,13 +130,16 @@ async function addCard(
   const newCard: Card = {
     id: idGenerator.generateCardId(laneId, title),
     laneId,
-    status: status === 'done' ? 'done' : status, // Normalize
-    blocked: status === 'done' ? false : blocked, // DONE cannot be blocked
+    status,
+    blocked,
     title,
     description: description || '',
     links: [],
     originalLine: lastLineInLane + 1,
   }
+  
+  // Normalize state
+  normalizeCardState(newCard)
   
   project.cards.push(newCard)
   
@@ -139,6 +149,18 @@ async function addCard(
 
 /**
  * Delete a card from the board
+ * 
+ * Note: Due to the position-based serializer design, this function
+ * currently has limited effectiveness. The serializer uses originalLine
+ * numbers to update cards in place, so removing a card from the array
+ * doesn't remove it from the serialized output.
+ * 
+ * For true deletion, the implementation would need to:
+ * 1. Modify rawMarkdown directly to remove the card's lines, OR
+ * 2. Enhance the serializer to support line removal
+ * 
+ * Current behavior: Card is removed from the in-memory array but
+ * will reappear when the file is reparsed.
  */
 async function deleteCard(statusPath: string, cardId: string): Promise<Project> {
   const project = await readStatusFile(statusPath)
@@ -148,8 +170,11 @@ async function deleteCard(statusPath: string, cardId: string): Promise<Project> 
     throw new Error(`Card with id ${cardId} not found`)
   }
   
+  // Remove from array (limited effectiveness - see note above)
   project.cards.splice(cardIndex, 1)
   
+  // Note: Serialization will not actually remove the card from STATUS.md
+  // due to position-based serializer design
   await writeStatusFile(statusPath, project)
   return project
 }
@@ -391,7 +416,13 @@ async function main() {
             args.title as string,
             args.description as string | undefined
           )
-          const newCard = project.cards[project.cards.length - 1]
+          // Find the newly added card by its generated ID
+          const idGenerator = new IdGenerator()
+          const expectedId = idGenerator.generateCardId(
+            args.laneId as string,
+            args.title as string
+          )
+          const newCard = project.cards.find(c => c.id === expectedId)
           return {
             content: [
               {

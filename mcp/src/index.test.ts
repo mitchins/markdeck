@@ -265,11 +265,13 @@ describe('MCP Server Operations', () => {
       // Filter out the card
       project.cards = project.cards.filter(c => c.id !== cardToDelete.id)
       
-      // Note: The serializer will still output the original line since it's based on originalLine
-      // This is a limitation of the current serializer design
-      // For a real delete, we'd need to modify the rawMarkdown directly or use a different approach
+      // Note: The current serializer is position-based (uses originalLine),
+      // so it will still output the original line from rawMarkdown.
+      // This is a known limitation of the serializer design.
+      // For true deletion, the rawMarkdown would need to be modified directly,
+      // or the serializer would need to support removing lines.
       
-      // Just verify the card is filtered from the array
+      // Verify the card is filtered from the array
       expect(project.cards.length).toBe(initialCount - 1)
       expect(project.cards.find(c => c.id === cardToDelete.id)).toBeUndefined()
     })
