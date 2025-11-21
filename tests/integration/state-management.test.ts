@@ -15,6 +15,26 @@ import {
 } from '@/application/state/app-store'
 import type { Project } from '@/core/domain/types'
 
+const createCard = (
+  overrides: Partial<Project['cards'][number]> = {}
+): Project['cards'][number] => ({
+  id: 'card-1',
+  title: 'Task',
+  status: 'todo',
+  laneId: 'lane-1',
+  links: [],
+  originalLine: 0,
+  ...overrides
+})
+
+const createProject = (overrides: Partial<Project> = {}): Project => ({
+  metadata: { title: 'Test', ...overrides.metadata },
+  cards: overrides.cards ?? [],
+  swimlanes: overrides.swimlanes ?? [],
+  notes: overrides.notes ?? [],
+  rawMarkdown: overrides.rawMarkdown ?? ''
+})
+
 describe('State Management', () => {
   beforeEach(() => {
     // Reset the store before each test
@@ -39,13 +59,10 @@ describe('State Management', () => {
     it('should update project state', () => {
       const { result } = renderHook(() => useAppStore())
       
-      const mockProject: Project = {
+      const mockProject = createProject({
         metadata: { title: 'Test Project' },
-        cards: [],
-        swimlanes: [],
-        notes: [],
         rawMarkdown: '# Test'
-      }
+      })
       
       act(() => {
         result.current.actions.setProject(mockProject)
@@ -58,21 +75,9 @@ describe('State Management', () => {
     it('should move card and update hasChanges flag', () => {
       const { result } = renderHook(() => useAppStore())
       
-      const mockProject: Project = {
-        metadata: { title: 'Test' },
-        cards: [
-          {
-            id: 'card-1',
-            title: 'Task',
-            status: 'todo',
-            laneId: 'lane-1',            links: [],
-            originalLine: 0
-          }
-        ],
-        swimlanes: [],
-        notes: [],
-        rawMarkdown: ''
-      }
+      const mockProject = createProject({
+        cards: [createCard()]
+      })
       
       act(() => {
         result.current.actions.setProject(mockProject)
@@ -91,21 +96,9 @@ describe('State Management', () => {
     it('should maintain state immutability', () => {
       const { result } = renderHook(() => useAppStore())
       
-      const mockProject: Project = {
-        metadata: { title: 'Test' },
-        cards: [
-          {
-            id: 'card-1',
-            title: 'Task',
-            status: 'todo',
-            laneId: 'lane-1',            links: [],
-            originalLine: 0
-          }
-        ],
-        swimlanes: [],
-        notes: [],
-        rawMarkdown: ''
-      }
+      const mockProject = createProject({
+        cards: [createCard()]
+      })
       
       act(() => {
         result.current.actions.setProject(mockProject)
@@ -125,22 +118,9 @@ describe('State Management', () => {
     it('should update card status including blocked', () => {
       const { result } = renderHook(() => useAppStore())
       
-      const mockProject: Project = {
-        metadata: { title: 'Test' },
-        cards: [
-          {
-            id: 'card-1',
-            title: 'Task',
-            status: 'todo',
-            laneId: 'lane-1',
-            links: [],
-            originalLine: 0
-          }
-        ],
-        swimlanes: [],
-        notes: [],
-        rawMarkdown: ''
-      }
+      const mockProject = createProject({
+        cards: [createCard()]
+      })
       
       act(() => {
         result.current.actions.setProject(mockProject)
@@ -246,13 +226,7 @@ describe('State Management', () => {
     it('should update project with updater function', () => {
       const { result } = renderHook(() => useAppStore())
       
-      const mockProject: Project = {
-        metadata: { title: 'Test' },
-        cards: [],
-        swimlanes: [],
-        notes: [],
-        rawMarkdown: ''
-      }
+      const mockProject = createProject()
       
       act(() => {
         result.current.actions.setProject(mockProject)
@@ -288,28 +262,17 @@ describe('State Management', () => {
     it('should select cards by lane', () => {
       const { result } = renderHook(() => useAppStore())
       
-      const mockProject: Project = {
-        metadata: { title: 'Test' },
+      const mockProject = createProject({
         cards: [
-          {
-            id: 'card-1',
-            title: 'Task 1',
-            status: 'todo',
-            laneId: 'lane-1',            links: [],
-            originalLine: 0
-          },
-          {
+          createCard({ id: 'card-1', title: 'Task 1', laneId: 'lane-1' }),
+          createCard({
             id: 'card-2',
             title: 'Task 2',
-            status: 'todo',
-            laneId: 'lane-2',            links: [],
+            laneId: 'lane-2',
             originalLine: 1
-          }
-        ],
-        swimlanes: [],
-        notes: [],
-        rawMarkdown: ''
-      }
+          })
+        ]
+      })
       
       act(() => {
         result.current.actions.setProject(mockProject)
@@ -323,30 +286,12 @@ describe('State Management', () => {
     it('should select blocked cards', () => {
       const { result } = renderHook(() => useAppStore())
       
-      const mockProject: Project = {
-        metadata: { title: 'Test' },
+      const mockProject = createProject({
         cards: [
-          {
-            id: 'card-1',
-            title: 'Task 1',
-            status: 'blocked',
-            laneId: 'lane-1',
-            links: [],
-            originalLine: 0
-          },
-          {
-            id: 'card-2',
-            title: 'Task 2',
-            status: 'todo',
-            laneId: 'lane-1',
-            links: [],
-            originalLine: 1
-          }
-        ],
-        swimlanes: [],
-        notes: [],
-        rawMarkdown: ''
-      }
+          createCard({ id: 'card-1', title: 'Task 1', status: 'blocked' }),
+          createCard({ id: 'card-2', title: 'Task 2', originalLine: 1 })
+        ]
+      })
       
       act(() => {
         result.current.actions.setProject(mockProject)
@@ -360,28 +305,12 @@ describe('State Management', () => {
     it('should select cards by status', () => {
       const { result } = renderHook(() => useAppStore())
       
-      const mockProject: Project = {
-        metadata: { title: 'Test' },
+      const mockProject = createProject({
         cards: [
-          {
-            id: 'card-1',
-            title: 'Task 1',
-            status: 'done',
-            laneId: 'lane-1',            links: [],
-            originalLine: 0
-          },
-          {
-            id: 'card-2',
-            title: 'Task 2',
-            status: 'todo',
-            laneId: 'lane-1',            links: [],
-            originalLine: 1
-          }
-        ],
-        swimlanes: [],
-        notes: [],
-        rawMarkdown: ''
-      }
+          createCard({ id: 'card-1', title: 'Task 1', status: 'done' }),
+          createCard({ id: 'card-2', title: 'Task 2', originalLine: 1 })
+        ]
+      })
       
       act(() => {
         result.current.actions.setProject(mockProject)
@@ -425,21 +354,9 @@ describe('State Management', () => {
     it('should select selected card', () => {
       const { result } = renderHook(() => useAppStore())
       
-      const mockProject: Project = {
-        metadata: { title: 'Test' },
-        cards: [
-          {
-            id: 'card-1',
-            title: 'Task 1',
-            status: 'todo',
-            laneId: 'lane-1',            links: [],
-            originalLine: 0
-          }
-        ],
-        swimlanes: [],
-        notes: [],
-        rawMarkdown: ''
-      }
+      const mockProject = createProject({
+        cards: [createCard({ id: 'card-1', title: 'Task 1' })]
+      })
       
       act(() => {
         result.current.actions.setProject(mockProject)
@@ -462,21 +379,9 @@ describe('State Management', () => {
     it('should return null for selected card when card not found', () => {
       const { result } = renderHook(() => useAppStore())
       
-      const mockProject: Project = {
-        metadata: { title: 'Test' },
-        cards: [
-          {
-            id: 'card-1',
-            title: 'Task 1',
-            status: 'todo',
-            laneId: 'lane-1',            links: [],
-            originalLine: 0
-          }
-        ],
-        swimlanes: [],
-        notes: [],
-        rawMarkdown: ''
-      }
+      const mockProject = createProject({
+        cards: [createCard({ id: 'card-1', title: 'Task 1' })]
+      })
       
       act(() => {
         result.current.actions.setProject(mockProject)
