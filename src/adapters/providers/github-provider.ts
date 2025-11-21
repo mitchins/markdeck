@@ -151,7 +151,9 @@ export class GitHubProvider implements StatusProvider {
   }
 
   isConfigured(): boolean {
-    return !!(this.config.token && this.config.owner && this.config.repo)
+    // For public repos, only owner and repo are required
+    // Token is optional for read-only access to public repos
+    return !!(this.config.owner && this.config.repo)
   }
 
   async validateConfig(): Promise<ProviderResult<void>> {
