@@ -15,12 +15,12 @@ Random text without structure
     What should we do with this?
 
 Orphan card not in any lane:
-- ✅ This card appears before any H2 header
+- 🟢 This card appears before any H2 header
 
 ## Another Lane
 
 - ⚡ Another unknown emoji
-- Multiple emojis: ✅ ⚠️ ❗ (too many!)
+- Multiple emojis: 🟢 🟡 🔵 (too many!)
 
 <!-- Unclosed HTML comment
 

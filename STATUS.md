@@ -9,7 +9,7 @@
     Supports H2/H3 headings as swimlanes
     Parses TODO/IN PROGRESS/BLOCKED/DONE columns with RAGB emojis
     Handles indented context and descriptions
-- 🟢 Three-column Kanban board UI
+- 🟢 Four-column Kanban board UI
     Drag-and-drop card movement
     Visual state indicators with RAGB status emojis (🔵🟡🔴🟢)
     Responsive design with TailwindCSS 4

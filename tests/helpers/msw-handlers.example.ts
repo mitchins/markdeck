@@ -20,15 +20,15 @@ export const handlers = [
 
 ## Test Lane
 
-- ✅ Completed task
+- 🟢 Completed task
     This is a description
 
-- ❗ Todo task
+- 🔵 Todo task
     [Link](https://example.com)
 
-- ⚠️ In progress task
+- 🟡 In progress task
 
-- ❌ Blocked task
+- 🔴 Blocked task
     **BLOCKED:** Waiting for something
 
 ## Notes

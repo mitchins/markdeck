@@ -93,7 +93,7 @@ INTERACTIVE CONTROLS:
   ↑↓              Navigate between cards
   ←→              Navigate between lanes (visual)
   Shift+←→        Move card to previous/next lane
-  b               Toggle blocked flag on selected card
+  b               Toggle blocked status on selected card
   q               Quit
 
 EXAMPLES:

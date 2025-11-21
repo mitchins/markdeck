@@ -19,8 +19,8 @@ describe('Card Service', () => {
     })
   })
 
-  describe('toggleBlocked', () => {
-    it('should toggle blocked flag', () => {
+  describe('toggleBlockedStatus', () => {
+    it('should toggle blocked status', () => {
       // TODO: Implement test
       expect(true).toBe(true)
     })

@@ -23,9 +23,7 @@ describe('Renderer', () => {
         id: 'card1',
         title: 'Implement parser',
         status: 'done',
-        laneId: 'lane1',
-        blocked: false,
-        description: 'Parse markdown files',
+        laneId: 'lane1',        description: 'Parse markdown files',
         links: [],
         originalLine: 1,
       },
@@ -33,21 +31,27 @@ describe('Renderer', () => {
         id: 'card2',
         title: 'Add tests',
         status: 'in_progress',
-        laneId: 'lane1',
-        blocked: false,
-        description: '',
+        laneId: 'lane1',        description: '',
         links: ['https://example.com'],
         originalLine: 2,
       },
       {
         id: 'card3',
         title: 'Deploy to production',
-        status: 'todo',
+        status: 'blocked',
         laneId: 'lane2',
-        blocked: true,
         description: '',
         links: [],
         originalLine: 3,
+      },
+      {
+        id: 'card4',
+        title: 'Plan monitoring',
+        status: 'todo',
+        laneId: 'lane2',
+        description: '',
+        links: [],
+        originalLine: 4,
       },
     ],
     notes: [],
@@ -87,6 +91,7 @@ describe('Renderer', () => {
       expect(stripped).toContain('Implement parser')
       expect(stripped).toContain('Add tests')
       expect(stripped).toContain('Deploy to production')
+      expect(stripped).toContain('Plan monitoring')
     })
 
     it('should show blocked indicator', () => {
@@ -110,6 +115,7 @@ describe('Renderer', () => {
       // Check for column headers
       expect(stripped).toContain('TODO')
       expect(stripped).toContain('IN PROGRESS')
+      expect(stripped).toContain('BLOCKED')
       expect(stripped).toContain('DONE')
     })
 
@@ -117,11 +123,11 @@ describe('Renderer', () => {
       const result = renderProject(mockProject)
       const stripped = stripAnsi(result)
       expect(stripped).toContain('Summary:')
-      expect(stripped).toContain('3 cards')
+      expect(stripped).toContain('4 cards')
       expect(stripped).toContain('1 TODO')
       expect(stripped).toContain('1 IN PROGRESS')
-      expect(stripped).toContain('1 DONE')
       expect(stripped).toContain('1 BLOCKED')
+      expect(stripped).toContain('1 DONE')
     })
     
     it('should include interactive controls hint', () => {

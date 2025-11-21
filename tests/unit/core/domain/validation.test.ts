@@ -21,7 +21,6 @@ describe('Domain Validation', () => {
         title: 'Test Card',
         status: 'todo',
         laneId: 'lane-1',
-        blocked: false,
         links: [],
         originalLine: 0
       }
@@ -39,7 +38,6 @@ describe('Domain Validation', () => {
         title: 'Test Card',
         status: 'in_progress',
         laneId: 'lane-1',
-        blocked: false,
         description: 'This is a description',
         links: ['https://example.com'],
         originalLine: 5
@@ -56,7 +54,7 @@ describe('Domain Validation', () => {
       const invalidCard = {
         id: 'card-1',
         title: 'Test Card'
-        // Missing status, laneId, blocked, links, originalLine
+        // Missing status, laneId, links, originalLine
       }
       
       const result = validateCard(invalidCard)
@@ -69,7 +67,6 @@ describe('Domain Validation', () => {
         title: '',
         status: 'todo',
         laneId: 'lane-1',
-        blocked: false,
         links: [],
         originalLine: 0
       }
@@ -84,7 +81,6 @@ describe('Domain Validation', () => {
         title: 'Test Card',
         status: 'invalid_status',
         laneId: 'lane-1',
-        blocked: false,
         links: [],
         originalLine: 0
       }
@@ -99,7 +95,6 @@ describe('Domain Validation', () => {
         title: 'Test Card',
         status: 'todo',
         laneId: 'lane-1',
-        blocked: false,
         links: ['not-a-url'],
         originalLine: 0
       }
@@ -114,7 +109,6 @@ describe('Domain Validation', () => {
         title: 'Test Card',
         status: 'todo',
         laneId: 'lane-1',
-        blocked: false,
         links: [],
         originalLine: -1
       }
@@ -226,7 +220,6 @@ describe('Domain Validation', () => {
             title: 'Task 1',
             status: 'todo',
             laneId: 'lane-1',
-            blocked: false,
             links: [],
             originalLine: 0
           }
@@ -239,7 +232,7 @@ describe('Domain Validation', () => {
           }
         ],
         notes: [],
-        rawMarkdown: '# Project\n\n- ❗ Task 1'
+        rawMarkdown: '# Project\n\n- 🔵 Task 1'
       }
       
       const result = validateProject(validProject)
@@ -257,7 +250,6 @@ describe('Domain Validation', () => {
             title: '',  // Invalid: empty title
             status: 'todo',
             laneId: 'lane-1',
-            blocked: false,
             links: [],
             originalLine: 0
           }
