@@ -1,7 +1,7 @@
 /**
  * Unit tests for markdown serializer
  * 
- * Tests converting domain model back to STATUS.md
+ * Tests converting domain model back to STATUS.md with RAGB emojis
  */
 
 import { describe, it, expect } from 'vitest'
@@ -11,29 +11,29 @@ import type { Project } from '@/core/domain/types'
 
 describe('Markdown Serializer', () => {
   describe('serializeProject', () => {
-    it('should serialize project to markdown', () => {
+    it('should serialize project to markdown with RAGB emojis', () => {
       const originalMarkdown = `# My Project
 
 ## Tasks
 
-- ✅ Completed task
-- ⚠️ In progress task`
+- 🟢 Completed task
+- 🟡 In progress task`
 
       const project = parseStatusMarkdown(originalMarkdown)
       const serialized = serializeProject(project)
       
       expect(serialized).toContain('# My Project')
       expect(serialized).toContain('## Tasks')
-      expect(serialized).toContain('- ✅ Completed task')
-      expect(serialized).toContain('- ⚠️ In progress task')
+      expect(serialized).toContain('- 🟢 Completed task')
+      expect(serialized).toContain('- 🟡 In progress task')
     })
 
-    it('should update card status emojis', () => {
+    it('should update card status emojis to RAGB', () => {
       const originalMarkdown = `# Project
 
 ## Tasks
 
-- ⚠️ Task to complete`
+- 🟡 Task to complete`
 
       const project = parseStatusMarkdown(originalMarkdown)
       
@@ -42,8 +42,8 @@ describe('Markdown Serializer', () => {
       
       const serialized = serializeProject(project)
       
-      expect(serialized).toContain('- ✅ Task to complete')
-      expect(serialized).not.toContain('- ⚠️ Task to complete')
+      expect(serialized).toContain('- 🟢 Task to complete')
+      expect(serialized).not.toContain('- 🟡 Task to complete')
     })
 
     it('should preserve non-card content', () => {
@@ -53,7 +53,7 @@ This is some explanatory text.
 
 ## Tasks
 
-- ✅ Task 1
+- 🟢 Task 1
 
 Some notes here.`
 
@@ -64,21 +64,21 @@ Some notes here.`
       expect(serialized).toContain('Some notes here.')
     })
 
-    it('should handle blocked cards', () => {
+    it('should handle blocked status with 🔴 emoji', () => {
       const originalMarkdown = `# Project
 
 ## Tasks
 
-- ⚠️ Normal task`
+- 🟡 Normal task`
 
       const project = parseStatusMarkdown(originalMarkdown)
       
-      // Mark the task as blocked
-      project.cards[0].blocked = true
+      // Change task to blocked status
+      project.cards[0].status = 'blocked'
       
       const serialized = serializeProject(project)
       
-      expect(serialized).toContain('- ⚠️ ❌ Normal task')
+      expect(serialized).toContain('- 🔴 Normal task')
     })
 
     it('should preserve card descriptions', () => {
@@ -86,7 +86,7 @@ Some notes here.`
 
 ## Tasks
 
-- ✅ Task with description
+- 🟢 Task with description
     This is a description
     Second line`
 
@@ -102,7 +102,7 @@ Some notes here.`
 
 ## Tasks
 
-- ✅ Task with description
+- 🟢 Task with description
     Old description`
 
       const project = parseStatusMarkdown(originalMarkdown)
@@ -124,7 +124,7 @@ Some notes here.`
 
 ## Tasks
 
-- ✅ Task 1`
+- 🟢 Task 1`
 
       const project = parseStatusMarkdown(markdown)
       

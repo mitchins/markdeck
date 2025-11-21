@@ -1,7 +1,7 @@
 /**
  * Card parser for STATUS.md files
  * 
- * Extracts cards from bullet points with status emojis.
+ * Extracts cards from bullet points with RAGB status emojis.
  */
 
 import type { Card, CardStatus } from '../domain/types'
@@ -10,16 +10,14 @@ import { IdGenerator } from '../utils/id-generator'
 
 export interface ParsedEmoji {
   statusEmoji: string | null
-  blockedEmoji: string | null
   remaining: string
 }
 
 export function extractEmojis(text: string): ParsedEmoji {
-  const statusEmojiRegex = /(✅|⚠️|❗)/
-  const blockedEmojiRegex = /(❌)/
+  // RAGB emojis: 🔵 TODO, 🟡 IN PROGRESS, 🔴 BLOCKED, 🟢 DONE
+  const statusEmojiRegex = /(🔵|🟡|🔴|🟢)/
   
   const statusMatch = text.match(statusEmojiRegex)
-  const blockedMatch = text.match(blockedEmojiRegex)
   
   let remaining = text
   
@@ -27,13 +25,8 @@ export function extractEmojis(text: string): ParsedEmoji {
     remaining = remaining.replace(statusEmojiRegex, '').trim()
   }
   
-  if (blockedMatch) {
-    remaining = remaining.replace(blockedEmojiRegex, '').trim()
-  }
-  
   return {
     statusEmoji: statusMatch ? statusMatch[1] : null,
-    blockedEmoji: blockedMatch ? blockedMatch[1] : null,
     remaining: remaining.trim(),
   }
 }
@@ -94,23 +87,19 @@ export function parseCard(
   if (!bulletMatch) return null
   
   const bulletText = bulletMatch[2]
-  const { statusEmoji, blockedEmoji, remaining } = extractEmojis(bulletText)
+  const { statusEmoji, remaining } = extractEmojis(bulletText)
   
-  // Edge case: Only blocked emoji (❌) without status emoji -> default to TODO
-  // This handles malformed entries as per PRD spec
+  // Determine status: if no emoji, default to TODO (🔵)
   let status: CardStatus
   if (!statusEmoji || !isStatusEmoji(statusEmoji)) {
-    // If we have a blocked emoji but no status emoji, default to TODO
-    if (blockedEmoji) {
-      status = 'todo'
-    } else {
-      // No valid emoji at all, not a card
-      return null
-    }
+    status = 'todo'
   } else {
     const mappedStatus = emojiToStatus(statusEmoji)
-    if (!mappedStatus) return null
-    status = mappedStatus
+    if (!mappedStatus) {
+      status = 'todo'
+    } else {
+      status = mappedStatus
+    }
   }
   
   const title = remaining.trim()
@@ -132,7 +121,6 @@ export function parseCard(
     title,
     status,
     laneId,
-    blocked: !!blockedEmoji,
     description: description || undefined,
     links,
     originalLine: lineIndex,
