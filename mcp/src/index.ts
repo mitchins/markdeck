@@ -357,7 +357,13 @@ async function main() {
           const project = await updateCard(
             args.statusPath as string,
             args.cardId as string,
-            args.changes as any
+            args.changes as {
+              laneId?: string
+              status?: CardStatus
+              blocked?: boolean
+              title?: string
+              description?: string
+            }
           )
           return {
             content: [
