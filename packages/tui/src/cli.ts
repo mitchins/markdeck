@@ -12,9 +12,15 @@
  */
 
 import { readFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { resolve, dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { parseStatusMarkdown } from '../../../src/core/parsers/markdown-parser.js'
 import { renderProject } from './renderer.js'
+
+// Read package version
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const packageJson = JSON.parse(await readFile(join(__dirname, '..', 'package.json'), 'utf-8'))
+const VERSION = packageJson.version
 
 interface CliOptions {
   file: string
@@ -70,7 +76,7 @@ function parseArgs(args: string[]): CliOptions {
 function showHelp(): void {
   console.log(`
 ╔═══════════════════════════════════════════════════════════════════╗
-║                   MarkDeck TUI Viewer v0.2.0                      ║
+║                   MarkDeck TUI Viewer v${VERSION}                    ║
 ╚═══════════════════════════════════════════════════════════════════╝
 
 A lightweight terminal viewer for STATUS.md files.
