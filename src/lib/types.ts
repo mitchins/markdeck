@@ -19,5 +19,4 @@ export {
   STATUS_COLUMNS,
   EMOJI_TO_STATUS,
   STATUS_TO_EMOJI,
-  BLOCKED_EMOJI,
 } from '@/core'
