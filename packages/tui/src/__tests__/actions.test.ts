@@ -22,9 +22,7 @@ describe('Actions', () => {
         id: 'card1',
         title: 'Card 1',
         status: 'todo',
-        laneId: 'lane1',
-        blocked: false,
-        description: '',
+        laneId: 'lane1',        description: '',
         links: [],
         originalLine: 1,
       },
@@ -32,9 +30,7 @@ describe('Actions', () => {
         id: 'card2',
         title: 'Card 2',
         status: 'in_progress',
-        laneId: 'lane1',
-        blocked: false,
-        description: '',
+        laneId: 'lane1',        description: '',
         links: [],
         originalLine: 2,
       },
@@ -42,9 +38,7 @@ describe('Actions', () => {
         id: 'card3',
         title: 'Card 3',
         status: 'done',
-        laneId: 'lane2',
-        blocked: false,
-        description: '',
+        laneId: 'lane2',        description: '',
         links: [],
         originalLine: 3,
       },
@@ -85,22 +79,14 @@ describe('Actions', () => {
   })
 
   describe('toggleCardBlocked', () => {
-    it('should toggle blocked flag from false to true', () => {
-      const result = toggleCardBlocked(mockProject, 'card1')
-      const card = result.cards.find(c => c.id === 'card1')
-      expect(card?.blocked).toBe(true)
-    })
+    it('should toggle status between todo and blocked', () => {
+      const blockedResult = toggleCardBlocked(mockProject, 'card1')
+      const blockedCard = blockedResult.cards.find(c => c.id === 'card1')
+      expect(blockedCard?.status).toBe('blocked')
 
-    it('should toggle blocked flag from true to false', () => {
-      const projectWithBlocked = {
-        ...mockProject,
-        cards: mockProject.cards.map(c =>
-          c.id === 'card1' ? { ...c, blocked: true } : c
-        ),
-      }
-      const result = toggleCardBlocked(projectWithBlocked, 'card1')
-      const card = result.cards.find(c => c.id === 'card1')
-      expect(card?.blocked).toBe(false)
+      const unblockedResult = toggleCardBlocked(blockedResult, 'card1')
+      const unblockedCard = unblockedResult.cards.find(c => c.id === 'card1')
+      expect(unblockedCard?.status).toBe('todo')
     })
 
     it('should return unchanged project for non-existent card', () => {

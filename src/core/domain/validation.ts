@@ -9,9 +9,8 @@ import { z } from 'zod'
 export const CardSchema = z.object({
   id: z.string().min(1, 'Card ID is required'),
   title: z.string().min(1, 'Card title is required'),
-  status: z.enum(['todo', 'in_progress', 'done']),
+  status: z.enum(['todo', 'in_progress', 'blocked', 'done']),
   laneId: z.string().min(1, 'Lane ID is required'),
-  blocked: z.boolean(),
   description: z.string().optional(),
   links: z.array(z.string().url()).default([]),
   originalLine: z.number().int().nonnegative(),

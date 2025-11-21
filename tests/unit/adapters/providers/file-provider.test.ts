@@ -52,7 +52,7 @@ describe('File Provider', () => {
 
   describe('save', () => {
     it('should trigger browser download', async () => {
-      const content = '# Test Project\n\n- ✅ Task 1'
+      const content = '# Test Project\n\n- 🟢 Task 1'
       const context: SaveContext = {
         filePath: 'STATUS.md'
       }

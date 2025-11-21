@@ -113,8 +113,8 @@ describe('Swimlane Parser', () => {
       const lines = [
         '# Project',
         '## Backend',
-        '- ✅ Task 1',
-        '- ⚠️ Task 2'
+        '- 🟢 Task 1',
+        '- 🟡 Task 2'
       ]
       
       const swimlanes = parseSwimlanes(lines)
@@ -126,9 +126,9 @@ describe('Swimlane Parser', () => {
     it('should return most recent swimlane', () => {
       const lines = [
         '## Frontend',
-        '- ✅ Task 1',
+        '- 🟢 Task 1',
         '## Backend',
-        '- ⚠️ Task 2'
+        '- 🟡 Task 2'
       ]
       
       const swimlanes = parseSwimlanes(lines)
@@ -140,7 +140,7 @@ describe('Swimlane Parser', () => {
     it('should default to first swimlane if none found', () => {
       const lines = [
         '# Project',
-        '- ✅ Task before any swimlane'
+        '- 🟢 Task before any swimlane'
       ]
       
       const swimlanes = parseSwimlanes(lines)

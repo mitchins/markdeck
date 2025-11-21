@@ -5,41 +5,14 @@
  * and allow overriding specific fields for test scenarios.
  */
 
-// TODO: Import actual types from @/core/domain/types when implemented
-type CardStatus = 'todo' | 'in_progress' | 'done'
-
-interface Card {
-  id: string
-  title: string
-  status: CardStatus
-  laneId: string
-  blocked: boolean
-  description: string
-  links: string[]
-  originalLine: number
-}
-
-interface Swimlane {
-  id: string
-  title: string
-  order: number
-}
-
-interface ProjectMetadata {
-  title: string
-  version?: string
-  lastUpdated?: string
-}
-
-type Note = Record<string, unknown>
-
-interface Project {
-  metadata: ProjectMetadata
-  cards: Card[]
-  swimlanes: Swimlane[]
-  notes: Note[]
-  rawMarkdown: string
-}
+import type {
+  Card,
+  CardStatus,
+  Note,
+  Project,
+  ProjectMetadata,
+  Swimlane,
+} from '@/core/domain/types'
 
 let cardIdCounter = 0
 
@@ -52,7 +25,6 @@ export function createCard(overrides?: Partial<Card>): Card {
     title: 'Test Card',
     status: 'todo',
     laneId: 'lane-1',
-    blocked: false,
     description: '',
     links: [],
     originalLine: 10,
@@ -93,7 +65,7 @@ export function createProject(overrides?: Partial<Project>): Project {
     cards: [createCard()],
     swimlanes: [createSwimlane()],
     notes: [],
-    rawMarkdown: '# Test Project\n## Test Lane\n- ❗ Test Card',
+    rawMarkdown: '# Test Project\n## Test Lane\n- 🔵 Test Card',
     ...overrides,
   }
 }
@@ -157,7 +129,7 @@ export function createStatusMarkdown(options?: {
     
     const cardsPerLane = Math.ceil(cardCount / swimlaneCount)
     for (let card = 0; card < cardsPerLane; card++) {
-      const statuses = ['✅', '⚠️', '❗', '❌']
+      const statuses = ['🔵', '🟡', '🔴', '🟢']
       const statusEmoji = statuses[card % statuses.length]
       markdown += `- ${statusEmoji} Card ${lane}-${card}\n`
       markdown += `    Description for card ${lane}-${card}\n\n`

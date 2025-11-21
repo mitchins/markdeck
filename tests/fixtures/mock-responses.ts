@@ -8,7 +8,7 @@ export const mockGetFileResponse = {
   sha: 'abc123def456',
   size: 1234,
   type: 'file',
-  content: btoa('# Test Project\n## Lane\n- ✅ Card'),
+  content: btoa('# Test Project\n## Lane\n- 🟢 Card'),
   encoding: 'base64',
 }
 

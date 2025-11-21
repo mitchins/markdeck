@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button'
 import { KanbanCard } from './KanbanCard'
 import type { KanbanCard as KanbanCardType, CardStatus, Swimlane as SwimlaneType } from '@/lib/types'
 import { STATUS_COLUMNS } from '@/lib/types'
-import { ListChecks, WarningCircle, CheckCircle, XCircle, CaretDown, CaretUp } from '@phosphor-icons/react'
+import type { LucideIcon } from 'lucide-react'
+import { BadgeCheck, CircleAlert, CircleSlash, ChevronDown, ChevronUp, ListChecks } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface SwimlaneProps {
@@ -16,7 +17,7 @@ interface SwimlaneProps {
 }
 
 const columnConfig: Record<CardStatus, {
-  icon: typeof ListChecks
+  icon: LucideIcon
   color: string
   bgColor: string
   borderColor: string
@@ -28,13 +29,19 @@ const columnConfig: Record<CardStatus, {
     borderColor: 'border-accent/20',
   },
   in_progress: {
-    icon: WarningCircle,
+    icon: CircleAlert,
     color: 'text-warning',
     bgColor: 'bg-warning/5',
     borderColor: 'border-warning/20',
   },
+  blocked: {
+    icon: CircleSlash,
+    color: 'text-destructive',
+    bgColor: 'bg-destructive/5',
+    borderColor: 'border-destructive/20',
+  },
   done: {
-    icon: CheckCircle,
+    icon: BadgeCheck,
     color: 'text-success',
     bgColor: 'bg-success/5',
     borderColor: 'border-success/20',
@@ -56,7 +63,7 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
   }, {} as Record<CardStatus, KanbanCardType[]>)
 
   const totalCards = cards.length
-  const blockedCount = cards.filter(card => card.blocked).length
+  const blockedCount = cards.filter(card => card.status === 'blocked').length
 
   return (
     <div className="border border-border rounded-lg bg-card overflow-hidden">
@@ -74,7 +81,7 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
               handleToggle()
             }}
           >
-            {isCollapsed ? <CaretDown size={16} /> : <CaretUp size={16} />}
+            {isCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
           </Button>
           <h2 className="text-base font-semibold">{swimlane.title}</h2>
           <span className="text-xs text-muted-foreground bg-background px-2 py-1 rounded-full">
@@ -83,20 +90,20 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
         </div>
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
-            <ListChecks size={14} className="text-accent" weight="fill" />
+            <ListChecks size={14} className="text-accent" />
             {cardsByStatus.todo.length}
           </span>
           <span className="flex items-center gap-1">
-            <WarningCircle size={14} className="text-warning" weight="fill" />
+            <CircleAlert size={14} className="text-warning" />
             {cardsByStatus.in_progress.length}
           </span>
           <span className="flex items-center gap-1">
-            <CheckCircle size={14} className="text-success" weight="fill" />
+            <BadgeCheck size={14} className="text-success" />
             {cardsByStatus.done.length}
           </span>
           {blockedCount > 0 && (
             <span className="flex items-center gap-1">
-              <XCircle size={14} className="text-destructive" weight="fill" />
+              <CircleSlash size={14} className="text-destructive" />
               {blockedCount}
             </span>
           )}
@@ -132,7 +139,7 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
                   >
                     <div className="p-3 border-b border-border">
                       <div className="flex items-center gap-2">
-                        <Icon className={config.color} size={16} weight="bold" />
+                          <Icon className={config.color} size={16} />
                         <h3 className="text-xs font-medium tracking-wider">{statusCol.label}</h3>
                         <span className="ml-auto text-xs text-muted-foreground bg-background/50 px-2 py-0.5 rounded-full">
                           {statusCards.length}

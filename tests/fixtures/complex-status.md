@@ -10,23 +10,23 @@ Custom content before lanes.
 ## Main Feature
 
 ### Nested Sublane 1
-- ✅ Task A1
+- 🟢 Task A1
     Multi-line description
     with special characters: @#$%^&*()
     [Link 1](http://example.com) [Link 2](http://test.com)
 
 ### Nested Sublane 2
-- ⚠️ ❌ Blocked task B1
+- 🔴 Blocked task B1
     **BLOCKED:** Dependencies not ready
 
 ## Another Feature
 
-- ❗ Task C1
+- 🔵 Task C1
 
 Custom text between lanes.
 
 ### Deep Nesting
-- ✅ Task D1
+- 🟢 Task D1
     Very long description that goes on and on and on and on and on
     and continues for many lines to test handling of long text
     and make sure we don't have issues with buffer sizes or truncation

@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import {
   Select,
   SelectContent,
@@ -20,7 +19,8 @@ import {
 } from '@/components/ui/select'
 import type { KanbanCard, CardStatus } from '@/lib/types'
 import { STATUS_COLUMNS } from '@/lib/types'
-import { ListChecks, WarningCircle, CheckCircle, FloppyDisk, XCircle } from '@phosphor-icons/react'
+import type { LucideIcon } from 'lucide-react'
+import { BadgeCheck, CircleAlert, CircleSlash, ListChecks, Save } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface CardDetailDrawerProps {
@@ -30,15 +30,17 @@ interface CardDetailDrawerProps {
   onSave: (updatedCard: KanbanCard) => void
 }
 
-const statusIconMap = {
+const statusIconMap: Record<CardStatus, LucideIcon> = {
   todo: ListChecks,
-  in_progress: WarningCircle,
-  done: CheckCircle,
+  in_progress: CircleAlert,
+  blocked: CircleSlash,
+  done: BadgeCheck,
 }
 
 const statusColorMap = {
   todo: 'text-accent',
   in_progress: 'text-warning',
+  blocked: 'text-destructive',
   done: 'text-success',
 }
 
@@ -46,14 +48,12 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [status, setStatus] = useState<CardStatus>('in_progress')
-  const [blocked, setBlocked] = useState(false)
 
   useEffect(() => {
     if (card) {
       setTitle(card.title)
       setDescription(card.description || '')
       setStatus(card.status)
-      setBlocked(card.blocked || false)
     }
   }, [card])
 
@@ -70,7 +70,6 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
       title: title.trim(),
       description: description.trim() || undefined,
       status,
-      blocked,
     }
 
     onSave(updatedCard)
@@ -114,7 +113,7 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
                   return (
                     <SelectItem key={col.key} value={col.key}>
                       <div className="flex items-center gap-2">
-                        <Icon className={color} size={16} weight="fill" />
+                        <Icon className={color} size={16} />
                         {col.label}
                       </div>
                     </SelectItem>
@@ -122,23 +121,6 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
                 })}
               </SelectContent>
             </Select>
-          </div>
-
-          <div className="flex items-center justify-between rounded-lg border border-border p-4">
-            <div className="space-y-0.5">
-              <Label htmlFor="blocked" className="text-sm font-medium flex items-center gap-2">
-                <XCircle size={16} className="text-destructive" weight="fill" />
-                Blocked
-              </Label>
-              <p className="text-xs text-muted-foreground">
-                Mark this card as blocked regardless of current workflow status
-              </p>
-            </div>
-            <Switch
-              id="blocked"
-              checked={blocked}
-              onCheckedChange={setBlocked}
-            />
           </div>
 
           <div className="space-y-2">
@@ -176,7 +158,7 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
 
           <div className="flex gap-2 pt-4">
             <Button onClick={handleSave} className="flex-1">
-              <FloppyDisk className="mr-2" size={16} />
+              <Save className="mr-2" size={16} />
               Save Changes
             </Button>
             <Button variant="outline" onClick={onClose}>
