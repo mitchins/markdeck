@@ -56,14 +56,14 @@ jobs:
         if: matrix.os != 'windows'
         run: |
           cd packages/tui/dist/bin
-          for target in ${{ matrix.targets }}; do
-            platform=$(echo $target | cut -d'-' -f2-)
-            if [ -f "markdeck-$platform" ]; then
-              echo "Binary markdeck-$platform already exists"
-            else
-              mv markdeck "markdeck-$platform" 2>/dev/null || true
-            fi
-          done
+          # pkg creates binaries named 'markdeck-<platform>' when multiple targets
+          # or 'markdeck' when single target - handle both cases
+          if [ -f "markdeck" ] && [ ! -f "markdeck-linux-x64" ] && [ ! -f "markdeck-macos-x64" ] && [ ! -f "markdeck-macos-arm64" ]; then
+            # Single binary case - rename based on first target
+            platform=$(echo "${{ matrix.targets }}" | cut -d',' -f1 | cut -d'-' -f2-)
+            mv markdeck "markdeck-$platform"
+            echo "Renamed single binary to markdeck-$platform"
+          fi
           ls -lh
       
       - name: Rename binaries (Windows)
@@ -91,7 +91,8 @@ jobs:
         shell: pwsh
         run: |
           cd packages/tui/dist/bin
-          foreach ($artifact in @(${{ matrix.artifacts }}.Split(" "))) {
+          $artifacts = "${{ matrix.artifacts }}".Split(" ")
+          foreach ($artifact in $artifacts) {
             if (Test-Path $artifact) {
               $hash = (Get-FileHash -Algorithm SHA256 $artifact).Hash.ToLower()
               "$hash  $artifact" | Out-File -FilePath "$artifact.sha256" -Encoding ASCII
