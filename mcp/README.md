@@ -268,6 +268,10 @@ Errors include:
 - **Single file**: Operates on one STATUS.md at a time
 - **No concurrency control**: Assumes single-user edits
 - **No history**: No undo/redo support
+- **Limited deletion**: Due to the position-based serializer design, `delete_card` currently has limited effectiveness. The card is removed from the in-memory array but may reappear when re-parsing. True deletion would require:
+  - Modifying rawMarkdown directly to remove card lines, OR
+  - Enhancing the serializer to support line removal
+- **Position-based add**: New cards are appended to the end of their lane rather than inserted at specific positions
 
 ## Future Enhancements
 
