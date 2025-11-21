@@ -22,7 +22,9 @@ describe('Actions', () => {
         id: 'card1',
         title: 'Card 1',
         status: 'todo',
-        laneId: 'lane1',        description: '',
+        blocked: false,
+        laneId: 'lane1',
+        description: '',
         links: [],
         originalLine: 1,
       },
@@ -30,7 +32,9 @@ describe('Actions', () => {
         id: 'card2',
         title: 'Card 2',
         status: 'in_progress',
-        laneId: 'lane1',        description: '',
+        blocked: false,
+        laneId: 'lane1',
+        description: '',
         links: [],
         originalLine: 2,
       },
@@ -38,7 +42,9 @@ describe('Actions', () => {
         id: 'card3',
         title: 'Card 3',
         status: 'done',
-        laneId: 'lane2',        description: '',
+        blocked: false,
+        laneId: 'lane2',
+        description: '',
         links: [],
         originalLine: 3,
       },
@@ -79,19 +85,89 @@ describe('Actions', () => {
   })
 
   describe('toggleCardBlocked', () => {
-    it('should toggle status between todo and blocked', () => {
+    it('should toggle blocked flag for TODO card', () => {
       const blockedResult = toggleCardBlocked(mockProject, 'card1')
       const blockedCard = blockedResult.cards.find(c => c.id === 'card1')
-      expect(blockedCard?.status).toBe('blocked')
+      expect(blockedCard?.status).toBe('todo')
+      expect(blockedCard?.blocked).toBe(true)
 
       const unblockedResult = toggleCardBlocked(blockedResult, 'card1')
       const unblockedCard = unblockedResult.cards.find(c => c.id === 'card1')
       expect(unblockedCard?.status).toBe('todo')
+      expect(unblockedCard?.blocked).toBe(false)
+    })
+
+    it('should toggle blocked flag for IN_PROGRESS card', () => {
+      const blockedResult = toggleCardBlocked(mockProject, 'card2')
+      const blockedCard = blockedResult.cards.find(c => c.id === 'card2')
+      expect(blockedCard?.status).toBe('in_progress')
+      expect(blockedCard?.blocked).toBe(true)
+
+      const unblockedResult = toggleCardBlocked(blockedResult, 'card2')
+      const unblockedCard = unblockedResult.cards.find(c => c.id === 'card2')
+      expect(unblockedCard?.status).toBe('in_progress')
+      expect(unblockedCard?.blocked).toBe(false)
+    })
+
+    it('should not allow blocking DONE cards', () => {
+      const result = toggleCardBlocked(mockProject, 'card3')
+      const card = result.cards.find(c => c.id === 'card3')
+      expect(card?.status).toBe('done')
+      expect(card?.blocked).toBe(false) // unchanged
     })
 
     it('should return unchanged project for non-existent card', () => {
       const result = toggleCardBlocked(mockProject, 'non-existent')
       expect(result).toBe(mockProject)
+    })
+  })
+
+  describe('moveCardToLane', () => {
+    it('should clear blocked flag when moving to DONE', () => {
+      // Create a blocked TODO card
+      const projectWithBlocked: Project = {
+        ...mockProject,
+        cards: [
+          {
+            id: 'card1',
+            title: 'Card 1',
+            status: 'in_progress',
+            blocked: true,
+            laneId: 'lane1',
+            description: '',
+            links: [],
+            originalLine: 1,
+          },
+        ],
+      }
+
+      const result = moveCardToLane(projectWithBlocked, 'card1', 'right')
+      const card = result.cards.find(c => c.id === 'card1')
+      expect(card?.status).toBe('done')
+      expect(card?.blocked).toBe(false) // cleared
+    })
+
+    it('should preserve blocked flag when moving between TODO and IN_PROGRESS', () => {
+      const projectWithBlocked: Project = {
+        ...mockProject,
+        cards: [
+          {
+            id: 'card1',
+            title: 'Card 1',
+            status: 'todo',
+            blocked: true,
+            laneId: 'lane1',
+            description: '',
+            links: [],
+            originalLine: 1,
+          },
+        ],
+      }
+
+      const result = moveCardToLane(projectWithBlocked, 'card1', 'right')
+      const card = result.cards.find(c => c.id === 'card1')
+      expect(card?.status).toBe('in_progress')
+      expect(card?.blocked).toBe(true) // preserved
     })
   })
 
