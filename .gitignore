@@ -32,7 +32,9 @@ playwright-report/
 
 .env
 **/agent-eval-report*
-packages
+# Ignore build artifacts in packages but not the source
+packages/*/dist
+packages/*/node_modules
 pids
 .file-manifest
 .devcontainer/
