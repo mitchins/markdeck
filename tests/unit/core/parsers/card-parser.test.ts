@@ -40,10 +40,16 @@ describe('Card Parser', () => {
       expect(result.remaining).toBe('In progress task')
     })
 
-    it('should extract RAGB status emoji - blocked', () => {
+    it('should extract RYGBO status emoji - blocked todo', () => {
       const result = extractEmojis('🔴 Blocked task')
       expect(result.statusEmoji).toBe('🔴')
       expect(result.remaining).toBe('Blocked task')
+    })
+
+    it('should extract RYGBO status emoji - blocked in_progress', () => {
+      const result = extractEmojis('🟧 Blocked in progress task')
+      expect(result.statusEmoji).toBe('🟧')
+      expect(result.remaining).toBe('Blocked in progress task')
     })
 
     it('should handle text without emojis', () => {
@@ -154,13 +160,24 @@ describe('Card Parser', () => {
       expect(card?.status).toBe('in_progress')
     })
 
-    it('should parse card with BLOCKED status', () => {
+    it('should parse card with BLOCKED TODO status', () => {
       const line = '- 🔴 Blocked task'
       const card = parseCard(line, 0, [line], 'lane-1', idGenerator)
       
       expect(card).not.toBeNull()
       expect(card?.title).toBe('Blocked task')
-      expect(card?.status).toBe('blocked')
+      expect(card?.status).toBe('todo')
+      expect(card?.blocked).toBe(true)
+    })
+
+    it('should parse card with BLOCKED IN PROGRESS status', () => {
+      const line = '- 🟧 Blocked in progress'
+      const card = parseCard(line, 0, [line], 'lane-1', idGenerator)
+      
+      expect(card).not.toBeNull()
+      expect(card?.title).toBe('Blocked in progress')
+      expect(card?.status).toBe('in_progress')
+      expect(card?.blocked).toBe(true)
     })
 
     it('should default to TODO when no emoji present', () => {
@@ -246,7 +263,8 @@ describe('Card Parser', () => {
       const card = parseCard(lines[0], 0, lines, 'lane-1', idGenerator)
       
       expect(card).not.toBeNull()
-      expect(card?.status).toBe('blocked')
+      expect(card?.status).toBe('todo')
+      expect(card?.blocked).toBe(true)
       expect(card?.title).toBe('Blocked task')
       expect(card?.description).toBe('Description with ! and x\nAnd [ ] checkboxes')
     })
