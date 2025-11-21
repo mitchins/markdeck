@@ -23,7 +23,9 @@ describe('Renderer', () => {
         id: 'card1',
         title: 'Implement parser',
         status: 'done',
-        laneId: 'lane1',        description: 'Parse markdown files',
+        blocked: false,
+        laneId: 'lane1',
+        description: 'Parse markdown files',
         links: [],
         originalLine: 1,
       },
@@ -31,14 +33,17 @@ describe('Renderer', () => {
         id: 'card2',
         title: 'Add tests',
         status: 'in_progress',
-        laneId: 'lane1',        description: '',
+        blocked: false,
+        laneId: 'lane1',
+        description: '',
         links: ['https://example.com'],
         originalLine: 2,
       },
       {
         id: 'card3',
         title: 'Deploy to production',
-        status: 'blocked',
+        status: 'todo',
+        blocked: true,
         laneId: 'lane2',
         description: '',
         links: [],
@@ -48,6 +53,7 @@ describe('Renderer', () => {
         id: 'card4',
         title: 'Plan monitoring',
         status: 'todo',
+        blocked: false,
         laneId: 'lane2',
         description: '',
         links: [],
@@ -124,7 +130,7 @@ describe('Renderer', () => {
       const stripped = stripAnsi(result)
       expect(stripped).toContain('Summary:')
       expect(stripped).toContain('4 cards')
-      expect(stripped).toContain('1 TODO')
+      expect(stripped).toContain('2 TODO')
       expect(stripped).toContain('1 IN PROGRESS')
       expect(stripped).toContain('1 BLOCKED')
       expect(stripped).toContain('1 DONE')

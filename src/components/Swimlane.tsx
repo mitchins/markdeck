@@ -5,7 +5,7 @@ import { KanbanCard } from './KanbanCard'
 import type { KanbanCard as KanbanCardType, CardStatus, Swimlane as SwimlaneType } from '@/lib/types'
 import { STATUS_COLUMNS } from '@/lib/types'
 import type { LucideIcon } from 'lucide-react'
-import { BadgeCheck, CircleAlert, CircleSlash, ChevronDown, ChevronUp, ListChecks } from 'lucide-react'
+import { BadgeCheck, CircleAlert, ChevronDown, ChevronUp, ListChecks } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface SwimlaneProps {
@@ -34,12 +34,6 @@ const columnConfig: Record<CardStatus, {
     bgColor: 'bg-warning/5',
     borderColor: 'border-warning/20',
   },
-  blocked: {
-    icon: CircleSlash,
-    color: 'text-destructive',
-    bgColor: 'bg-destructive/5',
-    borderColor: 'border-destructive/20',
-  },
   done: {
     icon: BadgeCheck,
     color: 'text-success',
@@ -63,7 +57,7 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
   }, {} as Record<CardStatus, KanbanCardType[]>)
 
   const totalCards = cards.length
-  const blockedCount = cards.filter(card => card.status === 'blocked').length
+  const blockedCount = cards.filter(card => card.blocked).length
 
   return (
     <div className="border border-border rounded-lg bg-card overflow-hidden">
@@ -102,9 +96,8 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
             {cardsByStatus.done.length}
           </span>
           {blockedCount > 0 && (
-            <span className="flex items-center gap-1">
-              <CircleSlash size={14} className="text-destructive" />
-              {blockedCount}
+            <span className="flex items-center gap-1 text-destructive">
+              🔴 {blockedCount}
             </span>
           )}
         </div>

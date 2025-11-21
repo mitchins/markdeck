@@ -1,11 +1,11 @@
 /**
  * Card parser for STATUS.md files
  * 
- * Extracts cards from bullet points with RAGB status emojis.
+ * Extracts cards from bullet points with RYGBO status emojis.
  */
 
 import type { Card, CardStatus } from '../domain/types'
-import { emojiToStatus, isStatusEmoji } from '../utils/emoji-mapper'
+import { emojiToStatusBlocked, isStatusEmoji } from '../utils/emoji-mapper'
 import { IdGenerator } from '../utils/id-generator'
 
 export interface ParsedEmoji {
@@ -14,8 +14,8 @@ export interface ParsedEmoji {
 }
 
 export function extractEmojis(text: string): ParsedEmoji {
-  // RAGB emojis: 🔵 todo, 🟡 in_progress, 🔴 blocked, 🟢 done
-  const statusEmojiRegex = /(🔵|🟡|🔴|🟢)/
+  // RYGBO emojis: 🔵 todo, 🟡 in_progress, 🔴 blocked todo, 🟧 blocked in_progress, 🟢 done
+  const statusEmojiRegex = /(🔵|🟡|🔴|🟧|🟢)/
   
   const statusMatch = text.match(statusEmojiRegex)
   
@@ -89,13 +89,17 @@ export function parseCard(
   const bulletText = bulletMatch[2]
   const { statusEmoji, remaining } = extractEmojis(bulletText)
   
-  // Determine status: if no emoji, default to todo (🔵)
+  // Determine status and blocked: if no emoji, default to (todo, false)
   let status: CardStatus
+  let blocked: boolean
+  
   if (!statusEmoji || !isStatusEmoji(statusEmoji)) {
     status = 'todo'
+    blocked = false
   } else {
-    // isStatusEmoji guarantees this won't be null
-    status = emojiToStatus(statusEmoji)!
+    const parsed = emojiToStatusBlocked(statusEmoji)!
+    status = parsed.status
+    blocked = parsed.blocked
   }
   
   const title = remaining.trim()
@@ -116,6 +120,7 @@ export function parseCard(
     id,
     title,
     status,
+    blocked,
     laneId,
     description: description || undefined,
     links,

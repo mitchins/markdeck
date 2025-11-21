@@ -21,7 +21,7 @@ npm run build
 
 ## Key Features
 
-- Four-column workflow (TODO → IN PROGRESS → BLOCKED → DONE) with swimlanes
+- Three-column workflow (TODO → IN PROGRESS → DONE) with blocked status modifier
 - Round-trip safe: preserves all non-card markdown when saving
 - GitHub integration with personal access tokens
 - Local file mode for offline work
@@ -30,7 +30,7 @@ npm run build
 
 ## STATUS.md Format
 
-MarkDeck parses a simple markdown format to create Kanban cards using the RAGB (traffic-light) status system:
+MarkDeck parses a simple markdown format to create Kanban cards using the RYGBO (5-color) status system:
 
 **Card Format:**
 ```markdown
@@ -38,14 +38,18 @@ MarkDeck parses a simple markdown format to create Kanban cards using the RAGB (
     Optional indented description
 - 🟡 In progress task
 - 🔵 TODO task
-- 🔴 Blocked task
+- 🔴 Blocked TODO task
+- 🟧 Blocked in progress task
 ```
 
-**Status Emojis (RAGB System):**
+**Status Emojis (RYGBO System):**
 - 🔵 = TODO (default if no emoji)
-- 🟡 = IN PROGRESS  
-- 🔴 = BLOCKED
+- 🟡 = IN PROGRESS
+- 🔴 = Blocked TODO (blocked modifier)
+- 🟧 = Blocked IN PROGRESS (blocked modifier)
 - 🟢 = DONE
+
+**Note:** Blocked is a modifier, not a separate column. Blocked cards remain in their TODO or IN PROGRESS column but are visually distinguished.
 
 **Swimlanes:**
 Any H2 (`##`) or H3 (`###`) heading creates a swimlane.

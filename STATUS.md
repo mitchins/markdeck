@@ -7,11 +7,13 @@
 
 - 🟢 Markdown parser for STATUS.md format
     Supports H2/H3 headings as swimlanes
-    Parses TODO/IN PROGRESS/BLOCKED/DONE columns with RAGB emojis
+    Parses TODO/IN PROGRESS/DONE columns with RYGBO emojis
+    Blocked as modifier (🔴 for blocked TODO, 🟧 for blocked IN PROGRESS)
     Handles indented context and descriptions
-- 🟢 Four-column Kanban board UI
+- 🟢 Three-column Kanban board UI
     Drag-and-drop card movement
-    Visual state indicators with RAGB status emojis (🔵🟡🔴🟢)
+    Visual state indicators with RYGBO status emojis (🔵🟡🔴🟧🟢)
+    Blocked cards displayed with visual indicator in their column
     Responsive design with TailwindCSS 4
 - 🟢 Round-trip safe serialization
     Preserves non-card Markdown
