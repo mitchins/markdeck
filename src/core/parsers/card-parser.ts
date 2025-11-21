@@ -94,12 +94,7 @@ export function parseCard(
   if (!statusEmoji || !isStatusEmoji(statusEmoji)) {
     status = 'todo'
   } else {
-    const mappedStatus = emojiToStatus(statusEmoji)
-    if (!mappedStatus) {
-      status = 'todo'
-    } else {
-      status = mappedStatus
-    }
+    status = emojiToStatus(statusEmoji) as CardStatus
   }
   
   const title = remaining.trim()
