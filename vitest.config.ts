@@ -9,7 +9,7 @@ export default defineConfig({
     environment: 'happy-dom',
     setupFiles: ['./tests/vitest.setup.ts'],
     include: ['tests/**/*.{test,spec}.{ts,tsx}'],
-    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
+    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'tests/e2e-playwright/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
