@@ -42,23 +42,15 @@ console.log('Fixing import paths...')
 
 function fixImportsInFile(filePath) {
   let content = readFileSync(filePath, 'utf-8')
-  let modified = false
   
   // Replace imports that point to ../../../src/core with ./core
   if (content.includes('../../../src/core/')) {
     content = content.replace(/from ['"]\.\.\/\.\.\/\.\.\/src\/core\//g, 'from \'./core/')
-    modified = true
   }
   
   // Add .js extensions to relative imports that don't have them
   // Match: from './something' or from '../something'
-  content = content.replace(/from ['"](\.\/.+?)['"];?/g, (match, path) => {
-    if (!path.endsWith('.js') && !path.includes('.json')) {
-      return `from '${path}.js';`
-    }
-    return match
-  })
-  content = content.replace(/from ['"](\.\.\/.+?)['"];?/g, (match, path) => {
+  content = content.replace(/from ['"](\.\.?\/[^'"]+?)['"];?/g, (match, path) => {
     if (!path.endsWith('.js') && !path.includes('.json')) {
       return `from '${path}.js';`
     }
