@@ -18,14 +18,22 @@ import { fileURLToPath } from 'node:url'
 import { parseStatusMarkdown } from '../../../src/core/parsers/markdown-parser.js'
 import { startLoop } from './loop.js'
 
-// Read package version
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const packageJson = JSON.parse(await readFile(join(__dirname, '..', 'package.json'), 'utf-8'))
-const VERSION = packageJson.version
+// Version is either injected at bundle time or read from package.json
+declare const __MARKDECK_VERSION__: string | undefined
+
+async function getVersion(): Promise<string> {
+  if (typeof __MARKDECK_VERSION__ !== 'undefined') {
+    return __MARKDECK_VERSION__
+  }
+  const __dirname = dirname(fileURLToPath(import.meta.url))
+  const packageJson = JSON.parse(await readFile(join(__dirname, '..', 'package.json'), 'utf-8'))
+  return packageJson.version
+}
 
 interface CliOptions {
   file: string
   help: boolean
+  version: boolean
 }
 
 /**
@@ -35,6 +43,7 @@ function parseArgs(args: string[]): CliOptions {
   const options: CliOptions = {
     file: 'STATUS.md',
     help: false,
+    version: false,
   }
   
   for (let i = 0; i < args.length; i++) {
@@ -44,6 +53,11 @@ function parseArgs(args: string[]): CliOptions {
       case '--help':
       case '-h':
         options.help = true
+        break
+        
+      case '--version':
+      case '-v':
+        options.version = true
         break
         
       case '--file':
@@ -74,7 +88,8 @@ function parseArgs(args: string[]): CliOptions {
 /**
  * Show help message
  */
-function showHelp(): void {
+async function showHelp(): Promise<void> {
+  const VERSION = await getVersion()
   console.log(`
 ╔═══════════════════════════════════════════════════════════════════╗
 ║                   MarkDeck TUI Viewer v${VERSION}                    ║
@@ -87,6 +102,7 @@ USAGE:
 
 OPTIONS:
   --file <path>    Path to STATUS.md file (default: ./STATUS.md)
+  --version, -v    Show version number
   --help, -h       Show this help message
 
 INTERACTIVE CONTROLS:
@@ -110,9 +126,15 @@ For more information, visit: https://github.com/mitchins/markdeck
  */
 async function main(): Promise<void> {
   const options = parseArgs(process.argv.slice(2))
+  const VERSION = await getVersion()
+  
+  if (options.version) {
+    console.log(`v${VERSION}`)
+    process.exit(0)
+  }
   
   if (options.help) {
-    showHelp()
+    await showHelp()
     process.exit(0)
   }
   
