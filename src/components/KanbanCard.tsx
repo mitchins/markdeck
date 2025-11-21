@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { KanbanCard as KanbanCardType } from '@/lib/types'
-import { Prohibit, CaretDown, CaretUp, Link as LinkIcon } from '@phosphor-icons/react'
+import { ChevronDown, ChevronUp, Link, Slash } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface KanbanCardProps {
@@ -39,7 +39,7 @@ export function KanbanCard({ card, isDragging }: KanbanCardProps) {
                   </h4>
                   {card.status === 'blocked' && (
                     <Badge variant="destructive" className="h-5 px-1.5 text-[10px] font-medium flex items-center gap-1">
-                      <Prohibit size={10} weight="fill" />
+                      <Slash size={12} />
                       Blocked
                     </Badge>
                   )}
@@ -55,7 +55,7 @@ export function KanbanCard({ card, isDragging }: KanbanCardProps) {
                     setIsExpanded(!isExpanded)
                   }}
                 >
-                  {isExpanded ? <CaretUp size={12} /> : <CaretDown size={12} />}
+                  {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </Button>
               )}
             </div>
@@ -87,7 +87,7 @@ export function KanbanCard({ card, isDragging }: KanbanCardProps) {
                     className="text-xs text-accent hover:underline flex items-center gap-1"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <LinkIcon size={10} />
+                    <Link size={12} />
                     <span className="truncate max-w-[150px]">{new URL(link).hostname}</span>
                   </a>
                 ))}
