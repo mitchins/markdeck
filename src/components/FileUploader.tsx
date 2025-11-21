@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
-import { Upload, FileText, Sparkle, FolderOpen } from '@phosphor-icons/react'
+import { UploadSimple, FileDoc, Sparkles, Folder } from '@phosphor-icons/react'
 import { DEMO_STATUS_MD, MARKDECK_STATUS_MD } from '@/lib/demo-data'
 import { toast } from 'sonner'
 
@@ -82,7 +82,8 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
 
   const handleLoadFromGitHub = async (repoUrl: string) => {
     // Parse GitHub repo URL (supports various formats)
-    const match = repoUrl.match(/github\.com\/([^/]+)\/([^/]+?)(?:\.git)?(?:\/|$)/)
+    const regex = /github\.com\/([^/]+)\/([^/]+?)(?:\.git)?(?:\/|$)/
+    const match = regex.exec(repoUrl)
     if (!match) {
       toast.error('Invalid GitHub URL', {
         description: 'Please enter a valid GitHub repository URL',
@@ -121,6 +122,7 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
       try {
         content = atob(data.content)
       } catch (decodeError) {
+        console.error('Failed to decode base64 content:', decodeError)
         throw new Error('Failed to decode file content - file may be corrupted')
       }
       
@@ -158,7 +160,7 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
       >
         <div className="text-center space-y-4">
           <div className="flex justify-center">
-            <FileText size={48} className="text-muted-foreground" weight="duotone" />
+            <FileDoc size={48} className="text-muted-foreground" weight="duotone" />
           </div>
           
           <div>
@@ -180,19 +182,19 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
             <label htmlFor="file-upload">
               <Button asChild disabled={isUploading}>
                 <span>
-                  <Upload className="mr-2" size={16} />
+                  <UploadSimple className="mr-2" size={16} />
                   {isUploading ? 'Uploading...' : 'Choose File'}
                 </span>
               </Button>
             </label>
             
             <Button variant="outline" onClick={handleLoadDemo}>
-              <Sparkle className="mr-2" size={16} weight="duotone" />
+              <Sparkles className="mr-2" size={16} weight="duotone" />
               Try Demo
             </Button>
 
             <Button variant="outline" onClick={handleLoadMarkDeck}>
-              <FolderOpen className="mr-2" size={16} weight="duotone" />
+              <Folder className="mr-2" size={16} weight="duotone" />
               MarkDeck Status
             </Button>
           </div>
