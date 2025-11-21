@@ -35,4 +35,15 @@ pids
 .file-manifest
 .devcontainer/
 
+# Spark and development tool metadata
 .spark-workbench-id
+.spark-initial-sha
+spark.meta.json
+runtime.config.json
+
+# Example/template files (keep in docs/ if needed)
+*.example.yml
+*.example.yaml
+*.example.ts
+*.example.js
+*.example.properties
