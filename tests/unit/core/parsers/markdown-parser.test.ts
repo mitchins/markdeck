@@ -96,6 +96,40 @@ Not a bullet`
       expect(project.cards[0].title).toBe('Valid card')
     })
 
+    it('should parse ❌-only bullets as TODO cards (malformed emoji handling)', () => {
+      const markdown = `# Project
+
+## Tasks
+
+- ❌ Custom domain setup
+    Need to configure DNS
+    SSL certificate automation
+- ✅ Working feature
+- ❌ Rate limiting
+    GitHub API limits not handled`
+
+      const project = parseStatusMarkdown(markdown)
+      
+      // Should parse all three cards
+      expect(project.cards).toHaveLength(3)
+      
+      // First card: ❌-only defaults to TODO and blocked
+      expect(project.cards[0].title).toBe('Custom domain setup')
+      expect(project.cards[0].status).toBe('todo')
+      expect(project.cards[0].blocked).toBe(true)
+      expect(project.cards[0].description).toContain('Need to configure DNS')
+      
+      // Second card: normal ✅ card
+      expect(project.cards[1].title).toBe('Working feature')
+      expect(project.cards[1].status).toBe('done')
+      expect(project.cards[1].blocked).toBe(false)
+      
+      // Third card: ❌-only defaults to TODO and blocked
+      expect(project.cards[2].title).toBe('Rate limiting')
+      expect(project.cards[2].status).toBe('todo')
+      expect(project.cards[2].blocked).toBe(true)
+    })
+
     it('should parse cards with descriptions', () => {
       const markdown = `# Project
 

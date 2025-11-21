@@ -8,6 +8,63 @@ MarkDeck turns a `STATUS.md` file into a focused, three-column Kanban board. It 
 - GitHub provider for pulling and pushing `STATUS.md` content with personal access tokens alongside local file support.
 - Keyboard-friendly, accessible React UI with card drawers, drag-and-drop, and inline editing.
 
+## STATUS.md Format Specification
+
+MarkDeck parses a specific markdown format to create Kanban cards. Here's the exact schema:
+
+### Card Format
+Cards are markdown bullet points with status emojis:
+
+```markdown
+- ✅ Completed task
+    Optional description lines
+    Indented under the task
+- ⚠️ In progress task
+- ❗ TODO task
+- ❌ ⚠️ Blocked task (combine status + ❌)
+- ❌ Only blocked emoji (defaults to TODO + blocked)
+```
+
+### Status Emojis
+- **✅** = DONE
+- **⚠️** = IN PROGRESS  
+- **❗** = TODO
+- **❌** = BLOCKED flag (can be combined with any status, or used alone to default to TODO)
+
+**Important**: If a bullet has only ❌ without a status emoji, it defaults to TODO status and is marked as blocked. This ensures all tracked work appears on the board.
+
+### Swimlanes
+Any H2 (`##`) or H3 (`###`) heading creates a swimlane:
+
+```markdown
+## 🚀 DEPLOYMENT & INFRASTRUCTURE
+
+- ✅ Vite build configuration
+- ❌ Custom domain setup
+
+## 🧪 TESTING & QUALITY
+
+- ⚠️ Accessibility testing
+```
+
+### Multi-line Descriptions
+Indent content under a card bullet to add description:
+
+```markdown
+- ⚠️ GitHub provider integration
+    Basic pull/push functionality works
+    Need better error handling
+    Rate limiting not implemented
+```
+
+### Non-Card Content
+Any markdown that doesn't match the card format is preserved as-is:
+- Regular bullet points without emojis
+- Paragraphs, code blocks, tables, etc.
+- Comments and documentation
+
+**Example**: See [STATUS.md](STATUS.md) for a complete working example.
+
 ## Tech stack
 - React 19 + TypeScript, Vite, TailwindCSS 4
 - State management with Zustand and React Query for async data
