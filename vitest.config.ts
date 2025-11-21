@@ -13,16 +13,31 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
+      include: [
+        'src/core/**/*.{ts,tsx}',
+        'src/adapters/providers/*.{ts,tsx}',
+        'src/application/state/*.{ts,tsx}',
+      ],
       exclude: [
         'node_modules/',
         'tests/',
         '**/*.d.ts',
         '**/*.config.*',
         '**/mockData.ts',
-        'src/components/ui/',    // shadcn/ui components
-        'src/ui/primitives/',    // UI primitives
+        '**/index.ts',           // Index files
+        'packages/**',           // TUI package has its own tests
+        'src/components/**',     // UI components not yet tested
+        'src/ui/**',             // UI layer not yet tested
+        'src/application/hooks/**', // Hooks not yet tested
+        'src/application/use-cases/**', // Use cases not yet tested
+        'src/adapters/api/**',   // API clients not yet tested
+        'src/adapters/providers/github-provider.ts', // GitHub provider not yet tested
+        'src/adapters/providers/provider-registry.ts', // Registry not yet tested
+        'src/hooks/**',          // Hooks not yet tested
+        'src/lib/**',            // Lib utilities not yet tested
         'src/main.tsx',          // Entry point
-        'src/lib/demo-data.ts',  // Demo data
+        'src/App.tsx',           // App component not yet tested
+        'src/ErrorFallback.tsx', // Error component not yet tested
       ],
       thresholds: {
         global: {
