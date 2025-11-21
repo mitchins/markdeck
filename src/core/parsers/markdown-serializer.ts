@@ -1,11 +1,11 @@
 /**
  * Markdown serializer for STATUS.md files
  * 
- * Converts domain model back to STATUS.md markdown with round-trip fidelity.
+ * Converts domain model back to STATUS.md markdown with round-trip fidelity using RAGB emojis.
  */
 
 import type { Project, Card } from '../domain/types'
-import { statusToEmoji, BLOCKED_EMOJI } from '../utils/emoji-mapper'
+import { statusToEmoji } from '../utils/emoji-mapper'
 import { formatLastUpdated } from '../utils/date-formatter'
 import { getIndentLevel } from './card-parser'
 
@@ -32,13 +32,12 @@ export function serializeProject(project: Project): string {
       continue
     }
     
-    // Serialize the card
+    // Serialize the card with RAGB emoji
     const statusEmoji = statusToEmoji(card.status)
-    const blockedEmoji = card.blocked ? ` ${BLOCKED_EMOJI}` : ''
     const indent = line.match(/^\s*/)?.[0] || ''
     
     // Add card title line with status
-    updatedLines.push(`${indent}- ${statusEmoji}${blockedEmoji} ${card.title}`)
+    updatedLines.push(`${indent}- ${statusEmoji} ${card.title}`)
     
     // Add description lines if present
     if (card.description && card.description.trim()) {

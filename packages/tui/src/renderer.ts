@@ -158,13 +158,13 @@ function renderSwimlaneColumns(lane: Swimlane, allCards: Card[], width: number, 
 function renderCardCompact(card: Card, maxWidth: number, highlightedCard?: string): string[] {
   const lines: string[] = []
   const emoji = STATUS_TO_EMOJI[card.status]
-  const blockedIndicator = card.blocked ? ' ❌' : ''
   
   // Determine if this card is highlighted
   const isHighlighted = highlightedCard === card.id
   
   // Build title without ANSI codes first to check length
-  const plainTitle = `${emoji}${blockedIndicator} ${card.title}`
+  const blockedLabel = card.status === 'blocked' ? ' (BLOCKED)' : ''
+  const plainTitle = `${emoji} ${card.title}${blockedLabel}`
   let displayTitle = plainTitle
   
   // Truncate if necessary (based on plain text length)
@@ -175,7 +175,7 @@ function renderCardCompact(card: Card, maxWidth: number, highlightedCard?: strin
   // Apply styling after truncation
   if (isHighlighted) {
     lines.push(ANSI.bg.blue + colorize(displayTitle, 'white', 'bold') + ANSI.reset)
-  } else if (card.blocked) {
+  } else if (card.status === 'blocked') {
     lines.push(colorize(displayTitle, 'red'))
   } else {
     lines.push(colorize(displayTitle, 'white'))
@@ -196,8 +196,8 @@ function renderCard(card: Card, highlightedCard?: string): string[] {
   
   // Card title with emoji indicator
   const emoji = STATUS_TO_EMOJI[card.status]
-  const blockedIndicator = card.blocked ? ' ❌ BLOCKED' : ''
-  const titleColor = card.blocked ? 'red' : 'white'
+  const blockedIndicator = card.status === 'blocked' ? ' (BLOCKED)' : ''
+  const titleColor = card.status === 'blocked' ? 'red' : 'white'
   const isHighlighted = highlightedCard === card.id
   
   if (isHighlighted) {
@@ -251,6 +251,6 @@ function getProjectStats(project: Project) {
     todo: project.cards.filter(c => c.status === 'todo').length,
     inProgress: project.cards.filter(c => c.status === 'in_progress').length,
     done: project.cards.filter(c => c.status === 'done').length,
-    blocked: project.cards.filter(c => c.blocked).length,
+    blocked: project.cards.filter(c => c.status === 'blocked').length,
   }
 }

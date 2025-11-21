@@ -223,7 +223,7 @@ Test pure functions, domain logic, parsers, services, and utilities with no exte
 ```typescript
 describe('Card Parser', () => {
   it('should parse TODO card with emoji', () => {
-    const markdown = '- ❗ Implement login'
+    const markdown = '- 🔵 Implement login'
     const card = parseCard(markdown)
     
     expect(card.status).toBe('todo')

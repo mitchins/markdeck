@@ -44,10 +44,13 @@ export function toggleCardBlocked(project: Project, cardId: string): Project {
   const card = project.cards.find(c => c.id === cardId)
   if (!card) return project
   
+  // Toggle between blocked and previous non-blocked status
+  const newStatus: CardStatus = card.status === 'blocked' ? 'todo' : 'blocked'
+  
   // Create updated card
   const updatedCard: Card = {
     ...card,
-    blocked: !card.blocked,
+    status: newStatus,
   }
   
   // Return updated project

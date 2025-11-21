@@ -1,7 +1,7 @@
 /**
  * useCards hook
  * 
- * Hook for card operations (move, update, toggle blocked, etc.)
+ * Hook for card operations (move, update, etc.)
  */
 
 import { useCallback } from 'react'
@@ -28,16 +28,11 @@ export function useCards() {
     actions.updateCard(cardId, updates)
   }, [actions])
   
-  const toggleBlocked = useCallback((cardId: string) => {
-    actions.toggleBlocked(cardId)
-  }, [actions])
-  
   return {
     cards,
     getCardsByLane,
     getCardsByStatus,
     moveCard,
     updateCard,
-    toggleBlocked,
   }
 }
