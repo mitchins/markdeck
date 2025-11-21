@@ -8,6 +8,7 @@
  *   
  * Options:
  *   --file <path>    Path to STATUS.md file (default: ./STATUS.md)
+ *   --watch, -w      Watch mode with interactive editing
  *   --help, -h       Show help message
  */
 
@@ -15,7 +16,7 @@ import { readFile } from 'node:fs/promises'
 import { resolve, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseStatusMarkdown } from '../../../src/core/parsers/markdown-parser.js'
-import { renderProject } from './renderer.js'
+import { startLoop } from './loop.js'
 
 // Read package version
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -88,9 +89,16 @@ OPTIONS:
   --file <path>    Path to STATUS.md file (default: ./STATUS.md)
   --help, -h       Show this help message
 
+INTERACTIVE CONTROLS:
+  ↑↓              Navigate between cards
+  ←→              Navigate between lanes (visual)
+  Shift+←→        Move card to previous/next lane
+  b               Toggle blocked flag on selected card
+  q               Quit
+
 EXAMPLES:
-  markdeck-tui
-  markdeck-tui STATUS.md
+  markdeck-tui                    # Interactive mode (default)
+  markdeck-tui STATUS.md          # Interactive mode with file
   markdeck-tui --file docs/STATUS.md
 
 For more information, visit: https://github.com/mitchins/markdeck
@@ -118,14 +126,8 @@ async function main(): Promise<void> {
     // Parse the markdown
     const project = parseStatusMarkdown(content)
     
-    // Render to terminal
-    const output = renderProject(project, {
-      width: process.stdout.columns || 100,
-      showMetadata: true,
-    })
-    
-    // Output to terminal
-    console.log(output)
+    // Start interactive loop (default behavior)
+    await startLoop(project, filePath)
     
     process.exit(0)
   } catch (error) {

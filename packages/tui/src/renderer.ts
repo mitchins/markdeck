@@ -6,18 +6,19 @@
 
 import type { Project, Card, Swimlane, CardStatus } from '../../../src/core/domain/types.js'
 import { STATUS_COLUMNS, STATUS_TO_EMOJI } from '../../../src/core/domain/types.js'
-import { colorize, separator, ANSI } from './ansi.js'
+import { colorize, separator, ANSI, stripAnsi } from './ansi.js'
 
 interface RenderOptions {
   width?: number
   showMetadata?: boolean
+  highlightedCard?: string // Card ID to highlight
 }
 
 /**
  * Render a project to terminal output
  */
 export function renderProject(project: Project, options: RenderOptions = {}): string {
-  const { width = 100, showMetadata = true } = options
+  const { width = 100, showMetadata = true, highlightedCard } = options
   const lines: string[] = []
   
   // Clear screen and move cursor to top
@@ -64,7 +65,7 @@ export function renderProject(project: Project, options: RenderOptions = {}): st
   const sortedLanes = [...project.swimlanes].sort((a, b) => a.order - b.order)
   
   for (const lane of sortedLanes) {
-    lines.push(...renderSwimlane(lane, project.cards, width))
+    lines.push(...renderSwimlaneColumns(lane, project.cards, width, highlightedCard))
     lines.push('') // Spacing between swimlanes
   }
   
@@ -82,14 +83,16 @@ export function renderProject(project: Project, options: RenderOptions = {}): st
     colorize(`${stats.done} DONE`, 'green') +
     (stats.blocked > 0 ? colorize(' • ', 'gray') + colorize(`${stats.blocked} BLOCKED`, 'red') : '')
   )
+  lines.push('')
+  lines.push(colorize('Controls: ', 'cyan', 'bold') + colorize('↑↓=navigate  ⇧←⇧→=move to lane  b=toggle block  q=quit', 'gray'))
   
   return lines.join('\n')
 }
 
 /**
- * Render a single swimlane with its cards grouped by status
+ * Render a single swimlane with cards in columns
  */
-function renderSwimlane(lane: Swimlane, allCards: Card[], width: number): string[] {
+function renderSwimlaneColumns(lane: Swimlane, allCards: Card[], width: number, highlightedCard?: string): string[] {
   const lines: string[] = []
   const laneCards = allCards.filter(card => card.laneId === lane.id)
   
@@ -107,30 +110,87 @@ function renderSwimlane(lane: Swimlane, allCards: Card[], width: number): string
     cardsByStatus[card.status].push(card)
   }
   
-  // Render each status column
-  for (const column of STATUS_COLUMNS) {
+  // Calculate column width (3 columns)
+  const colWidth = Math.floor((width - 6) / 3) // 6 chars for spacing
+  
+  // Convert cards to rendered lines per column
+  const columnLines: string[][] = STATUS_COLUMNS.map(column => {
     const cards = cardsByStatus[column.key]
-    if (cards.length === 0) continue
+    const colLines: string[] = []
     
-    // Status header
-    const statusHeader = `  ${column.emoji} ${column.label}`
-    lines.push(colorize(statusHeader, getStatusColor(column.key), 'bold'))
+    // Column header
+    colLines.push(colorize(`${column.emoji} ${column.label}`, getStatusColor(column.key), 'bold'))
+    colLines.push(colorize('─'.repeat(colWidth), 'gray'))
     
-    // Render cards in this status
-    for (const card of cards) {
-      lines.push(...renderCard(card))
+    // Render cards
+    if (cards.length === 0) {
+      colLines.push(colorize('(empty)', 'gray'))
+    } else {
+      for (const card of cards) {
+        colLines.push(...renderCardCompact(card, colWidth, highlightedCard))
+      }
     }
     
-    lines.push('') // Spacing after status column
+    return colLines
+  })
+  
+  // Find max height
+  const maxHeight = Math.max(...columnLines.map(col => col.length))
+  
+  // Render columns side by side
+  for (let row = 0; row < maxHeight; row++) {
+    const rowParts: string[] = []
+    for (const col of columnLines) {
+      const line = col[row] || ''
+      const stripped = stripAnsi(line)
+      const padding = Math.max(0, colWidth - stripped.length)
+      rowParts.push(line + ' '.repeat(padding))
+    }
+    lines.push(rowParts.join('  '))
   }
   
   return lines
 }
 
 /**
- * Render a single card
+ * Render a card in compact form (for columns)
  */
-function renderCard(card: Card): string[] {
+function renderCardCompact(card: Card, maxWidth: number, highlightedCard?: string): string[] {
+  const lines: string[] = []
+  const emoji = STATUS_TO_EMOJI[card.status]
+  const blockedIndicator = card.blocked ? ' ❌' : ''
+  
+  // Determine if this card is highlighted
+  const isHighlighted = highlightedCard === card.id
+  
+  // Build title without ANSI codes first to check length
+  const plainTitle = `${emoji}${blockedIndicator} ${card.title}`
+  let displayTitle = plainTitle
+  
+  // Truncate if necessary (based on plain text length)
+  if (plainTitle.length > maxWidth) {
+    displayTitle = plainTitle.substring(0, maxWidth - 3) + '...'
+  }
+  
+  // Apply styling after truncation
+  if (isHighlighted) {
+    lines.push(ANSI.bg.blue + colorize(displayTitle, 'white', 'bold') + ANSI.reset)
+  } else if (card.blocked) {
+    lines.push(colorize(displayTitle, 'red'))
+  } else {
+    lines.push(colorize(displayTitle, 'white'))
+  }
+  
+  lines.push('') // Empty line between cards
+  return lines
+}
+
+/**
+ * Render a single card (detailed view - kept for future use)
+ * @internal
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function renderCard(card: Card, highlightedCard?: string): string[] {
   const lines: string[] = []
   const indent = '    '
   
@@ -138,8 +198,13 @@ function renderCard(card: Card): string[] {
   const emoji = STATUS_TO_EMOJI[card.status]
   const blockedIndicator = card.blocked ? ' ❌ BLOCKED' : ''
   const titleColor = card.blocked ? 'red' : 'white'
+  const isHighlighted = highlightedCard === card.id
   
-  lines.push(indent + colorize(`${emoji} ${card.title}${blockedIndicator}`, titleColor))
+  if (isHighlighted) {
+    lines.push(indent + ANSI.bg.blue + colorize(`${emoji} ${card.title}${blockedIndicator}`, 'white', 'bold') + ANSI.reset)
+  } else {
+    lines.push(indent + colorize(`${emoji} ${card.title}${blockedIndicator}`, titleColor))
+  }
   
   // Card description (if present)
   if (card.description) {
