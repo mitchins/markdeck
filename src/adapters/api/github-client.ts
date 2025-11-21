@@ -15,7 +15,7 @@ function isOctokitError(error: unknown): error is OctokitError {
 }
 
 export interface GitHubConfig {
-  token: string
+  token?: string
   owner?: string
   repo?: string
   branch?: string
@@ -43,7 +43,8 @@ export class GitHubClient {
   private octokit: Octokit
 
   constructor(private config: GitHubConfig) {
-    this.octokit = new Octokit({ auth: config.token })
+    // Token is optional - allows read access to public repos without authentication
+    this.octokit = new Octokit({ auth: config.token || undefined })
   }
 
   async getFile(
@@ -87,6 +88,11 @@ export class GitHubClient {
     message: string,
     branch?: string
   ): Promise<{ sha: string }> {
+    // Writing requires authentication
+    if (!this.config.token) {
+      throw new Error('GitHub token required to update files')
+    }
+    
     const encoded = Buffer.from(content).toString('base64')
 
     const response = await this.octokit.rest.repos.createOrUpdateFileContents({
@@ -103,6 +109,11 @@ export class GitHubClient {
   }
 
   async listRepos(limit = 100): Promise<GitHubRepo[]> {
+    // Listing repos requires authentication
+    if (!this.config.token) {
+      throw new Error('GitHub token required to list repositories')
+    }
+    
     const response = await this.octokit.rest.repos.listForAuthenticatedUser({
       per_page: limit,
       sort: 'updated',
@@ -140,6 +151,11 @@ export class GitHubClient {
   }
 
   async validateToken(): Promise<boolean> {
+    // If no token is provided, validation is skipped (public access mode)
+    if (!this.config.token) {
+      return true
+    }
+    
     try {
       await this.octokit.rest.users.getAuthenticated()
       return true
