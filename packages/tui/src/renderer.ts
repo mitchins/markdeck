@@ -79,11 +79,10 @@ function renderSwimlane(lane: Swimlane, allCards: Card[], width: number): string
   lines.push(separator('─', width))
   
   // Group cards by status
-  const cardsByStatus: Record<CardStatus, Card[]> = {
-    todo: [],
-    in_progress: [],
-    done: [],
-  }
+  const cardsByStatus = STATUS_COLUMNS.reduce((acc, column) => {
+    acc[column.key] = []
+    return acc
+  }, {} as Record<CardStatus, Card[]>)
   
   for (const card of laneCards) {
     cardsByStatus[card.status].push(card)

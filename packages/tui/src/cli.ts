@@ -18,7 +18,6 @@ import { renderProject } from './renderer.js'
 
 interface CliOptions {
   file: string
-  color: boolean
   help: boolean
 }
 
@@ -28,7 +27,6 @@ interface CliOptions {
 function parseArgs(args: string[]): CliOptions {
   const options: CliOptions = {
     file: 'STATUS.md',
-    color: true,
     help: false,
   }
   
