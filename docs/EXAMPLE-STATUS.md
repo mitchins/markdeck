@@ -3,6 +3,21 @@
 **Last Updated:** 2025-01-15
 **Version:** Alpha 3
 
+<!-- 
+  STATUS.md Format Guide:
+  - ✅ = DONE
+  - ⚠️ = IN PROGRESS
+  - ❗ = TODO
+  - ❌ = BLOCKED (can be combined with status or used alone)
+  
+  Examples:
+  - ✅ Completed task
+  - ⚠️ In progress task
+  - ❗ Todo task
+  - ❌ ⚠️ Blocked + in progress
+  - ❌ Only blocked (defaults to TODO + blocked)
+-->
+
 ## 💰 PAYMENT SYSTEM STATUS
 
 - ✅ Core API deployed to staging
