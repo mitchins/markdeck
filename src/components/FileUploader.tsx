@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
-import { ArrowLineUp, File, Star, FolderSimple } from '@phosphor-icons/react'
+import { ArrowUp, FileText, Star, Folder } from 'lucide-react'
 import { DEMO_STATUS_MD, MARKDECK_STATUS_MD } from '@/lib/demo-data'
 import { toast } from 'sonner'
 
@@ -160,7 +160,7 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
       >
         <div className="text-center space-y-4">
           <div className="flex justify-center">
-            <File size={48} className="text-muted-foreground" weight="duotone" />
+            <FileText size={48} className="text-muted-foreground" />
           </div>
           
           <div>
@@ -182,19 +182,19 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
             <label htmlFor="file-upload">
               <Button asChild disabled={isUploading}>
                 <span>
-                  <ArrowLineUp className="mr-2" size={16} />
+                  <ArrowUp className="mr-2" size={16} />
                   {isUploading ? 'Uploading...' : 'Choose File'}
                 </span>
               </Button>
             </label>
             
             <Button variant="outline" onClick={handleLoadDemo}>
-              <Star className="mr-2" size={16} weight="duotone" />
+              <Star className="mr-2" size={16} />
               Try Demo
             </Button>
 
             <Button variant="outline" onClick={handleLoadMarkDeck}>
-              <FolderSimple className="mr-2" size={16} weight="duotone" />
+              <Folder className="mr-2" size={16} />
               MarkDeck Status
             </Button>
           </div>
