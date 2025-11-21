@@ -26,7 +26,17 @@ export function renderProject(project: Project, options: RenderOptions = {}): st
   // Render metadata header
   if (showMetadata) {
     lines.push(colorize('╔' + '═'.repeat(width - 2) + '╗', 'cyan', 'bold'))
-    lines.push(colorize('║ ', 'cyan', 'bold') + colorize(project.metadata.title, 'white', 'bold') + colorize(' '.repeat(width - project.metadata.title.length - 4) + '║', 'cyan', 'bold'))
+    
+    // Truncate or pad title to fit
+    const titleText = project.metadata.title.length > width - 4 
+      ? project.metadata.title.substring(0, width - 7) + '...'
+      : project.metadata.title
+    const titlePadding = Math.max(0, width - titleText.length - 4)
+    lines.push(
+      colorize('║ ', 'cyan', 'bold') + 
+      colorize(titleText, 'white', 'bold') + 
+      colorize(' '.repeat(titlePadding) + '║', 'cyan', 'bold')
+    )
     
     if (project.metadata.version || project.metadata.lastUpdated) {
       const metaInfo = [
@@ -34,7 +44,16 @@ export function renderProject(project: Project, options: RenderOptions = {}): st
         project.metadata.lastUpdated ? `Updated: ${project.metadata.lastUpdated}` : null,
       ].filter(Boolean).join(' • ')
       
-      lines.push(colorize('║ ', 'cyan', 'bold') + colorize(metaInfo, 'gray') + colorize(' '.repeat(width - metaInfo.length - 4) + '║', 'cyan', 'bold'))
+      // Truncate or pad metadata to fit
+      const metaText = metaInfo.length > width - 4
+        ? metaInfo.substring(0, width - 7) + '...'
+        : metaInfo
+      const metaPadding = Math.max(0, width - metaText.length - 4)
+      lines.push(
+        colorize('║ ', 'cyan', 'bold') + 
+        colorize(metaText, 'gray') + 
+        colorize(' '.repeat(metaPadding) + '║', 'cyan', 'bold')
+      )
     }
     
     lines.push(colorize('╚' + '═'.repeat(width - 2) + '╝', 'cyan', 'bold'))
