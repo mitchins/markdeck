@@ -8,7 +8,6 @@
  *   
  * Options:
  *   --file <path>    Path to STATUS.md file (default: ./STATUS.md)
- *   --no-color       Disable colored output
  *   --help, -h       Show help message
  */
 
@@ -52,10 +51,6 @@ function parseArgs(args: string[]): CliOptions {
         }
         break
         
-      case '--no-color':
-        options.color = false
-        break
-        
       default:
         // Positional argument (file path)
         if (!arg.startsWith('-')) {
@@ -87,14 +82,12 @@ USAGE:
 
 OPTIONS:
   --file <path>    Path to STATUS.md file (default: ./STATUS.md)
-  --no-color       Disable colored output
   --help, -h       Show this help message
 
 EXAMPLES:
   markdeck-tui
   markdeck-tui STATUS.md
   markdeck-tui --file docs/STATUS.md
-  markdeck-tui --no-color STATUS.md
 
 For more information, visit: https://github.com/mitchins/markdeck
 `)
@@ -109,12 +102,6 @@ async function main(): Promise<void> {
   if (options.help) {
     showHelp()
     process.exit(0)
-  }
-  
-  // Disable colors if requested
-  if (!options.color) {
-    // This would require wrapping ANSI codes, but for simplicity we'll just note it
-    console.warn('Note: --no-color option is not yet fully implemented')
   }
   
   try {
