@@ -19,8 +19,10 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.config.*',
         '**/mockData.ts',
-        'src/components/ui/', // shadcn/ui components
-        'src/main.tsx',       // Entry point
+        'src/components/ui/',    // shadcn/ui components
+        'src/ui/primitives/',    // UI primitives
+        'src/main.tsx',          // Entry point
+        'src/lib/demo-data.ts',  // Demo data
       ],
       thresholds: {
         global: {
