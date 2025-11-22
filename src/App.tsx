@@ -10,7 +10,9 @@ import { NotesPanel } from '@/components/NotesPanel'
 import { CardDetailDrawer } from '@/components/CardDetailDrawer'
 import { GitHubConnector } from '@/components/GitHubConnector'
 import { ProjectSelector } from '@/components/ProjectSelector'
+import { UpgradeToFullModeBanner } from '@/components/UpgradeToFullModeBanner'
 import { parseStatusMarkdown, projectToMarkdown } from '@/lib/parser'
+import { upgradeToFullMode } from '@/core/utils/board-mode-upgrade'
 import type { ParsedStatus, KanbanCard, CardStatus } from '@/lib/types'
 import { Download, Eye, FileText, ArrowsClockwise, Kanban, Info, GithubLogo, Upload } from '@phosphor-icons/react'
 import { toast } from 'sonner'
@@ -233,6 +235,18 @@ function App() {
     }
   }
 
+  const handleUpgradeToFullMode = () => {
+    if (!parsedData) return
+    
+    const upgradedProject = upgradeToFullMode(parsedData)
+    setParsedData(upgradedProject)
+    setHasChanges(true)
+    toast.success('Upgraded to full 3-column mode! Your file will use emoji format when saved.', {
+      description: 'Save your changes to apply the upgrade.',
+      duration: 5000,
+    })
+  }
+
   const handleReset = () => {
     setParsedData(null)
     setCurrentRepo(null)
@@ -360,6 +374,11 @@ function App() {
           </TabsList>
 
           <TabsContent value="board" className="mt-0">
+            <UpgradeToFullModeBanner 
+              boardMode={normalizedData.boardMode || 'full'} 
+              onUpgrade={handleUpgradeToFullMode}
+            />
+            
             {normalizedData.cards.length === 0 ? (
               <Alert>
                 <Info />
@@ -369,13 +388,15 @@ function App() {
                     Your STATUS.md file was parsed, but no Kanban cards were detected.
                   </p>
                   <p className="mb-2">
-                    Cards must be markdown list items with status emojis:
+                    Cards must be markdown list items with status emojis or checkboxes:
                   </p>
                   <ul className="list-disc list-inside space-y-1 font-mono text-xs">
                     <li>🔵 TODO (default)</li>
                     <li>🟡 IN PROGRESS</li>
                     <li>🔴 BLOCKED</li>
                     <li>🟢 DONE</li>
+                    <li>[ ] TODO (checkbox)</li>
+                    <li>[x] DONE (checkbox)</li>
                   </ul>
                   <p className="mt-3">
                     Try the <Button variant="link" className="h-auto p-0 text-sm" onClick={handleReset}>Demo file</Button> to see the expected format.
@@ -393,6 +414,7 @@ function App() {
                       cards={laneCards}
                       onCardDrop={handleCardMove}
                       onCardClick={handleCardClick}
+                      boardMode={normalizedData.boardMode || 'full'}
                     />
                   )
                 })}

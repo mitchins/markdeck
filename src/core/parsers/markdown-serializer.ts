@@ -1,11 +1,12 @@
 /**
  * Markdown serializer for STATUS.md files
  * 
- * Converts domain model back to STATUS.md markdown with round-trip fidelity using RYGBO emojis.
+ * Converts domain model back to STATUS.md markdown with round-trip fidelity.
+ * Preserves original format (emoji or checkbox) per card.
  */
 
 import type { Project, Card } from '../domain/types'
-import { statusToEmoji } from '../utils/emoji-mapper'
+import { statusToEmoji, statusToCheckbox } from '../utils/emoji-mapper'
 import { formatLastUpdated } from '../utils/date-formatter'
 import { getIndentLevel } from './card-parser'
 
@@ -32,14 +33,22 @@ export function serializeProject(project: Project): string {
       continue
     }
     
-    // Serialize the card with RYGBO emoji based on (status, blocked)
-    // DONE cards are never blocked (normalize if needed)
-    const blocked = card.status === 'done' ? false : card.blocked
-    const statusEmoji = statusToEmoji(card.status, blocked)
+    // Serialize the card based on its original format
     const indent = line.match(/^\s*/)?.[0] || ''
+    let statusMarker: string
+    
+    if (card.originalFormat === 'checkbox') {
+      // Use checkbox format - simple mode only supports todo/done (NOSONAR)
+      statusMarker = statusToCheckbox(card.status)
+    } else {
+      // Use emoji format with RYGBO based on (status, blocked)
+      // DONE cards are never blocked (normalize if needed)
+      const blocked = card.status === 'done' ? false : card.blocked
+      statusMarker = statusToEmoji(card.status, blocked)
+    }
     
     // Add card title line with status
-    updatedLines.push(`${indent}- ${statusEmoji} ${card.title}`)
+    updatedLines.push(`${indent}- ${statusMarker} ${card.title}`)
     
     // Add description lines if present
     if (card.description && card.description.trim()) {
