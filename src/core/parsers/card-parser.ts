@@ -106,7 +106,7 @@ export function parseCard(
   // Determine status and blocked based on format
   let status: CardStatus
   let blocked: boolean
-  let originalFormat: 'emoji' | 'checkbox' = 'emoji'
+  let originalFormat: 'emoji' | 'checkbox'
   
   if (format === 'emoji' && statusEmoji && isStatusEmoji(statusEmoji)) {
     const parsed = emojiToStatusBlocked(statusEmoji)!
