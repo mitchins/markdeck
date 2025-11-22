@@ -14,6 +14,16 @@
     "declarationMap": false,
     "sourceMap": false,
     "allowSyntheticDefaultImports": true
+    ,
+    "baseUrl": "./",
+    "paths": {
+      "@modelcontextprotocol/sdk/server": ["./node_modules/@modelcontextprotocol/sdk/dist/esm/server/index.d.ts"],
+      "@modelcontextprotocol/sdk/server/stdio": ["./node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.d.ts"],
+      "@modelcontextprotocol/sdk/types.js": ["./node_modules/@modelcontextprotocol/sdk/dist/esm/types.d.ts"],
+      "@modelcontextprotocol/sdk/dist/esm/server/index.js": ["./node_modules/@modelcontextprotocol/sdk/dist/esm/server/index.d.ts"],
+      "@modelcontextprotocol/sdk/dist/esm/server/stdio.js": ["./node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.d.ts"],
+      "@modelcontextprotocol/sdk/dist/esm/types.js": ["./node_modules/@modelcontextprotocol/sdk/dist/esm/types.d.ts"]
+    }
   },
   "include": ["src/**/*", "../src/core/parsers/**/*", "../src/core/utils/**/*", "../src/core/domain/types.ts"],
   "exclude": ["node_modules", "dist", "src/**/*.test.ts"]

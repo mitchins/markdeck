@@ -6,7 +6,13 @@ This document demonstrates how to use the MarkDeck MCP server to safely manipula
 
 ## Installation
 
-First, build the MCP server:
+Fastest path (after publishing):
+
+```bash
+npx @markdeck/mcp-server --status /absolute/path/to/STATUS.md
+```
+
+Local build (current repo):
 
 ```bash
 cd mcp
