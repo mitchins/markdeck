@@ -15,8 +15,8 @@ import { parseStatusMarkdown, projectToMarkdown } from '@/lib/parser'
 import { upgradeToFullMode } from '@/core/utils/board-mode-upgrade'
 import type { ParsedStatus, KanbanCard, CardStatus } from '@/lib/types'
 import { STATUS_COLUMNS } from '@/lib/types'
+import { getColumnIcon, getColumnColor } from '@/lib/column-config'
 import { Download, Eye, FileText, ArrowsClockwise, Kanban, Info, GithubLogo, Upload } from '@phosphor-icons/react'
-import { BadgeCheck, CircleAlert, ListChecks } from 'lucide-react'
 import { toast } from 'sonner'
 import { decodeBase64ToUtf8, encodeUtf8ToBase64 } from '@/lib/encoding-utils'
 
@@ -414,8 +414,8 @@ function App() {
                     ? STATUS_COLUMNS.filter(col => col.key === 'todo' || col.key === 'done')
                     : STATUS_COLUMNS
                   ).map((statusCol) => {
-                    const Icon = statusCol.key === 'todo' ? ListChecks : statusCol.key === 'in_progress' ? CircleAlert : BadgeCheck
-                    const color = statusCol.key === 'todo' ? 'text-accent' : statusCol.key === 'in_progress' ? 'text-warning' : 'text-success'
+                    const Icon = getColumnIcon(statusCol.key)
+                    const color = getColumnColor(statusCol.key)
                     return (
                       <div key={statusCol.key} className="flex items-center gap-2">
                         <Icon className={color} size={16} />
