@@ -21,7 +21,10 @@ npm run build
 
 ## Key Features
 
-- Three-column workflow (TODO → IN PROGRESS → DONE) with blocked status modifier
+- **Dual Format Support**: Works with both emoji-based (RYGBO) and simple checkbox formats
+- **Simple Mode**: Two-column workflow (TODO → DONE) for checkbox-based lists
+- **Full Mode**: Three-column workflow (TODO → IN PROGRESS → DONE) with blocked status modifier
+- **Easy Upgrade**: Convert simple checkbox mode to full emoji mode with one click
 - Round-trip safe: preserves all non-card markdown when saving
 - GitHub integration with personal access tokens
 - Local file mode for offline work
@@ -30,9 +33,28 @@ npm run build
 
 ## STATUS.md Format
 
-MarkDeck parses a simple markdown format to create Kanban cards using the RYGBO (5-color) status system:
+MarkDeck supports two formats for creating Kanban cards:
 
-**Card Format:**
+### Simple Checkbox Format (2-column mode)
+
+For basic TODO lists compatible with most markdown editors:
+
+```markdown
+- [ ] Task to do
+- [x] Completed task
+- [ ] Another task
+```
+
+**Checkbox Syntax:**
+- `[ ]` = TODO
+- `[x]` or `[X]` = DONE
+
+This creates a simple 2-column board (TODO | DONE) perfect for quick checklists.
+
+### Full Emoji Format (3-column mode)
+
+For advanced project tracking with the RYGBO (5-color) status system:
+
 ```markdown
 - 🟢 Completed task
     Optional indented description
@@ -51,11 +73,19 @@ MarkDeck parses a simple markdown format to create Kanban cards using the RYGBO 
 
 **Note:** Blocked is a modifier, not a separate column. Blocked cards remain in their TODO or IN PROGRESS column but are visually distinguished.
 
+### Common Features
+
 **Swimlanes:**
 Any H2 (`##`) or H3 (`###`) heading creates a swimlane.
 
 **Preservation:**
 Non-card markdown (paragraphs, code blocks, etc.) is preserved exactly when saving.
+
+**Format Detection:**
+MarkDeck automatically detects which format you're using and preserves it during round-trips.
+
+**Upgrading:**
+When using checkbox format, MarkDeck displays an upgrade banner allowing you to permanently switch to the full 3-column emoji format.
 
 **Example:** See [STATUS.md](STATUS.md) for a complete working example.
 
