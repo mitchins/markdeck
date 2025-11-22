@@ -36,11 +36,6 @@ describe('RYGBO Emoji Encoding', () => {
     const decoded = decodeBase64ToUtf8(base64WithNewlines)
     
     expect(decoded).toBe(content)
-    expect(decoded).toContain('🔵')
-    expect(decoded).toContain('🟡')
-    expect(decoded).toContain('🔴')
-    expect(decoded).toContain('🟧')
-    expect(decoded).toContain('🟢')
   })
 
   it('should decode STATUS.md-like content with emojis', () => {
