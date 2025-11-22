@@ -63,7 +63,7 @@ export class GitHubClient {
 
       if ('content' in response.data) {
         const encoding = (response.data.encoding || 'base64') as BufferEncoding
-        const normalizedContent = (response.data.content || '').replace(/\n/g, '')
+        const normalizedContent = (response.data.content || '').replaceAll('\n', '')
 
         return {
           content: Buffer.from(normalizedContent, encoding).toString('utf8'),
