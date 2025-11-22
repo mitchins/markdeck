@@ -1,33 +1,47 @@
 /**
  * Card parser for STATUS.md files
  * 
- * Extracts cards from bullet points with RYGBO status emojis.
+ * Extracts cards from bullet points with RYGBO status emojis or checkbox syntax.
  */
 
 import type { Card, CardStatus } from '../domain/types'
-import { emojiToStatusBlocked, isStatusEmoji } from '../utils/emoji-mapper'
+import { emojiToStatusBlocked, isStatusEmoji, checkboxToStatusBlocked, isCheckbox } from '../utils/emoji-mapper'
 import { IdGenerator } from '../utils/id-generator'
 
 export interface ParsedEmoji {
   statusEmoji: string | null
+  checkbox: string | null
   remaining: string
+  format: 'emoji' | 'checkbox' | 'none'
 }
 
 export function extractEmojis(text: string): ParsedEmoji {
   // RYGBO emojis: 🔵 todo, 🟡 in_progress, 🔴 blocked todo, 🟧 blocked in_progress, 🟢 done
   const statusEmojiRegex = /(🔵|🟡|🔴|🟧|🟢)/
   
+  // Checkbox syntax: [ ] or [x] or [X]
+  const checkboxRegex = /\[([ xX])\]/
+  
   const statusMatch = text.match(statusEmojiRegex)
+  const checkboxMatch = text.match(checkboxRegex)
   
   let remaining = text
+  let format: 'emoji' | 'checkbox' | 'none' = 'none'
   
+  // Emoji takes priority if both exist
   if (statusMatch) {
     remaining = remaining.replace(statusEmojiRegex, '').trim()
+    format = 'emoji'
+  } else if (checkboxMatch) {
+    remaining = remaining.replace(checkboxRegex, '').trim()
+    format = 'checkbox'
   }
   
   return {
     statusEmoji: statusMatch ? statusMatch[1] : null,
+    checkbox: checkboxMatch ? checkboxMatch[0] : null,
     remaining: remaining.trim(),
+    format,
   }
 }
 
@@ -87,19 +101,28 @@ export function parseCard(
   if (!bulletMatch) return null
   
   const bulletText = bulletMatch[2]
-  const { statusEmoji, remaining } = extractEmojis(bulletText)
+  const { statusEmoji, checkbox, remaining, format } = extractEmojis(bulletText)
   
-  // Determine status and blocked: if no emoji, default to (todo, false)
+  // Determine status and blocked based on format
   let status: CardStatus
   let blocked: boolean
+  let originalFormat: 'emoji' | 'checkbox' = 'emoji'
   
-  if (!statusEmoji || !isStatusEmoji(statusEmoji)) {
-    status = 'todo'
-    blocked = false
-  } else {
+  if (format === 'emoji' && statusEmoji && isStatusEmoji(statusEmoji)) {
     const parsed = emojiToStatusBlocked(statusEmoji)!
     status = parsed.status
     blocked = parsed.blocked
+    originalFormat = 'emoji'
+  } else if (format === 'checkbox' && checkbox && isCheckbox(checkbox)) {
+    const parsed = checkboxToStatusBlocked(checkbox)!
+    status = parsed.status
+    blocked = parsed.blocked
+    originalFormat = 'checkbox'
+  } else {
+    // Default to TODO when no recognized format
+    status = 'todo'
+    blocked = false
+    originalFormat = 'emoji'  // Default to emoji format for new cards
   }
   
   const title = remaining.trim()
@@ -125,5 +148,6 @@ export function parseCard(
     description: description || undefined,
     links,
     originalLine: lineIndex,
+    originalFormat,
   }
 }
