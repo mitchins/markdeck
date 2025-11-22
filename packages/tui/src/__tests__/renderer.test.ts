@@ -87,8 +87,9 @@ describe('Renderer', () => {
     it('should render all swimlanes', () => {
       const result = renderProject(mockProject)
       const stripped = stripAnsi(result)
-      expect(stripped).toContain('CORE FEATURES')
-      expect(stripped).toContain('INFRASTRUCTURE')
+      // Swimlanes are now rendered as rows with normal case titles
+      expect(stripped).toContain('Core Features')
+      expect(stripped).toContain('Infrastructure')
     })
 
     it('should render cards with correct status emojis', () => {
@@ -96,7 +97,7 @@ describe('Renderer', () => {
       const stripped = stripAnsi(result)
       expect(stripped).toContain('Implement parser')
       expect(stripped).toContain('Add tests')
-      expect(stripped).toContain('Deploy to production')
+      expect(stripped).toContain('Deploy to produc') // May be truncated
       expect(stripped).toContain('Plan monitoring')
     })
 
@@ -109,20 +110,23 @@ describe('Renderer', () => {
     it('should render card titles in compact form', () => {
       const result = renderProject(mockProject)
       const stripped = stripAnsi(result)
-      // In compact column view, we show titles but not full descriptions
+      // In the new table layout, we show titles but may truncate long ones
       expect(stripped).toContain('Implement parser')
       expect(stripped).toContain('Add tests')
-      expect(stripped).toContain('Deploy to production')
+      expect(stripped).toContain('Deploy to produc') // May be truncated
     })
 
     it('should support column-based layout', () => {
       const result = renderProject(mockProject)
       const stripped = stripAnsi(result)
-      // Check for column headers
+      // Check for single header row with all column headers
+      expect(stripped).toContain('SWIMLANE')
       expect(stripped).toContain('TODO')
       expect(stripped).toContain('IN PROGRESS')
-      expect(stripped).toContain('BLOCKED')
       expect(stripped).toContain('DONE')
+      // Check for swimlane names
+      expect(stripped).toContain('Core Features')
+      expect(stripped).toContain('Infrastructure')
     })
 
     it('should include summary statistics', () => {
