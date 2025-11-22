@@ -200,6 +200,12 @@ npm run build
 npm start
 ```
 
+### Against other MarkDeck projects
+
+- The server depends on the MarkDeck core parser/serializer in this repo. You can still target a `STATUS.md` that lives in another project by pointing `statusPath` at that file (absolute or relative).
+- Keep this repo available on disk (or publish the `mcp` package privately) so the relative imports to `src/core` continue to work.
+- If the target project already ships a MarkDeck-compatible `STATUS.md`, no additional changes are required—the MCP tools read, mutate, and re-serialize that file in place.
+
 ### As MCP Server
 
 Configure in your MCP client (e.g., Claude Desktop):
