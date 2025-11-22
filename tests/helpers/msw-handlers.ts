@@ -7,6 +7,22 @@
 
 import { http, HttpResponse } from 'msw'
 
+/**
+ * Encode UTF-8 string to base64 (handles Unicode correctly)
+ * btoa() fails with Unicode characters, so we need to encode to UTF-8 bytes first
+ */
+function encodeBase64(str: string): string {
+  // Convert string to UTF-8 bytes, then to base64
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(str, 'utf8').toString('base64')
+  }
+  
+  // Browser fallback: encode to UTF-8 bytes manually
+  const utf8Bytes = new TextEncoder().encode(str)
+  const binaryString = Array.from(utf8Bytes, byte => String.fromCharCode(byte)).join('')
+  return btoa(binaryString)
+}
+
 export const handlers = [
   // GitHub API: Get file contents
   http.get('https://api.github.com/repos/:owner/:repo/contents/:path', ({ params }) => {
@@ -14,13 +30,7 @@ export const handlers = [
     
     // Default mock response for STATUS.md
     if (path === 'STATUS.md') {
-      return HttpResponse.json({
-        name: 'STATUS.md',
-        path: 'STATUS.md',
-        sha: 'abc123def456',
-        size: 1234,
-        type: 'file',
-        content: btoa(`# Test Project
+      const content = `# Test Project
 
 **Last Updated:** 2025-11-20  
 **Version:** Alpha 3
@@ -37,7 +47,14 @@ export const handlers = [
 
 - 🔴 Blocked task
     **BLOCKED:** Waiting for something
-`),
+`
+      return HttpResponse.json({
+        name: 'STATUS.md',
+        path: 'STATUS.md',
+        sha: 'abc123def456',
+        size: content.length,
+        type: 'file',
+        content: encodeBase64(content),
         encoding: 'base64',
       })
     }
@@ -117,7 +134,7 @@ export function createSuccessHandler(content: string, sha = 'custom-sha') {
       path: 'STATUS.md',
       sha,
       type: 'file',
-      content: btoa(content),
+      content: encodeBase64(content),
       encoding: 'base64',
     })
   })

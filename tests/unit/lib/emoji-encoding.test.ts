@@ -14,7 +14,7 @@ describe('RYGBO Emoji Encoding', () => {
   }
 
   it('should decode all RYGBO emojis correctly using Buffer', () => {
-    Object.entries(RYGBO_EMOJIS).forEach(([emoji, description]) => {
+    Object.keys(RYGBO_EMOJIS).forEach((emoji) => {
       const base64 = Buffer.from(emoji, 'utf8').toString('base64')
       const decoded = decodeBase64ToUtf8(base64)
       expect(decoded).toBe(emoji)
@@ -83,7 +83,7 @@ describe('RYGBO Emoji Encoding', () => {
       )
     }
 
-    Object.entries(RYGBO_EMOJIS).forEach(([emoji, description]) => {
+    Object.keys(RYGBO_EMOJIS).forEach((emoji) => {
       const base64 = originalBuffer.from(emoji, 'utf8').toString('base64')
       const decoded = decodeBase64ToUtf8(base64)
       expect(decoded).toBe(emoji)
