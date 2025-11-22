@@ -51,3 +51,11 @@ runtime.config.json
 *.example.ts
 *.example.js
 *.example.properties
+
+# TypeScript build artifacts
+src/**/*.js
+src/**/*.d.ts
+src/**/*.js.map
+src/**/*.d.ts.map
+!src/**/*.test.ts
+!src/**/*.spec.ts
