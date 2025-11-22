@@ -2,6 +2,8 @@
 
 This document demonstrates how to use the MarkDeck MCP server to safely manipulate STATUS.md files.
 
+> **Use in other projects:** You can point the tools at any MarkDeck-formatted `STATUS.md` by passing an absolute or relative `statusPath`. Keep this repo (or a published build of `mcp`) available locally so the server can import the MarkDeck core parser/serializer.
+
 ## Installation
 
 First, build the MCP server:
