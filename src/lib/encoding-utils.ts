@@ -1,7 +1,7 @@
 const textDecoder = new TextDecoder('utf-8')
 
 export function decodeBase64ToUtf8(base64: string): string {
-  const normalized = base64.replaceAll('\n', '')
+  const normalized = base64.replace(/\n/g, '')
 
   if (typeof Buffer !== 'undefined') {
     return Buffer.from(normalized, 'base64').toString('utf8')
