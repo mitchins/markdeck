@@ -62,8 +62,10 @@ export function renderProject(project: Project, options: RenderOptions = {}): st
     lines.push('')
   }
   
-  // Calculate column widths
-  const laneWidth = 25 // Fixed width for lane title
+  // Calculate column widths dynamically
+  // Determine lane width based on longest lane name (with some padding)
+  const maxLaneNameLength = Math.max(...project.swimlanes.map(lane => lane.title.length))
+  const laneWidth = Math.min(Math.max(maxLaneNameLength + 2, 20), Math.floor(width * 0.3)) // Min 20, max 30% of width
   const colWidth = Math.floor((width - laneWidth - 8) / 3) // 3 columns, 8 for spacing
   
   // Render single header row

@@ -46,77 +46,91 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
 
   return (
     <div className="border-b border-border bg-card">
+      {/* Swimlane header row - separate from cards */}
       <div 
-        className={`grid ${gridColsClass} gap-4 p-4 cursor-pointer hover:bg-muted/50 transition-colors items-start`}
+        className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50 transition-colors border-b border-border/50"
         onClick={handleToggle}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            handleToggle()
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-expanded={!isCollapsed}
+        aria-label={`Toggle ${swimlane.title} swimlane`}
       >
-        {/* Swimlane title cell */}
-        <div className="flex items-center gap-3 min-w-[200px]">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <Button
             variant="ghost"
             size="sm"
-            className="h-6 w-6 p-0"
+            className="h-6 w-6 p-0 flex-shrink-0"
             onClick={(e) => {
               e.stopPropagation()
               handleToggle()
             }}
+            aria-label={isCollapsed ? 'Expand swimlane' : 'Collapse swimlane'}
           >
             {isCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
           </Button>
-          <div className="flex-1 min-w-0">
-            <h2 className="text-base font-semibold truncate">{swimlane.title}</h2>
-            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-              <span className="flex items-center gap-1">
-                <ListChecks size={12} className="text-accent" />
-                {cardsByStatus.todo?.length || 0}
-              </span>
-              {boardMode === 'full' && (
-                <span className="flex items-center gap-1">
-                  <CircleAlert size={12} className="text-warning" />
-                  {cardsByStatus.in_progress?.length || 0}
-                </span>
-              )}
-              <span className="flex items-center gap-1">
-                <BadgeCheck size={12} className="text-success" />
-                {cardsByStatus.done?.length || 0}
-              </span>
-              {blockedCount > 0 && (
-                <span className="flex items-center gap-1 text-destructive">
-                  🔴 {blockedCount}
-                </span>
-              )}
-              <span className="bg-background px-2 py-0.5 rounded-full ml-auto">
-                {totalCards}
-              </span>
-            </div>
-          </div>
+          <h2 className="text-base font-semibold truncate">{swimlane.title}</h2>
         </div>
+        <div className="flex items-center gap-3 text-xs text-muted-foreground flex-shrink-0">
+          <span className="flex items-center gap-1">
+            <ListChecks size={12} className="text-accent" />
+            {cardsByStatus.todo?.length || 0}
+          </span>
+          {boardMode === 'full' && (
+            <span className="flex items-center gap-1">
+              <CircleAlert size={12} className="text-warning" />
+              {cardsByStatus.in_progress?.length || 0}
+            </span>
+          )}
+          <span className="flex items-center gap-1">
+            <BadgeCheck size={12} className="text-success" />
+            {cardsByStatus.done?.length || 0}
+          </span>
+          {blockedCount > 0 && (
+            <span className="flex items-center gap-1 text-destructive">
+              🔴 {blockedCount}
+            </span>
+          )}
+          <span className="bg-background px-2 py-0.5 rounded-full">
+            {totalCards}
+          </span>
+        </div>
+      </div>
 
-        {/* Column cells - render even when collapsed to maintain grid structure */}
-        {columns.map((statusCol: StatusColumn) => {
-          const statusCards = cardsByStatus[statusCol.key] || []
-          
-          return (
-            <div
-              key={statusCol.key}
-              className={`min-h-[80px] ${isCollapsed ? 'opacity-30' : ''}`}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault()
-                const cardId = e.dataTransfer.getData('cardId')
-                if (cardId) {
-                  onCardDrop(cardId, statusCol.key)
-                }
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <AnimatePresence>
-                {!isCollapsed && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+      {/* Cards grid - aligned with header columns */}
+      <AnimatePresence>
+        {!isCollapsed && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className={`grid ${gridColsClass} gap-4 p-4`}>
+              {/* Empty cell for swimlane title column */}
+              <div />
+              
+              {/* Column cells */}
+              {columns.map((statusCol: StatusColumn) => {
+                const statusCards = cardsByStatus[statusCol.key] || []
+                
+                return (
+                  <div
+                    key={statusCol.key}
+                    className="min-h-[80px]"
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault()
+                      const cardId = e.dataTransfer.getData('cardId')
+                      if (cardId) {
+                        onCardDrop(cardId, statusCol.key)
+                      }
+                    }}
                   >
                     <ScrollArea className="max-h-[400px]">
                       <div className="space-y-2 pr-2">
@@ -143,13 +157,13 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
                         )}
                       </div>
                     </ScrollArea>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  </div>
+                )
+              })}
             </div>
-          )
-        })}
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
