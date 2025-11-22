@@ -5,6 +5,7 @@
  */
 
 import { Octokit } from 'octokit'
+import { decodeBase64ToUtf8 } from '@/lib/encoding-utils'
 
 type OctokitError = {
   status?: number
@@ -62,10 +63,18 @@ export class GitHubClient {
       })
 
       if ('content' in response.data) {
+        const encoding = response.data.encoding || 'base64'
+
+        if (encoding !== 'base64') {
+          throw new Error(`Unsupported encoding: ${encoding}`)
+        }
+
+        const content = decodeBase64ToUtf8(response.data.content || '')
+
         return {
-          content: Buffer.from(response.data.content, 'base64').toString('utf-8'),
+          content,
           sha: response.data.sha,
-          encoding: response.data.encoding as string,
+          encoding,
           size: response.data.size,
         }
       }
@@ -93,7 +102,7 @@ export class GitHubClient {
       throw new Error('GitHub token required to update files')
     }
     
-    const encoded = Buffer.from(content).toString('base64')
+    const encoded = Buffer.from(content, 'utf8').toString('base64')
 
     const response = await this.octokit.rest.repos.createOrUpdateFileContents({
       owner,

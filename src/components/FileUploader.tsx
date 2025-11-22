@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card'
 import { ArrowUp, FileText, Star, Folder } from 'lucide-react'
 import { DEMO_STATUS_MD, MARKDECK_STATUS_MD } from '@/lib/demo-data'
 import { toast } from 'sonner'
+import { decodeBase64ToUtf8 } from '@/lib/encoding-utils'
 
 interface FileUploaderProps {
   onFileLoad: (content: string) => void
@@ -117,10 +118,10 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
 
       const data = await response.json()
       
-      // Safely decode base64 content
+      // Safely decode base64 content with UTF-8 support
       let content: string
       try {
-        content = atob(data.content)
+        content = decodeBase64ToUtf8(data.content)
       } catch (decodeError) {
         console.error('Failed to decode base64 content:', decodeError)
         throw new Error('Failed to decode file content - file may be corrupted')
