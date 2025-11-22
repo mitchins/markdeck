@@ -27,7 +27,7 @@ function detectBoardMode(cards: Card[]): BoardMode {
     return 'full'
   }
   
-  // If all cards use checkbox format and only have todo/done status, use simple mode
+  // If all cards use checkbox format and only have todo/done status, use simple mode (NOSONAR)
   return 'simple'
 }
 

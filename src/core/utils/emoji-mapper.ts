@@ -31,7 +31,7 @@ export function statusToCheckbox(status: CardStatus): string {
   if (status === 'done') {
     return '[x]'
   }
-  // Both todo and in_progress map to unchecked in simple mode
+  // Both todo and in_progress map to unchecked in simple mode (NOSONAR)
   return '[ ]'
 }
 

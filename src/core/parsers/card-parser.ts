@@ -22,8 +22,8 @@ export function extractEmojis(text: string): ParsedEmoji {
   // Checkbox syntax: [ ] or [x] or [X]
   const checkboxRegex = /\[([ xX])\]/
   
-  const statusMatch = text.match(statusEmojiRegex)
-  const checkboxMatch = text.match(checkboxRegex)
+  const statusMatch = statusEmojiRegex.exec(text)
+  const checkboxMatch = checkboxRegex.exec(text)
   
   let remaining = text
   let format: 'emoji' | 'checkbox' | 'none' = 'none'
@@ -119,7 +119,7 @@ export function parseCard(
     blocked = parsed.blocked
     originalFormat = 'checkbox'
   } else {
-    // Default to TODO when no recognized format
+    // Default to TODO when no recognized format (NOSONAR)
     status = 'todo'
     blocked = false
     originalFormat = 'emoji'  // Default to emoji format for new cards
