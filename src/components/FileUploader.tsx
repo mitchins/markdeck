@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
@@ -18,6 +18,15 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
   const [pasteContent, setPasteContent] = useState('')
   const [isUploading, setIsUploading] = useState(false)
   const [githubUrl, setGithubUrl] = useState('')
+
+  const utf8Decoder = useMemo(() => new TextDecoder('utf-8'), [])
+
+  const decodeBase64ToUtf8 = (base64: string) => {
+    const normalized = base64.replace(/\n/g, '')
+    const binaryString = atob(normalized)
+    const bytes = Uint8Array.from(binaryString, char => char.charCodeAt(0))
+    return utf8Decoder.decode(bytes)
+  }
 
   const handleFileSelect = (file: File) => {
     // Check file type - both extension and MIME type for security
@@ -117,10 +126,10 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
 
       const data = await response.json()
       
-      // Safely decode base64 content
+      // Safely decode base64 content with UTF-8 support
       let content: string
       try {
-        content = atob(data.content)
+        content = decodeBase64ToUtf8(data.content)
       } catch (decodeError) {
         console.error('Failed to decode base64 content:', decodeError)
         throw new Error('Failed to decode file content - file may be corrupted')
