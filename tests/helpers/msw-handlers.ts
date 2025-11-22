@@ -75,7 +75,7 @@ export const handlers = [
         name: body.path || 'STATUS.md',
         path: body.path || 'STATUS.md',
         sha: 'new-sha-' + Date.now(),
-        size: body.content ? atob(body.content).length : 0,
+        size: body.content ? Buffer.from(body.content, 'base64').length : 0,
         type: 'file',
       },
       commit: {

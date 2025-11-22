@@ -52,8 +52,6 @@ describe('Real GitHub STATUS.md Integration', () => {
       return acc
     }, {} as Record<string, number>)
     
-    console.log('Status distribution:', statusCounts)
-    
     // KEY TEST: Cards should NOT all be 'todo' - this was the bug
     // When Unicode encoding was broken, all emojis were garbled and cards defaulted to 'todo'
     expect(statusCounts.done).toBeGreaterThan(0)
