@@ -78,6 +78,9 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
       title: title.trim(),
       description: description.trim() || undefined,
       status,
+      ...(card.originalFormat === 'checkbox' && status === 'in_progress'
+        ? { originalFormat: 'emoji' as const }
+        : {}),
     }
 
     onSave(updatedCard)
