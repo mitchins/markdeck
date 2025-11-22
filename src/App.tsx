@@ -14,6 +14,7 @@ import { parseStatusMarkdown, projectToMarkdown } from '@/lib/parser'
 import type { ParsedStatus, KanbanCard, CardStatus } from '@/lib/types'
 import { Download, Eye, FileText, ArrowsClockwise, Kanban, Info, GithubLogo, Upload } from '@phosphor-icons/react'
 import { toast } from 'sonner'
+import { decodeBase64ToUtf8, encodeUtf8ToBase64 } from '@/lib/encoding-utils'
 
 function App() {
   const [parsedData, setParsedData] = useKV<ParsedStatus | null>('parsed-status', null)
@@ -58,7 +59,7 @@ function App() {
       }
 
       const data = await response.json()
-      const content = atob(data.content)
+      const content = decodeBase64ToUtf8(data.content)
       
       const parsed = parseStatusMarkdown(content)
       setParsedData(parsed)
@@ -183,7 +184,7 @@ function App() {
             },
             body: JSON.stringify({
               message: 'Update STATUS.md via MarkDeck',
-              content: btoa(updated),
+              content: encodeUtf8ToBase64(updated),
               sha: fileData.sha,
             }),
           }
