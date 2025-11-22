@@ -112,7 +112,7 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
             transition={{ duration: 0.2 }}
           >
             <div className={`grid ${gridColsClass} gap-4 p-4`}>
-              {/* Empty cell for swimlane title column */}
+              {/* Empty cell for swimlane title column - maintains grid alignment with header */}
               <div />
               
               {/* Column cells */}
