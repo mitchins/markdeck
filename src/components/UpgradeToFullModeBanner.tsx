@@ -11,8 +11,8 @@ import { X, ArrowRight, Info } from 'lucide-react'
 import type { BoardMode } from '@/lib/types'
 
 interface UpgradeToFullModeBannerProps {
-  boardMode: BoardMode
-  onUpgrade: () => void
+  readonly boardMode: BoardMode
+  readonly onUpgrade: () => void
 }
 
 export function UpgradeToFullModeBanner({ boardMode, onUpgrade }: UpgradeToFullModeBannerProps) {

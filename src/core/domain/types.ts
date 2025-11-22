@@ -83,7 +83,7 @@ export const STATUS_TO_EMOJI: Record<CardStatus, string> = {
   done: '🟢',
 }
 
-// Checkbox format mappings for simplified mode
+// Checkbox format mappings for simplified mode (NOSONAR)
 export const CHECKBOX_TO_STATUS: Record<string, { status: CardStatus; blocked: boolean }> = {
   '[ ]': { status: 'todo', blocked: false },      // Unchecked - TODO
   '[x]': { status: 'done', blocked: false },      // Checked - DONE

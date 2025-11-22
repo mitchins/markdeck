@@ -38,7 +38,7 @@ export function serializeProject(project: Project): string {
     let statusMarker: string
     
     if (card.originalFormat === 'checkbox') {
-      // Use checkbox format - simple mode only supports todo/done
+      // Use checkbox format - simple mode only supports todo/done (NOSONAR)
       statusMarker = statusToCheckbox(card.status)
     } else {
       // Use emoji format with RYGBO based on (status, blocked)

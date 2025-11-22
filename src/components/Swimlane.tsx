@@ -9,12 +9,12 @@ import { BadgeCheck, CircleAlert, ChevronDown, ChevronUp, ListChecks } from 'luc
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface SwimlaneProps {
-  swimlane: SwimlaneType
-  cards: KanbanCardType[]
-  onCardDrop: (cardId: string, newStatus: CardStatus) => void
-  onCardClick: (card: KanbanCardType) => void
-  onToggleCollapse?: (laneId: string) => void
-  boardMode?: BoardMode
+  readonly swimlane: SwimlaneType
+  readonly cards: KanbanCardType[]
+  readonly onCardDrop: (cardId: string, newStatus: CardStatus) => void
+  readonly onCardClick: (card: KanbanCardType) => void
+  readonly onToggleCollapse?: (laneId: string) => void
+  readonly boardMode?: BoardMode
 }
 
 const columnConfig: Record<CardStatus, {
@@ -52,7 +52,7 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
     onToggleCollapse?.(swimlane.id)
   }
 
-  // For simple mode, only show TODO and DONE columns
+  // For simple mode, only show TODO and DONE columns (NOSONAR)
   const columnsToShow = boardMode === 'simple' 
     ? STATUS_COLUMNS.filter(col => col.key === 'todo' || col.key === 'done')
     : STATUS_COLUMNS
