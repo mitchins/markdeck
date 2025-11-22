@@ -67,7 +67,7 @@ export function renderProject(project: Project, options: RenderOptions = {}): st
   const colWidth = Math.floor((width - laneWidth - 8) / 3) // 3 columns, 8 for spacing
   
   // Render single header row
-  lines.push(renderHeaderRow(laneWidth, colWidth, width))
+  lines.push(renderHeaderRow(laneWidth, colWidth))
   lines.push(separator('═', width))
   
   // Render swimlanes as rows
@@ -101,7 +101,7 @@ export function renderProject(project: Project, options: RenderOptions = {}): st
 /**
  * Render the single header row for all columns
  */
-function renderHeaderRow(laneWidth: number, colWidth: number, totalWidth: number): string {
+function renderHeaderRow(laneWidth: number, colWidth: number): string {
   const parts: string[] = []
   
   // Lane title header

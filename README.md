@@ -89,6 +89,17 @@ When using checkbox format, MarkDeck displays an upgrade banner allowing you to 
 
 **Example:** See [STATUS.md](STATUS.md) for a complete working example.
 
+## Board Layout
+
+MarkDeck uses a **table-style layout** with a single header row shared across all swimlanes:
+
+- **Single Header Row**: At the top of the board, one row displays all column headers (TODO, IN PROGRESS, DONE)
+- **Swimlanes as Rows**: Each swimlane appears as a row beneath the shared headers
+- **Grid Structure**: Cards are positioned in the appropriate column for their status
+- **Empty States**: Empty columns show "—" or "No items" to maintain the grid structure
+
+This layout applies to both the **Web UI** and **Terminal (TUI)** viewer, providing a consistent experience across interfaces. The underlying STATUS.md format and domain model remain unchanged—this is purely a presentation layer improvement.
+
 ## Architecture
 
 MarkDeck follows a layered architecture:
