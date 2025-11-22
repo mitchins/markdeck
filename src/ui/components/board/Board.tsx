@@ -12,26 +12,7 @@ import { useSwimlanes, useCards } from '@/application'
 import { useAppStore } from '@/application/state/app-store'
 import type { Card, CardStatus } from '@/core'
 import { STATUS_COLUMNS } from '@/core'
-import type { LucideIcon } from 'lucide-react'
-import { BadgeCheck, CircleAlert, ListChecks } from 'lucide-react'
-
-const columnConfig: Record<CardStatus, {
-  icon: LucideIcon
-  color: string
-}> = {
-  todo: {
-    icon: ListChecks,
-    color: 'text-accent',
-  },
-  in_progress: {
-    icon: CircleAlert,
-    color: 'text-warning',
-  },
-  done: {
-    icon: BadgeCheck,
-    color: 'text-success',
-  },
-}
+import { getColumnIcon, getColumnColor } from '@/lib/column-config'
 
 export function Board() {
   const { swimlanes } = useSwimlanes()
@@ -74,11 +55,11 @@ export function Board() {
       <div className={`grid ${gridColsClass} gap-4 p-4 bg-muted/30 border-b border-border sticky top-0 z-10`}>
         <div className="font-semibold text-sm">Swimlane</div>
         {columnsToShow.map((statusCol) => {
-          const config = columnConfig[statusCol.key]
-          const Icon = config.icon
+          const Icon = getColumnIcon(statusCol.key)
+          const color = getColumnColor(statusCol.key)
           return (
             <div key={statusCol.key} className="flex items-center gap-2">
-              <Icon className={config.color} size={16} />
+              <Icon className={color} size={16} />
               <h3 className="text-xs font-medium tracking-wider">{statusCol.label}</h3>
             </div>
           )
