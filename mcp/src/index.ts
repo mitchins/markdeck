@@ -7,12 +7,13 @@
  * Reuses existing parser and serializer - no new state models introduced.
  */
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js'
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { Server } from '@modelcontextprotocol/sdk/dist/esm/server/index.js'
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/dist/esm/server/stdio.js'
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js'
+  type CallToolRequest,
+} from '@modelcontextprotocol/sdk/dist/esm/types.js'
 import { readFile, writeFile } from 'fs/promises'
 import { resolve } from 'path'
 import { parseStatusMarkdown } from '../../src/core/parsers/markdown-parser.js'
@@ -363,7 +364,7 @@ async function main() {
   })
 
   // Handle tool calls
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest) => {
     const { name, arguments: args } = request.params
 
     if (!args) {

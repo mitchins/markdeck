@@ -192,6 +192,14 @@ npm install
 npm run build
 ```
 
+### Zero-friction distribution
+
+The easiest path to make this usable across projects is to ship a single npm package that exposes the `markdeck-mcp` binary:
+
+1. Publish this folder as `@markdeck/mcp-server` (or unscoped `markdeck-mcp`) to npm. The package already declares a `bin` entry named `markdeck-mcp`, so consumers can install globally or run with `npx`.
+2. For contributors or CI that do not want a global install, keep `npm install` + `npm run build` available as a local fallback.
+3. When targeting other MarkDeck projects, pass the absolute path to their `STATUS.md` via `statusPath`—no extra setup beyond installing the package.
+
 ## Usage
 
 ### Standalone
