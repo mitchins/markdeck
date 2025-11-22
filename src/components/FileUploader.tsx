@@ -22,9 +22,9 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
   const utf8Decoder = useMemo(() => new TextDecoder('utf-8'), [])
 
   const decodeBase64ToUtf8 = (base64: string) => {
-    const normalized = base64.replace(/\n/g, '')
+    const normalized = base64.replaceAll('\n', '')
     const binaryString = atob(normalized)
-    const bytes = Uint8Array.from(binaryString, char => char.charCodeAt(0))
+    const bytes = Uint8Array.from(binaryString, (char) => char.codePointAt(0) || 0)
     return utf8Decoder.decode(bytes)
   }
 
