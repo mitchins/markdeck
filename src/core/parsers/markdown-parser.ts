@@ -2,13 +2,34 @@
  * Markdown parser for STATUS.md files
  * 
  * Main parser that converts STATUS.md markdown to domain model.
+ * Supports both emoji (RYGBO) and checkbox formats, auto-detecting board mode.
  */
 
-import type { Project, Note, Card } from '../domain/types'
+import type { Project, Note, Card, BoardMode } from '../domain/types'
 import { extractMetadata } from './metadata-extractor'
 import { parseSwimlanes, getCurrentSwimlane } from './swimlane-parser'
 import { parseCard } from './card-parser'
 import { IdGenerator } from '../utils/id-generator'
+
+/**
+ * Detect board mode based on card formats
+ * Simple mode: all cards use checkbox format
+ * Full mode: at least one card uses emoji format OR has in_progress status
+ */
+function detectBoardMode(cards: Card[]): BoardMode {
+  if (cards.length === 0) return 'full' // Default to full mode
+  
+  const hasEmojiCard = cards.some(card => card.originalFormat === 'emoji')
+  const hasInProgressCard = cards.some(card => card.status === 'in_progress')
+  
+  // If any card uses emoji format or has in_progress status, use full mode
+  if (hasEmojiCard || hasInProgressCard) {
+    return 'full'
+  }
+  
+  // If all cards use checkbox format and only have todo/done status, use simple mode
+  return 'simple'
+}
 
 export function parseStatusMarkdown(markdown: string): Project {
   const lines = markdown.split('\n')
@@ -103,11 +124,15 @@ export function parseStatusMarkdown(markdown: string): Project {
     })
   }
   
+  // Detect board mode based on parsed cards
+  const boardMode = detectBoardMode(cards)
+  
   return {
     metadata,
     cards,
     swimlanes,
     notes,
     rawMarkdown: markdown,
+    boardMode,
   }
 }

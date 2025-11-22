@@ -5,9 +5,12 @@
 import { describe, it, expect } from 'vitest'
 import { 
   statusToEmoji, 
+  statusToCheckbox,
   emojiToStatus, 
   emojiToStatusBlocked,
-  isStatusEmoji
+  checkboxToStatusBlocked,
+  isStatusEmoji,
+  isCheckbox
 } from '@/core/utils/emoji-mapper'
 import type { CardStatus } from '@/core/domain/types'
 
@@ -37,6 +40,20 @@ describe('Emoji Mapper', () => {
     it('should default to 🔵 for invalid status', () => {
       const result = statusToEmoji('invalid' as CardStatus, false)
       expect(result).toBe('🔵')
+    })
+  })
+
+  describe('status to checkbox mapping (simplified mode)', () => {
+    it('should map todo to [ ]', () => {
+      expect(statusToCheckbox('todo')).toBe('[ ]')
+    })
+
+    it('should map in_progress to [ ] (simple mode only has todo/done)', () => {
+      expect(statusToCheckbox('in_progress')).toBe('[ ]')
+    })
+
+    it('should map done to [x]', () => {
+      expect(statusToCheckbox('done')).toBe('[x]')
     })
   })
 
@@ -78,6 +95,29 @@ describe('Emoji Mapper', () => {
     })
   })
 
+  describe('checkbox to (status, blocked) mapping', () => {
+    it('should map [ ] to (todo, false)', () => {
+      const result = checkboxToStatusBlocked('[ ]')
+      expect(result).toEqual({ status: 'todo', blocked: false })
+    })
+
+    it('should map [x] to (done, false)', () => {
+      const result = checkboxToStatusBlocked('[x]')
+      expect(result).toEqual({ status: 'done', blocked: false })
+    })
+
+    it('should map [X] to (done, false)', () => {
+      const result = checkboxToStatusBlocked('[X]')
+      expect(result).toEqual({ status: 'done', blocked: false })
+    })
+
+    it('should return null for invalid checkbox format', () => {
+      expect(checkboxToStatusBlocked('[?]')).toBeNull()
+      expect(checkboxToStatusBlocked('[ x]')).toBeNull()
+      expect(checkboxToStatusBlocked('[x ]')).toBeNull()
+    })
+  })
+
   describe('legacy emojiToStatus mapping', () => {
     it('should map 🔵 to todo', () => {
       expect(emojiToStatus('🔵')).toBe('todo')
@@ -115,6 +155,22 @@ describe('Emoji Mapper', () => {
       expect(isStatusEmoji('❗')).toBe(false)
       expect(isStatusEmoji('❌')).toBe(false)
       expect(isStatusEmoji('🔥')).toBe(false)
+    })
+  })
+
+  describe('checkbox detection', () => {
+    it('should return true for valid checkboxes', () => {
+      expect(isCheckbox('[ ]')).toBe(true)
+      expect(isCheckbox('[x]')).toBe(true)
+      expect(isCheckbox('[X]')).toBe(true)
+    })
+
+    it('should return false for invalid checkboxes', () => {
+      expect(isCheckbox('[?]')).toBe(false)
+      expect(isCheckbox('[ x]')).toBe(false)
+      expect(isCheckbox('[x ]')).toBe(false)
+      expect(isCheckbox('[]')).toBe(false)
+      expect(isCheckbox('')).toBe(false)
     })
   })
 })

@@ -27,6 +27,7 @@ export interface Card {
   description?: string
   links: string[]
   originalLine: number
+  originalFormat?: 'emoji' | 'checkbox'  // Track original format for round-trip preservation
 }
 
 export interface Swimlane {
@@ -47,12 +48,15 @@ export interface Note {
   section: string
 }
 
+export type BoardMode = 'simple' | 'full'
+
 export interface Project {
   metadata: ProjectMetadata
   cards: Card[]
   swimlanes: Swimlane[]
   notes: Note[]
   rawMarkdown: string
+  boardMode?: BoardMode  // Auto-detected board mode (simple for checkboxes, full for emojis)
 }
 
 // RYGBO emoji mappings - emojis map to (status, blocked) tuples
@@ -77,4 +81,11 @@ export const STATUS_TO_EMOJI: Record<CardStatus, string> = {
   todo: '🔵',
   in_progress: '🟡',
   done: '🟢',
+}
+
+// Checkbox format mappings for simplified mode
+export const CHECKBOX_TO_STATUS: Record<string, { status: CardStatus; blocked: boolean }> = {
+  '[ ]': { status: 'todo', blocked: false },      // Unchecked - TODO
+  '[x]': { status: 'done', blocked: false },      // Checked - DONE
+  '[X]': { status: 'done', blocked: false },      // Checked (uppercase) - DONE
 }
