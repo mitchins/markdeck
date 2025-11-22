@@ -14,7 +14,7 @@
         "build:mcp": "cd mcp && npm run build",
         "lint": "eslint . && cd packages/tui && npm run lint",
         "markdeck-tui": "node packages/tui/dist/cli.js",
-        "markdeck-mcp": "cd mcp && npm run build && node dist/index.js",
+        "markdeck-mcp": "cd mcp && npm run build && node dist/mcp/src/index.js",
         "optimize": "vite optimize",
         "preview": "vite preview",
         "test": "vitest",
