@@ -13,6 +13,7 @@ export type {
   Swimlane,
   Note,
   StatusColumn,
+  BoardMode,
 } from '@/core'
 
 export { 
