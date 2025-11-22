@@ -10,14 +10,22 @@
     Parses TODO/IN PROGRESS/DONE columns with RYGBO emojis
     Blocked as modifier (🔴 for blocked TODO, 🟧 for blocked IN PROGRESS)
     Handles indented context and descriptions
+    **NEW:** Supports simple checkbox format ([ ] / [x]) for universal compatibility
+- 🟢 Dual board mode support
+    Simple mode: 2-column layout (TODO | DONE) for checkbox-based files
+    Full mode: 3-column layout (TODO | IN PROGRESS | DONE) with RYGBO emojis
+    Auto-detection of mode based on file format
+    One-click upgrade from simple to full mode
 - 🟢 Three-column Kanban board UI
     Drag-and-drop card movement
     Visual state indicators with RYGBO status emojis (🔵🟡🔴🟧🟢)
     Blocked cards displayed with visual indicator in their column
     Responsive design with TailwindCSS 4
+    Adaptive 2-column or 3-column layout based on board mode
 - 🟢 Round-trip safe serialization
     Preserves non-card Markdown
     Maintains formatting and structure
+    Preserves original format (checkbox or emoji) per card
 - 🟡 GitHub provider integration
     Basic pull/push functionality works
     Need better error handling
@@ -46,9 +54,12 @@
 ## 🧪 TESTING & QUALITY
 
 - 🟢 Unit test coverage
-    90 tests passing
+    264 tests passing (up from 90)
     Core parsers fully tested
+    Checkbox format parsing tested
+    Emoji mapper with dual format support
     Domain validation tested
+    Board mode upgrade tested
 - 🟢 Integration tests
     Board interactions tested
     Provider system tested
@@ -71,6 +82,8 @@
     Installation instructions
     Tech stack overview
     Testing commands
+    Dual format documentation (emoji + checkbox)
+    Simple mode and upgrade path explained
 - 🟢 Architecture documentation
     System design documented
     ADRs for key decisions
@@ -79,6 +92,9 @@
     Lightweight CLI for viewing STATUS.md
     Zero dependencies, pure ANSI rendering
     Works with any terminal
+- 🟢 Example files
+    Simple checkbox example (examples/simple-checklist.md)
+    Full emoji format in STATUS.md
 - 🟡 Contributing guide
     Need CONTRIBUTING.md
     Issue templates needed
