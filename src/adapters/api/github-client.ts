@@ -62,10 +62,13 @@ export class GitHubClient {
       })
 
       if ('content' in response.data) {
+        const encoding = (response.data.encoding || 'base64') as BufferEncoding
+        const normalizedContent = (response.data.content || '').replace(/\n/g, '')
+
         return {
-          content: Buffer.from(response.data.content, 'base64').toString('utf-8'),
+          content: Buffer.from(normalizedContent, encoding).toString('utf8'),
           sha: response.data.sha,
-          encoding: response.data.encoding as string,
+          encoding: encoding,
           size: response.data.size,
         }
       }
@@ -93,7 +96,7 @@ export class GitHubClient {
       throw new Error('GitHub token required to update files')
     }
     
-    const encoded = Buffer.from(content).toString('base64')
+    const encoded = Buffer.from(content, 'utf8').toString('base64')
 
     const response = await this.octokit.rest.repos.createOrUpdateFileContents({
       owner,
