@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Sheet,
   SheetContent,
@@ -22,6 +22,7 @@ import { STATUS_COLUMNS } from '@/lib/types'
 import type { LucideIcon } from 'lucide-react'
 import { BadgeCheck, CircleAlert, ListChecks, Save } from 'lucide-react'
 import { toast } from 'sonner'
+import { useAppStore } from '@/application/state/app-store'
 
 interface CardDetailDrawerProps {
   card: KanbanCard | null
@@ -46,14 +47,23 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [status, setStatus] = useState<CardStatus>('in_progress')
+  const boardMode = useAppStore((state) => state.project?.boardMode || 'full')
+
+  const allowedStatuses = useMemo<CardStatus[]>(
+    () => (boardMode === 'simple' ? ['todo', 'done'] : ['todo', 'in_progress', 'done']),
+    [boardMode]
+  )
 
   useEffect(() => {
     if (card) {
+      const normalizedStatus = allowedStatuses.includes(card.status)
+        ? card.status
+        : allowedStatuses[0]
       setTitle(card.title)
       setDescription(card.description || '')
-      setStatus(card.status)
+      setStatus(normalizedStatus)
     }
-  }, [card])
+  }, [card, allowedStatuses])
 
   const handleSave = () => {
     if (!card) return
@@ -68,6 +78,9 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
       title: title.trim(),
       description: description.trim() || undefined,
       status,
+      ...(card.originalFormat === 'checkbox' && status === 'in_progress'
+        ? { originalFormat: 'emoji' as const }
+        : {}),
     }
 
     onSave(updatedCard)
@@ -105,7 +118,7 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {STATUS_COLUMNS.map((col) => {
+                {STATUS_COLUMNS.filter((col) => allowedStatuses.includes(col.key)).map((col) => {
                   const Icon = statusIconMap[col.key]
                   const color = statusColorMap[col.key]
                   return (

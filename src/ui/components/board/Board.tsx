@@ -2,6 +2,7 @@
  * Board component
  * 
  * Main Kanban board that displays swimlanes with columns and cards.
+ * Supports both simple (2-column) and full (3-column) modes.
  */
 
 import { Swimlane } from './Swimlane'
@@ -13,6 +14,7 @@ export function Board() {
   const { swimlanes } = useSwimlanes()
   const { cards, moveCard } = useCards()
   const actions = useAppStore(state => state.actions)
+  const project = useAppStore(state => state.project)
   
   const handleCardDrop = (cardId: string, newStatus: CardStatus) => {
     moveCard(cardId, newStatus)
@@ -31,6 +33,8 @@ export function Board() {
     )
   }
   
+  const boardMode = project?.boardMode || 'full'
+  
   return (
     <div className="space-y-4 pb-8">
       {swimlanes.map((swimlane) => (
@@ -40,6 +44,7 @@ export function Board() {
           cards={cards.filter(card => card.laneId === swimlane.id)}
           onCardDrop={handleCardDrop}
           onCardClick={handleCardClick}
+          boardMode={boardMode}
         />
       ))}
     </div>
