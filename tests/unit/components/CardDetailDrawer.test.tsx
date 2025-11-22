@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { CardDetailDrawer } from '@/components/CardDetailDrawer'
 import { useAppStore } from '@/application/state/app-store'
@@ -70,5 +70,33 @@ describe('CardDetailDrawer', () => {
     render(<CardDetailDrawer card={inProgressCard} open onClose={() => {}} onSave={() => {}} />)
 
     expect(screen.getByRole('combobox')).toHaveTextContent('TODO')
+  })
+
+  it('upgrades checkbox cards to emoji format when selecting in-progress in full mode', async () => {
+    const onSave = vi.fn()
+    const checkboxCard: Card = { ...baseCard, originalFormat: 'checkbox' }
+
+    useAppStore.setState((state) => ({
+      ...state,
+      project: {
+        metadata: { title: 'Test Project' },
+        cards: [checkboxCard],
+        swimlanes: [{ id: 'lane-1', title: 'Lane 1', order: 0 }],
+        notes: [],
+        rawMarkdown: '',
+        boardMode: 'full',
+      },
+    }))
+
+    render(<CardDetailDrawer card={checkboxCard} open onClose={() => {}} onSave={onSave} />)
+
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('combobox'))
+    await user.click(screen.getByRole('option', { name: 'IN PROGRESS' }))
+    await user.click(screen.getByRole('button', { name: 'Save Changes' }))
+
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ status: 'in_progress', originalFormat: 'emoji' })
+    )
   })
 })
