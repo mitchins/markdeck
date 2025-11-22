@@ -8,9 +8,9 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { readFile, writeFile, unlink } from 'fs/promises'
 import { resolve } from 'path'
-import { parseStatusMarkdown } from '@/core/parsers/markdown-parser'
-import { projectToMarkdown } from '@/core/parsers/markdown-serializer'
-import type { Project } from '@/core/domain/types'
+import { parseStatusMarkdown } from '../../src/core/parsers/markdown-parser.js'
+import { projectToMarkdown } from '../../src/core/parsers/markdown-serializer.js'
+import type { Project } from '../../src/core/domain/types.js'
 
 // Test file path
 const TEST_FILE = resolve('/tmp/test-status.md')

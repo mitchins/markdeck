@@ -15,10 +15,10 @@ import {
 } from '@modelcontextprotocol/sdk/types.js'
 import { readFile, writeFile } from 'fs/promises'
 import { resolve } from 'path'
-import { parseStatusMarkdown } from '@/core/parsers/markdown-parser'
-import { projectToMarkdown } from '@/core/parsers/markdown-serializer'
-import type { Card, CardStatus, Project } from '@/core/domain/types'
-import { IdGenerator } from '@/core/utils/id-generator'
+import { parseStatusMarkdown } from '../../src/core/parsers/markdown-parser.js'
+import { projectToMarkdown } from '../../src/core/parsers/markdown-serializer.js'
+import type { Card, CardStatus, Project } from '../../src/core/domain/types.js'
+import { IdGenerator } from '../../src/core/utils/id-generator.js'
 
 /**
  * Read and parse a STATUS.md file
@@ -118,6 +118,20 @@ async function addCard(
 ): Promise<Project> {
   const project = await readStatusFile(statusPath)
   const idGenerator = new IdGenerator()
+  
+  // Seed the ID generator with existing card IDs to prevent collisions
+  project.cards.forEach(card => {
+    // Extract the base ID and count from existing IDs
+    const match = card.id.match(/^(.+?)(?:-(\d+))?$/)
+    if (match) {
+      const baseId = match[1]
+      const count = match[2] ? parseInt(match[2], 10) : 0
+      const existingCount = idGenerator['usedIds'].get(baseId) || 0
+      if (count >= existingCount) {
+        idGenerator['usedIds'].set(baseId, count)
+      }
+    }
+  })
   
   // Find the last card in the target lane to determine insertion point
   const laneCards = project.cards.filter(c => c.laneId === laneId)
