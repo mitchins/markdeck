@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card'
 import { ArrowUp, FileText, Star, Folder } from 'lucide-react'
 import { DEMO_STATUS_MD, MARKDECK_STATUS_MD } from '@/lib/demo-data'
 import { toast } from 'sonner'
+import { decodeBase64ToUtf8 } from '@/lib/encoding-utils'
 
 interface FileUploaderProps {
   onFileLoad: (content: string) => void
@@ -18,15 +19,6 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
   const [pasteContent, setPasteContent] = useState('')
   const [isUploading, setIsUploading] = useState(false)
   const [githubUrl, setGithubUrl] = useState('')
-
-  const utf8Decoder = useMemo(() => new TextDecoder('utf-8'), [])
-
-  const decodeBase64ToUtf8 = (base64: string) => {
-    const normalized = base64.replaceAll('\n', '')
-    const binaryString = atob(normalized)
-    const bytes = Uint8Array.from(binaryString, (char) => char.codePointAt(0) || 0)
-    return utf8Decoder.decode(bytes)
-  }
 
   const handleFileSelect = (file: File) => {
     // Check file type - both extension and MIME type for security

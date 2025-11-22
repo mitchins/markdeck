@@ -5,6 +5,7 @@
  */
 
 import { Octokit } from 'octokit'
+import { decodeBase64ToUtf8 } from '@/lib/encoding-utils'
 
 type OctokitError = {
   status?: number
@@ -62,13 +63,18 @@ export class GitHubClient {
       })
 
       if ('content' in response.data) {
-        const encoding = (response.data.encoding || 'base64') as BufferEncoding
-        const normalizedContent = (response.data.content || '').replaceAll('\n', '')
+        const encoding = response.data.encoding || 'base64'
+
+        if (encoding !== 'base64') {
+          throw new Error(`Unsupported encoding: ${encoding}`)
+        }
+
+        const content = decodeBase64ToUtf8(response.data.content || '')
 
         return {
-          content: Buffer.from(normalizedContent, encoding).toString('utf8'),
+          content,
           sha: response.data.sha,
-          encoding: encoding,
+          encoding,
           size: response.data.size,
         }
       }
