@@ -17,6 +17,9 @@ export default defineConfig({
         'src/core/**/*.{ts,tsx}',
         'src/adapters/providers/*.{ts,tsx}',
         'src/application/state/*.{ts,tsx}',
+        'src/lib/encoding-utils.ts',
+        'src/adapters/api/github-client.ts',
+        'src/components/FileUploader.tsx',
       ],
       exclude: [
         'node_modules/',
@@ -26,15 +29,12 @@ export default defineConfig({
         '**/mockData.ts',
         '**/index.ts',           // Index files
         'packages/**',           // TUI package has its own tests
-        'src/components/**',     // UI components not yet tested
         'src/ui/**',             // UI layer not yet tested
         'src/application/hooks/**', // Hooks not yet tested
         'src/application/use-cases/**', // Use cases not yet tested
-        'src/adapters/api/**',   // API clients not yet tested
         'src/adapters/providers/github-provider.ts', // GitHub provider not yet tested
         'src/adapters/providers/provider-registry.ts', // Registry not yet tested
         'src/hooks/**',          // Hooks not yet tested
-        'src/lib/**',            // Lib utilities not yet tested
         'src/main.tsx',          // Entry point
         'src/App.tsx',           // App component not yet tested
         'src/ErrorFallback.tsx', // Error component not yet tested
