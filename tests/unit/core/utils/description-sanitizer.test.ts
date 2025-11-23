@@ -59,8 +59,8 @@ Normal text here`
 
   it('should handle empty descriptions', () => {
     expect(sanitizeDescription('')).toBe('')
-    expect(sanitizeDescription(null as any)).toBe(null)
-    expect(sanitizeDescription(undefined as any)).toBe(undefined)
+    expect(sanitizeDescription(null as unknown as string)).toBe(null)
+    expect(sanitizeDescription(undefined as unknown as string)).toBe(undefined)
   })
 
   it('should not modify headings that are not at start of line', () => {

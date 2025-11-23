@@ -29,7 +29,7 @@ export function sanitizeDescription(description: string): string {
     
     // Escape bullet points that start with status emojis or checkboxes
     // Pattern: `- 🔵`, `- 🟡`, `- 🔴`, `- 🟧`, `- 🟢`, `- [ ]`, `- [x]`, `- [X]`
-    if (line.trim().match(/^-\s+([🔵🟡🔴🟧🟢]|\[[xX\s]\])/)) {
+    if (line.trim().match(/^-\s+([🔵🟡🔴🟧🟢]|\[[xX\s]\])/u)) {
       return ' ' + line.trim()
     }
     
@@ -61,7 +61,7 @@ export function validateDescription(description: string): {
     }
     
     // Check for bullet points with status emojis/checkboxes
-    if (line.trim().match(/^-\s+([🔵🟡🔴🟧🟢]|\[[xX\s]\])/)) {
+    if (line.trim().match(/^-\s+([🔵🟡🔴🟧🟢]|\[[xX\s]\])/u)) {
       issues.push(`Line ${index + 1}: Bullet point with status emoji/checkbox will create a new card`)
     }
   })
