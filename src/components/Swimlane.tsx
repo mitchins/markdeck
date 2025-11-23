@@ -115,7 +115,7 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
                       }
                     }}
                   >
-                    <ScrollArea className="max-h-[400px]">
+                    <ScrollArea className="h-[400px]">
                       <div className="space-y-2 pr-2">
                         {statusCards.map((card) => (
                           <div
