@@ -115,7 +115,7 @@ describe('Swimlane', () => {
     const toggleButton = screen.getByRole('button', { name: /Toggle Test Lane swimlane/i })
     
     expect(toggleButton).toHaveAttribute('aria-expanded')
-    expect(toggleButton).toHaveAttribute('tabIndex', '0')
+    // Button elements are naturally focusable, so tabIndex is not needed
   })
 
   it('should toggle collapse on click', () => {

@@ -7,8 +7,8 @@ import type { StatusColumn } from '@/lib/types'
 import { getColumnIcon, getColumnColor } from '@/lib/column-config'
 
 interface BoardHeaderProps {
-  columnsToShow: StatusColumn[]
-  gridColsClass: string
+  readonly columnsToShow: StatusColumn[]
+  readonly gridColsClass: string
 }
 
 export function BoardHeader({ columnsToShow, gridColsClass }: BoardHeaderProps) {
