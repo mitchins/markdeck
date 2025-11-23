@@ -18,8 +18,13 @@ export default defineConfig({
         'src/adapters/providers/*.{ts,tsx}',
         'src/application/state/*.{ts,tsx}',
         'src/lib/encoding-utils.ts',
+        'src/lib/board-utils.ts',
+        'src/lib/column-config.ts',
         'src/adapters/api/github-client.ts',
         'src/components/FileUploader.tsx',
+        'src/components/BoardView.tsx',
+        'src/components/BoardHeader.tsx',
+        'src/components/Swimlane.tsx',
       ],
       exclude: [
         'node_modules/',
@@ -29,14 +34,14 @@ export default defineConfig({
         '**/mockData.ts',
         '**/index.ts',           // Index files
         'packages/**',           // TUI package has its own tests
-        'src/ui/**',             // UI layer not yet tested
+        'src/ui/components/board/Board.tsx', // Thin wrapper, logic tested in components
         'src/application/hooks/**', // Hooks not yet tested
         'src/application/use-cases/**', // Use cases not yet tested
         'src/adapters/providers/github-provider.ts', // GitHub provider not yet tested
         'src/adapters/providers/provider-registry.ts', // Registry not yet tested
         'src/hooks/**',          // Hooks not yet tested
         'src/main.tsx',          // Entry point
-        'src/App.tsx',           // App component not yet tested
+        'src/App.tsx',           // App component (minimal logic, delegates to BoardView)
         'src/ErrorFallback.tsx', // Error component not yet tested
       ],
       thresholds: {

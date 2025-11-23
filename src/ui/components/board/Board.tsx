@@ -3,12 +3,16 @@
  * 
  * Main Kanban board that displays swimlanes with columns and cards.
  * Supports both simple (2-column) and full (3-column) modes.
+ * 
+ * Layout: Single header row at top, swimlanes rendered as rows beneath.
  */
 
 import { Swimlane } from './Swimlane'
+import { BoardHeader } from '@/components/BoardHeader'
 import { useSwimlanes, useCards } from '@/application'
 import { useAppStore } from '@/application/state/app-store'
 import type { Card, CardStatus } from '@/core'
+import { getColumnsForMode, getGridClass } from '@/lib/board-utils'
 
 export function Board() {
   const { swimlanes } = useSwimlanes()
@@ -34,19 +38,27 @@ export function Board() {
   }
   
   const boardMode = project?.boardMode || 'full'
+  const columnsToShow = getColumnsForMode(boardMode)
+  const gridColsClass = getGridClass(boardMode)
   
   return (
-    <div className="space-y-4 pb-8">
-      {swimlanes.map((swimlane) => (
-        <Swimlane
-          key={swimlane.id}
-          swimlane={swimlane}
-          cards={cards.filter(card => card.laneId === swimlane.id)}
-          onCardDrop={handleCardDrop}
-          onCardClick={handleCardClick}
-          boardMode={boardMode}
-        />
-      ))}
+    <div className="space-y-0 pb-8">
+      <BoardHeader columnsToShow={columnsToShow} gridColsClass={gridColsClass} />
+      
+      {/* Swimlanes as rows */}
+      <div className="space-y-0">
+        {swimlanes.map((swimlane) => (
+          <Swimlane
+            key={swimlane.id}
+            swimlane={swimlane}
+            cards={cards.filter(card => card.laneId === swimlane.id)}
+            onCardDrop={handleCardDrop}
+            onCardClick={handleCardClick}
+            boardMode={boardMode}
+            columnsToShow={columnsToShow}
+          />
+        ))}
+      </div>
     </div>
   )
 }
