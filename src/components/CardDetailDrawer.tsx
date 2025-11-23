@@ -23,6 +23,7 @@ import type { LucideIcon } from 'lucide-react'
 import { BadgeCheck, CircleAlert, ListChecks, Save } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAppStore } from '@/application/state/app-store'
+import { sanitizeDescription } from '@/core/utils/description-sanitizer'
 
 interface CardDetailDrawerProps {
   card: KanbanCard | null
@@ -73,10 +74,13 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
       return
     }
 
+    // Sanitize description to prevent markdown injection
+    const sanitizedDescription = sanitizeDescription(description.trim())
+
     const updatedCard: KanbanCard = {
       ...card,
       title: title.trim(),
-      description: description.trim() || undefined,
+      description: sanitizedDescription || undefined,
       status,
       ...(card.originalFormat === 'checkbox' && status === 'in_progress'
         ? { originalFormat: 'emoji' as const }
@@ -144,7 +148,8 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
               className="min-h-[200px] font-mono text-xs"
             />
             <p className="text-xs text-muted-foreground">
-              Multi-line descriptions will be formatted as indented content in STATUS.md
+              Multi-line descriptions will be formatted as indented content in STATUS.md.
+              Special markdown patterns (headings and task list items) at the start of lines will be automatically escaped to prevent parsing issues.
             </p>
           </div>
 

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Button } from '@/components/ui/button'
 import { KanbanCard } from './KanbanCard'
 import type { KanbanCard as KanbanCardType, CardStatus, Swimlane as SwimlaneType, BoardMode, StatusColumn } from '@/lib/types'
 import { STATUS_COLUMNS } from '@/lib/types'
@@ -115,7 +114,7 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
                       }
                     }}
                   >
-                    <ScrollArea className="max-h-[400px]">
+                    <ScrollArea className="h-[400px]">
                       <div className="space-y-2 pr-2">
                         {statusCards.map((card) => (
                           <div
