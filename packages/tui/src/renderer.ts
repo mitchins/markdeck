@@ -62,17 +62,27 @@ export function renderProject(project: Project, options: RenderOptions = {}): st
     lines.push('')
   }
   
-  // Render swimlanes
+  // Calculate column widths dynamically
+  // Determine lane width based on longest lane name (with some padding)
+  const maxLaneNameLength = Math.max(...project.swimlanes.map(lane => lane.title.length))
+  const laneWidth = Math.min(Math.max(maxLaneNameLength + 2, 20), Math.floor(width * 0.3)) // Min 20, max 30% of width
+  const colWidth = Math.floor((width - laneWidth - 8) / 3) // 3 columns, 8 for spacing
+  
+  // Render single header row
+  lines.push(renderHeaderRow(laneWidth, colWidth))
+  lines.push(separator('═', width))
+  
+  // Render swimlanes as rows
   const sortedLanes = [...project.swimlanes].sort((a, b) => a.order - b.order)
   
   for (const lane of sortedLanes) {
-    lines.push(...renderSwimlaneColumns(lane, project.cards, width, highlightedCard))
-    lines.push('') // Spacing between swimlanes
+    lines.push(...renderSwimlaneRow(lane, project.cards, laneWidth, colWidth, highlightedCard))
+    lines.push(separator('─', width))
   }
   
   // Summary statistics - count blocked cards separately
   const stats = getProjectStats(project)
-  lines.push(separator('─', width))
+  lines.push('')
   lines.push(
     colorize('Summary: ', 'cyan', 'bold') +
     colorize(`${stats.total} cards`, 'white') +
@@ -91,17 +101,35 @@ export function renderProject(project: Project, options: RenderOptions = {}): st
 }
 
 /**
- * Render a single swimlane with cards in columns
+ * Render the single header row for all columns
  */
-function renderSwimlaneColumns(lane: Swimlane, allCards: Card[], width: number, highlightedCard?: string): string[] {
+function renderHeaderRow(laneWidth: number, colWidth: number): string {
+  const parts: string[] = []
+  
+  // Lane title header
+  const laneHeader = 'SWIMLANE'
+  const lanePadding = Math.max(0, laneWidth - laneHeader.length)
+  parts.push(colorize(laneHeader + ' '.repeat(lanePadding), 'cyan', 'bold'))
+  
+  // Column headers
+  for (const column of STATUS_COLUMNS) {
+    const headerText = `${column.emoji} ${column.label}`
+    const stripped = stripAnsi(headerText)
+    const padding = Math.max(0, colWidth - stripped.length)
+    parts.push(colorize(headerText, getStatusColor(column.key), 'bold') + ' '.repeat(padding))
+  }
+  
+  return parts.join('  ')
+}
+
+/**
+ * Render a single swimlane as a row with cards in columns
+ */
+function renderSwimlaneRow(lane: Swimlane, allCards: Card[], laneWidth: number, colWidth: number, highlightedCard?: string): string[] {
   const lines: string[] = []
   const laneCards = allCards.filter(card => card.laneId === lane.id)
   
-  // Swimlane header
-  lines.push(colorize(`▓▓ ${lane.title.toUpperCase()}`, 'blue', 'bold'))
-  lines.push(separator('─', width))
-  
-  // Group cards by status (3 columns: todo, in_progress, done)
+  // Group cards by status
   const cardsByStatus = STATUS_COLUMNS.reduce((acc, column) => {
     acc[column.key] = []
     return acc
@@ -111,21 +139,14 @@ function renderSwimlaneColumns(lane: Swimlane, allCards: Card[], width: number, 
     cardsByStatus[card.status].push(card)
   }
   
-  // Calculate column width (3 columns)
-  const colWidth = Math.floor((width - 6) / 3) // 6 chars for spacing
-  
   // Convert cards to rendered lines per column
   const columnLines: string[][] = STATUS_COLUMNS.map(column => {
     const cards = cardsByStatus[column.key]
     const colLines: string[] = []
     
-    // Column header
-    colLines.push(colorize(`${column.emoji} ${column.label}`, getStatusColor(column.key), 'bold'))
-    colLines.push(colorize('─'.repeat(colWidth), 'gray'))
-    
-    // Render cards
+    // Render cards (no column header here - it's in the shared header row)
     if (cards.length === 0) {
-      colLines.push(colorize('(empty)', 'gray'))
+      colLines.push(colorize('—', 'gray'))
     } else {
       for (const card of cards) {
         colLines.push(...renderCardCompact(card, colWidth, highlightedCard))
@@ -138,15 +159,29 @@ function renderSwimlaneColumns(lane: Swimlane, allCards: Card[], width: number, 
   // Find max height
   const maxHeight = Math.max(...columnLines.map(col => col.length))
   
-  // Render columns side by side
+  // Render lane title and columns side by side
   for (let row = 0; row < maxHeight; row++) {
     const rowParts: string[] = []
+    
+    // Lane title (only on first row)
+    if (row === 0) {
+      const laneTitle = lane.title.length > laneWidth - 2 
+        ? lane.title.substring(0, laneWidth - 5) + '...'
+        : lane.title
+      const lanePadding = Math.max(0, laneWidth - stripAnsi(laneTitle).length)
+      rowParts.push(colorize(laneTitle, 'blue', 'bold') + ' '.repeat(lanePadding))
+    } else {
+      rowParts.push(' '.repeat(laneWidth))
+    }
+    
+    // Column cells
     for (const col of columnLines) {
       const line = col[row] || ''
       const stripped = stripAnsi(line)
       const padding = Math.max(0, colWidth - stripped.length)
       rowParts.push(line + ' '.repeat(padding))
     }
+    
     lines.push(rowParts.join('  '))
   }
   

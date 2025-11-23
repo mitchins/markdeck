@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Swimlane } from '@/components/Swimlane'
+import { BoardView } from '@/components/BoardView'
 import { FileUploader } from '@/components/FileUploader'
 import { NotesPanel } from '@/components/NotesPanel'
 import { CardDetailDrawer } from '@/components/CardDetailDrawer'
@@ -404,21 +404,11 @@ function App() {
                 </AlertDescription>
               </Alert>
             ) : (
-              <div className="space-y-4">
-                {normalizedData.swimlanes.map((swimlane) => {
-                  const laneCards = normalizedData.cards.filter(card => card.laneId === swimlane.id)
-                  return (
-                    <Swimlane
-                      key={swimlane.id}
-                      swimlane={swimlane}
-                      cards={laneCards}
-                      onCardDrop={handleCardMove}
-                      onCardClick={handleCardClick}
-                      boardMode={normalizedData.boardMode || 'full'}
-                    />
-                  )
-                })}
-              </div>
+              <BoardView 
+                data={normalizedData}
+                onCardMove={handleCardMove}
+                onCardClick={handleCardClick}
+              />
             )}
           </TabsContent>
 
