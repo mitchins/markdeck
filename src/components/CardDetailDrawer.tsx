@@ -149,7 +149,7 @@ export function CardDetailDrawer({ card, open, onClose, onSave }: CardDetailDraw
             />
             <p className="text-xs text-muted-foreground">
               Multi-line descriptions will be formatted as indented content in STATUS.md.
-              Note: Headings (## or ###) and bullet points with status markers at the start of lines will be automatically escaped.
+              Special markdown patterns (headings and task list items) at the start of lines will be automatically escaped to prevent parsing issues.
             </p>
           </div>
 
