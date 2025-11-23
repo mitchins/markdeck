@@ -47,17 +47,9 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
   return (
     <div className="border-b border-border bg-card">
       {/* Swimlane header row - separate from cards */}
-      <div 
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50 transition-colors border-b border-border/50"
+      <button
+        className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50 transition-colors border-b border-border/50 w-full text-left bg-transparent border-0"
         onClick={handleToggle}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            handleToggle()
-          }
-        }}
-        role="button"
-        tabIndex={0}
         aria-expanded={!isCollapsed}
         aria-label={`Toggle ${swimlane.title} swimlane`}
       >
@@ -100,7 +92,7 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
             {totalCards}
           </span>
         </div>
-      </div>
+      </button>
 
       {/* Cards grid - aligned with header columns */}
       <AnimatePresence>

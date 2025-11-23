@@ -9,9 +9,9 @@ import type { ParsedStatus, KanbanCard, CardStatus } from '@/lib/types'
 import { getColumnsForMode, getGridClass } from '@/lib/board-utils'
 
 interface BoardViewProps {
-  data: ParsedStatus
-  onCardMove: (cardId: string, newStatus: CardStatus) => void
-  onCardClick: (card: KanbanCard) => void
+  readonly data: ParsedStatus
+  readonly onCardMove: (cardId: string, newStatus: CardStatus) => void
+  readonly onCardClick: (card: KanbanCard) => void
 }
 
 export function BoardView({ data, onCardMove, onCardClick }: BoardViewProps) {
