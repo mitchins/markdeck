@@ -54,18 +54,9 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
         aria-label={`Toggle ${swimlane.title} swimlane`}
       >
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 w-6 p-0 flex-shrink-0"
-            onClick={(e) => {
-              e.stopPropagation()
-              handleToggle()
-            }}
-            aria-label={isCollapsed ? 'Expand swimlane' : 'Collapse swimlane'}
-          >
+          <span className="inline-flex items-center justify-center h-6 w-6 flex-shrink-0">
             {isCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-          </Button>
+          </span>
           <h2 className="text-base font-semibold truncate">{swimlane.title}</h2>
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground flex-shrink-0">

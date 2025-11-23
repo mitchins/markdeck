@@ -130,8 +130,8 @@ describe('Swimlane', () => {
     const toggleButton = screen.getByRole('button', { name: /Toggle Test Lane swimlane/i })
     fireEvent.click(toggleButton)
     
-    // Check that collapse button is accessible
-    expect(screen.getByLabelText(/Expand swimlane/i)).toBeInTheDocument()
+    // After clicking, the aria-expanded attribute should change
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
   })
 
   it('should render cards in correct columns', () => {
