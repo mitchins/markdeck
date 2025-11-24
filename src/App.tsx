@@ -309,19 +309,28 @@ function App() {
                 <Kanban size={24} className="text-primary" weight="duotone" />
                 <h1 className="text-xl font-bold tracking-tight">{normalizedData.metadata.title}</h1>
               </div>
-              <div className="flex items-center gap-4 mt-1">
+              <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-muted-foreground">
                 {normalizedData.metadata.version && (
-                  <span className="text-xs text-muted-foreground">
-                    v{normalizedData.metadata.version}
+                  <span>
+                    STATUS.md version:
+                    <span className="ml-1 font-medium text-foreground/80">
+                      v{normalizedData.metadata.version}
+                    </span>
                   </span>
                 )}
                 {normalizedData.metadata.lastUpdated && (
-                  <span className="text-xs text-muted-foreground">
-                    Updated: {normalizedData.metadata.lastUpdated}
+                  <span>
+                    Status updated:
+                    <span className="ml-1 text-foreground/80">
+                      {normalizedData.metadata.lastUpdated}
+                    </span>
                   </span>
                 )}
-                <span className="text-xs text-muted-foreground">
-                  {normalizedData.cards.length} cards · {normalizedData.swimlanes.length} sections
+                <span>
+                  Board stats:
+                  <span className="ml-1 text-foreground/80">
+                    {normalizedData.cards.length} cards · {normalizedData.swimlanes.length} sections
+                  </span>
                 </span>
               </div>
             </div>
