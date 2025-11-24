@@ -26,6 +26,7 @@ npm run build
 - **Full Mode**: Three-column workflow (TODO → IN PROGRESS → DONE) with blocked status modifier
 - **Easy Upgrade**: Convert simple checkbox mode to full emoji mode with one click
 - **Dark Mode**: Automatic theme detection with manual light/dark/system toggle
+- **Deploy Badge**: Floating version chip (package version + commit hash) for Cloudflare builds
 - Round-trip safe: preserves all non-card markdown when saving
 - GitHub integration with personal access tokens
 - Local file mode for offline work
