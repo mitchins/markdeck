@@ -11,6 +11,8 @@ import { CardDetailDrawer } from '@/components/CardDetailDrawer'
 import { GitHubConnector } from '@/components/GitHubConnector'
 import { ProjectSelector } from '@/components/ProjectSelector'
 import { UpgradeToFullModeBanner } from '@/components/UpgradeToFullModeBanner'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { Toaster } from '@/components/ui/sonner'
 import { parseStatusMarkdown, projectToMarkdown } from '@/lib/parser'
 import { upgradeToFullMode } from '@/core/utils/board-mode-upgrade'
 import type { ParsedStatus, KanbanCard, CardStatus } from '@/lib/types'
@@ -269,6 +271,7 @@ function App() {
           </header>
 
           <div className="mb-6 flex items-center justify-center gap-2">
+            <ThemeToggle />
             {githubToken ? (
               <ProjectSelector
                 githubToken={githubToken}
@@ -323,6 +326,7 @@ function App() {
             </div>
 
             <div className="flex items-center gap-2">
+              <ThemeToggle />
               {githubToken && (
                 <ProjectSelector
                   githubToken={githubToken}
@@ -443,6 +447,7 @@ function App() {
         onConnect={handleGitHubConnect}
         onClose={() => setShowGitHubConnector(false)}
       />
+      <Toaster />
     </div>
   )
 }

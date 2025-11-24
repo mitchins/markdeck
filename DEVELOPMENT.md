@@ -52,7 +52,9 @@ markdeck/
 │       │   ├── board/                # Kanban board
 │       │   ├── card/                 # Card components
 │       │   ├── modals/               # Dialogs and modals
-│       │   └── layout/               # Header, tabs, layout
+│       │   ├── layout/               # Header, tabs, layout
+│       │   ├── theme-provider.tsx    # Theme context (next-themes)
+│       │   └── theme-toggle.tsx      # Dark mode toggle dropdown
 │       └── styles/                    # Global styles
 ├── packages/
 │   └── tui/                          # Terminal UI viewer
@@ -63,6 +65,15 @@ markdeck/
 │   └── e2e/                          # End-to-end tests
 └── docs/                             # [REMOVED - consolidated into this file]
 ```
+
+## Theme System (Dark Mode)
+
+**Components:** `theme-provider.tsx` wraps app, `theme-toggle.tsx` provides UI  
+**Implementation:** Uses `next-themes` (existing dep) with `prefers-color-scheme` detection  
+**Storage:** User preference saved in localStorage as `theme` key  
+**Styling:** CSS custom properties in `main.css` with `.dark` class overrides  
+**Options:** Light | Dark | System (auto-detects OS preference)  
+**Accessibility:** WCAG AA+ contrast, keyboard nav, ARIA labels, no FOUC
 
 ## Architecture Decisions
 
