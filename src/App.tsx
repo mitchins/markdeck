@@ -13,7 +13,7 @@ import { ProjectSelector } from '@/components/ProjectSelector'
 import { UpgradeToFullModeBanner } from '@/components/UpgradeToFullModeBanner'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Toaster } from '@/components/ui/sonner'
-import { BuildInfoBadge } from '@/components/BuildInfoBadge'
+import { BuildInfoButton } from '@/components/BuildInfoButton'
 import { parseStatusMarkdown, projectToMarkdown } from '@/lib/parser'
 import { upgradeToFullMode } from '@/core/utils/board-mode-upgrade'
 import type { ParsedStatus, KanbanCard, CardStatus } from '@/lib/types'
@@ -273,6 +273,7 @@ function App() {
 
           <div className="mb-6 flex items-center justify-center gap-2">
             <ThemeToggle />
+            <BuildInfoButton />
             {githubToken ? (
               <ProjectSelector
                 githubToken={githubToken}
@@ -337,6 +338,7 @@ function App() {
 
             <div className="flex items-center gap-2">
               <ThemeToggle />
+              <BuildInfoButton />
               {githubToken && (
                 <ProjectSelector
                   githubToken={githubToken}
@@ -458,7 +460,6 @@ function App() {
         onClose={() => setShowGitHubConnector(false)}
       />
       <Toaster />
-      <BuildInfoBadge />
     </div>
   )
 }
