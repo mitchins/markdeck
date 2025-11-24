@@ -5,8 +5,21 @@ import { defineConfig, PluginOption } from "vite";
 import sparkPlugin from "@github/spark/spark-vite-plugin";
 import createIconImportProxy from "@github/spark/vitePhosphorIconProxyPlugin";
 import { resolve } from 'path'
+import { execSync } from 'node:child_process'
 
 const projectRoot = process.env.PROJECT_ROOT || import.meta.dirname
+
+const getCommitHash = () => {
+  try {
+    return execSync("git rev-parse --short HEAD").toString().trim()
+  } catch {
+    return "unknown"
+  }
+}
+
+const packageVersion = process.env.npm_package_version || "0.0.0"
+const buildTimestamp = new Date().toISOString()
+const commitHash = getCommitHash()
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -21,5 +34,10 @@ export default defineConfig({
     alias: {
       '@': resolve(projectRoot, 'src')
     }
+  },
+  define: {
+    __APP_VERSION__: JSON.stringify(packageVersion),
+    __APP_COMMIT_HASH__: JSON.stringify(commitHash),
+    __APP_BUILD_TIMESTAMP__: JSON.stringify(buildTimestamp),
   },
 });
