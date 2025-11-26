@@ -2,6 +2,8 @@
 
 A focused Kanban board that visualizes `STATUS.md` files with round-trip safe editing and GitHub sync.
 
+![MarkDeck Showcase](docs/images/showcase-dark.png)
+
 ## Quick Start
 
 **Install dependencies:**

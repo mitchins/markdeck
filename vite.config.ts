@@ -35,4 +35,8 @@ export default defineConfig({
     __APP_COMMIT_HASH__: JSON.stringify(commitHash),
     __APP_BUILD_TIMESTAMP__: JSON.stringify(buildTimestamp),
   },
+  server: {
+    host: true,
+    allowedHosts: true,
+  },
 });
