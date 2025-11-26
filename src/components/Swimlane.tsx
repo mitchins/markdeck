@@ -3,7 +3,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { KanbanCard } from './KanbanCard'
 import type { KanbanCard as KanbanCardType, CardStatus, Swimlane as SwimlaneType, BoardMode, StatusColumn } from '@/lib/types'
 import { STATUS_COLUMNS } from '@/lib/types'
-import { BadgeCheck, CircleAlert, ChevronDown, ChevronUp, ListChecks } from 'lucide-react'
+import { BadgeCheck, CircleAlert, ChevronDown, ChevronUp, ListChecks, Ban } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface SwimlaneProps {
@@ -58,29 +58,30 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
           </span>
           <h2 className="text-base font-semibold truncate">{swimlane.title}</h2>
         </div>
-        <div className="flex items-center gap-3 text-xs text-muted-foreground flex-shrink-0">
-          <span className="flex items-center gap-1">
-            <ListChecks size={12} className="text-accent" />
-            {cardsByStatus.todo?.length || 0}
-          </span>
+        <div className="flex items-center gap-2 text-xs font-medium flex-shrink-0">
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-accent/10 text-accent border border-accent/20">
+            <ListChecks size={14} />
+            <span>{cardsByStatus.todo?.length || 0}</span>
+          </div>
           {boardMode === 'full' && (
-            <span className="flex items-center gap-1">
-              <CircleAlert size={12} className="text-warning" />
-              {cardsByStatus.in_progress?.length || 0}
-            </span>
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-warning/10 text-warning border border-warning/20">
+              <CircleAlert size={14} />
+              <span>{cardsByStatus.in_progress?.length || 0}</span>
+            </div>
           )}
-          <span className="flex items-center gap-1">
-            <BadgeCheck size={12} className="text-success" />
-            {cardsByStatus.done?.length || 0}
-          </span>
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-success/10 text-success border border-success/20">
+            <BadgeCheck size={14} />
+            <span>{cardsByStatus.done?.length || 0}</span>
+          </div>
           {blockedCount > 0 && (
-            <span className="flex items-center gap-1 text-destructive">
-              🔴 {blockedCount}
-            </span>
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
+              <Ban size={14} />
+              <span>{blockedCount}</span>
+            </div>
           )}
-          <span className="bg-background px-2 py-0.5 rounded-full">
+          <div className="flex items-center justify-center px-2.5 py-1 rounded-md bg-muted text-muted-foreground border border-border min-w-[2rem]">
             {totalCards}
-          </span>
+          </div>
         </div>
       </button>
 

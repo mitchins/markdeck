@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useKV } from '@github/spark/hooks'
+import { useLocalStorage } from '@/hooks/use-local-storage'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
@@ -22,9 +22,9 @@ import { toast } from 'sonner'
 import { decodeBase64ToUtf8, encodeUtf8ToBase64 } from '@/lib/encoding-utils'
 
 function App() {
-  const [parsedData, setParsedData] = useKV<ParsedStatus | null>('parsed-status', null)
-  const [githubToken, setGithubToken] = useKV<string | null>('github-token', null)
-  const [currentRepo, setCurrentRepo] = useKV<{ name: string; full_name: string; owner: string; default_branch: string } | null>('current-repo', null)
+  const [parsedData, setParsedData] = useLocalStorage<ParsedStatus | null>('parsed-status', null)
+  const [githubToken, setGithubToken] = useLocalStorage<string | null>('github-token', null)
+  const [currentRepo, setCurrentRepo] = useLocalStorage<{ name: string; full_name: string; owner: string; default_branch: string } | null>('current-repo', null)
   const [hasChanges, setHasChanges] = useState(false)
   const [selectedCard, setSelectedCard] = useState<KanbanCard | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
