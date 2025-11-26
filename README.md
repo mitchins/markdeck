@@ -11,9 +11,15 @@ A focused Kanban board that visualizes `STATUS.md` files with round-trip safe ed
 npm ci
 ```
 
-**Run the dev server:**
+**Run Web UI:**
 ```bash
 npm run dev
+```
+
+**Run Terminal Viewer:**
+```bash
+npm run build:tui     # One-time build
+npm run markdeck-tui  # Run viewer
 ```
 
 **Build for production:**
@@ -66,21 +72,6 @@ For advanced project tracking with the RYGBO (5-color) status system:
 ```
 
 **Note:** Any H2 (`##`) or H3 (`###`) heading creates a swimlane. Blocked cards remain in their column but are visually distinguished.
-
-## Terminal Viewer
-
-View STATUS.md directly in your terminal:
-
-```bash
-# One-time build
-npm run build:tui
-
-# View STATUS.md in current directory
-npm run markdeck-tui
-
-# View a specific file
-npm run markdeck-tui -- --file path/to/STATUS.md
-```
 
 ## Documentation
 
