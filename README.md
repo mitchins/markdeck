@@ -49,10 +49,6 @@ For basic TODO lists compatible with most markdown editors:
 - [ ] Another task
 ```
 
-**Checkbox Syntax:**
-- `[ ]` = TODO
-- `[x]` or `[X]` = DONE
-
 This creates a simple 2-column board (TODO | DONE) perfect for quick checklists.
 
 ### Full Emoji Format (3-column mode)
@@ -67,12 +63,6 @@ For advanced project tracking with the RYGBO (5-color) status system:
 - 🔴 Blocked TODO task
 - 🟧 Blocked in progress task
 ```
-
-**Status Definitions:**
-- 🔵 = TODO (default)
-- 🟡 = IN PROGRESS
-- 🟢 = DONE
-- 🔴 / 🟧 = Blocked (modifier)
 
 **Note:** Blocked is a modifier, not a separate column. Blocked cards remain in their TODO or IN PROGRESS column but are visually distinguished.
 
