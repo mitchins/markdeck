@@ -5,7 +5,8 @@ import { defineConfig, devices } from '@playwright/test'
  * See https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
-  testDir: './tests/e2e-playwright',
+  testDir: './tests',
+  testMatch: /.*\.spec\.ts/,
   
   // Run tests in files in parallel
   fullyParallel: true,
@@ -25,7 +26,7 @@ export default defineConfig({
   // Shared settings for all the projects below
   use: {
     // Base URL to use in actions like `await page.goto('/')`
-    baseURL: 'http://127.0.0.1:5173',
+    baseURL: 'http://127.0.0.1:5174',
     
     // Collect trace when retrying the failed test
     trace: 'on-first-retry',
@@ -44,8 +45,8 @@ export default defineConfig({
 
   // Run your local dev server before starting the tests
   webServer: {
-    command: 'npm run dev',
-    url: 'http://127.0.0.1:5173',
+    command: 'npm run dev -- --port 5174 --host',
+    url: 'http://127.0.0.1:5174',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
   },

@@ -26,6 +26,7 @@
         "test:e2e": "vitest run tests/e2e",
         "test:e2e:playwright": "playwright test",
         "test:e2e:playwright:ui": "playwright test --ui",
+        "gen:screenshots": "playwright test tests/e2e/screenshots.spec.ts",
         "test:tui": "cd packages/tui && npm run test",
         "test:mcp": "cd mcp && npm test",
         "test:watch": "vitest watch"
