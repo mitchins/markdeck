@@ -56,6 +56,7 @@ This creates a simple 2-column board (TODO | DONE) perfect for quick checklists.
 For advanced project tracking with the RYGBO (5-color) status system:
 
 ```markdown
+## Swimlane Heading
 - 🟢 Completed task
     Optional indented description
 - 🟡 In progress task
@@ -64,44 +65,7 @@ For advanced project tracking with the RYGBO (5-color) status system:
 - 🟧 Blocked in progress task
 ```
 
-**Note:** Blocked is a modifier, not a separate column. Blocked cards remain in their TODO or IN PROGRESS column but are visually distinguished.
-
-### Common Features
-
-**Swimlanes:**
-Any H2 (`##`) or H3 (`###`) heading creates a swimlane.
-
-**Preservation:**
-Non-card markdown (paragraphs, code blocks, etc.) is preserved exactly when saving.
-
-**Format Detection:**
-MarkDeck automatically detects which format you're using and preserves it during round-trips.
-
-**Upgrading:**
-When using checkbox format, MarkDeck displays an upgrade banner allowing you to permanently switch to the full 3-column emoji format.
-
-**Example:** See [STATUS.md](STATUS.md) for a complete working example.
-
-## Board Layout
-
-MarkDeck uses a **table-style layout** with a single header row shared across all swimlanes:
-
-- **Single Header Row**: At the top of the board, one row displays all column headers (TODO, IN PROGRESS, DONE)
-- **Swimlanes as Rows**: Each swimlane appears as a row beneath the shared headers
-- **Grid Structure**: Cards are positioned in the appropriate column for their status
-- **Empty States**: Empty columns show "—" or "No items" to maintain the grid structure
-
-This layout applies to both the **Web UI** and **Terminal (TUI)** viewer, providing a consistent experience across interfaces. The underlying STATUS.md format and domain model remain unchanged—this is purely a presentation layer improvement.
-
-## Architecture
-
-MarkDeck follows a layered architecture:
-- **Core Domain** (`src/core/`) - Pure business logic, parsers, validation
-- **Adapters** (`src/adapters/`) - External I/O (GitHub API, file system, storage)
-- **Application** (`src/application/`) - State management, orchestration
-- **UI** (`src/ui/`) - React components, presentation
-
-Tech stack: React 19, TypeScript, Vite, TailwindCSS 4, Zustand, Vitest.
+**Note:** Any H2 (`##`) or H3 (`###`) heading creates a swimlane. Blocked cards remain in their column but are visually distinguished.
 
 ## Terminal Viewer
 

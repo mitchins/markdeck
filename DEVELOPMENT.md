@@ -4,7 +4,9 @@ This guide contains everything you need to build, test, debug, and contribute to
 
 ## Repository Structure
 
-MarkDeck follows a layered architecture with clear separation of concerns:
+MarkDeck follows a layered architecture with clear separation of concerns.
+
+**Tech Stack:** React 19, TypeScript, Vite, TailwindCSS 4, Zustand, Vitest.
 
 ```
 markdeck/
