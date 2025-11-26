@@ -468,12 +468,6 @@ npx tsc --noEmit
 
 ### Development Server Issues
 
-**Port already in use:**
-```bash
-# Kill process on port 5173
-lsof -ti:5173 | xargs kill -9
-```
-
 **HMR not working:**
 - Clear browser cache
 - Restart dev server

@@ -68,12 +68,11 @@ For advanced project tracking with the RYGBO (5-color) status system:
 - 🟧 Blocked in progress task
 ```
 
-**Status Emojis (RYGBO System):**
-- 🔵 = TODO (default if no emoji)
+**Status Definitions:**
+- 🔵 = TODO (default)
 - 🟡 = IN PROGRESS
-- 🔴 = Blocked TODO (blocked modifier)
-- 🟧 = Blocked IN PROGRESS (blocked modifier)
 - 🟢 = DONE
+- 🔴 / 🟧 = Blocked (modifier)
 
 **Note:** Blocked is a modifier, not a separate column. Blocked cards remain in their TODO or IN PROGRESS column but are visually distinguished.
 
@@ -129,36 +128,9 @@ npm run markdeck-tui
 npm run markdeck-tui -- --file path/to/STATUS.md
 ```
 
-## Testing
-
-```bash
-npm test                    # Run all tests
-npm run test:unit           # Unit tests only
-npm run test:integration    # Integration tests only
-npm run test:e2e            # E2E tests with Playwright
-npm run test:coverage       # With coverage reports
-npm run lint                # ESLint
-```
-
 ## Documentation
 
 - **[STATUS.md](STATUS.md)** - Project roadmap and current status
 - **[DEVELOPMENT.md](DEVELOPMENT.md)** - Developer guide: setup, architecture, testing, contributing
 
-## Troubleshooting
-
-**Build fails:**
-```bash
-rm -rf node_modules package-lock.json && npm install
-```
-
-**Tests hang:**
-- Check for missing `await` in async tests
-- Verify proper cleanup in test hooks
-
-**Port 5173 in use:**
-```bash
-lsof -ti:5173 | xargs kill -9
-```
-
-For more help, see [DEVELOPMENT.md](DEVELOPMENT.md).
+For troubleshooting and development instructions, see [DEVELOPMENT.md](DEVELOPMENT.md).
