@@ -67,10 +67,11 @@ describe('Swimlane', () => {
     
     // Total cards
     expect(screen.getByText('2')).toBeInTheDocument()
-    // Blocked count (check for the text including space and count)
-    expect(screen.getByText((content, element) => {
-      return element?.textContent === '🔴 1' || false
-    })).toBeInTheDocument()
+    // Blocked count
+    const blockedIndicator = screen.getAllByText('1').find(el => 
+      el.closest('.text-destructive')
+    )
+    expect(blockedIndicator).toBeInTheDocument()
   })
 
   it('should have keyboard accessibility with Enter key', () => {
