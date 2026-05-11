@@ -33,7 +33,10 @@ function ensureStorage(name: 'localStorage' | 'sessionStorage'): void {
   if (
     storage &&
     typeof storage.getItem === 'function' &&
-    typeof storage.setItem === 'function'
+    typeof storage.setItem === 'function' &&
+    typeof storage.removeItem === 'function' &&
+    typeof storage.clear === 'function' &&
+    typeof storage.key === 'function'
   ) {
     return
   }
