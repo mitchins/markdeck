@@ -20,7 +20,11 @@ vi.mock('octokit', () => {
     },
   }
 
-  const Octokit = vi.fn().mockImplementation(() => ({ rest }))
+  function MockOctokit(this: { rest: typeof rest }) {
+    this.rest = rest
+  }
+
+  const Octokit = vi.fn(MockOctokit)
 
   return { Octokit, __esModule: true }
 })
