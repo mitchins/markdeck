@@ -120,6 +120,9 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
                         {statusCards.map((card) => (
                           <div
                             key={card.id}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`Open card ${card.title}`}
                             draggable
                             onDragStart={(e) => {
                               e.dataTransfer.setData('cardId', card.id)
@@ -127,6 +130,12 @@ export function Swimlane({ swimlane, cards, onCardDrop, onCardClick, onToggleCol
                             onClick={(e) => {
                               e.stopPropagation()
                               onCardClick(card)
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault()
+                                onCardClick(card)
+                              }
                             }}
                           >
                             <KanbanCard card={card} />

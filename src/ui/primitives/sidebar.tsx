@@ -608,10 +608,17 @@ function SidebarMenuSkeleton({
 }: ComponentProps<"div"> & {
   showIcon?: boolean
 }) {
-  // Random width between 50 to 90%.
+  const skeletonSeed = useId()
+
+  // Deterministic width keeps the skeleton varied without PRNG usage.
   const width = useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
-  }, [])
+    const widths = ['50%', '58%', '66%', '74%', '82%', '90%']
+    const seed = Array.from(skeletonSeed).reduce(
+      (sum, char) => sum + char.codePointAt(0)!,
+      0
+    )
+    return widths[seed % widths.length]
+  }, [skeletonSeed])
 
   return (
     <div
