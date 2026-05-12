@@ -19,7 +19,7 @@ export function decodeBase64ToUtf8(base64: string): string {
   // We need to convert these bytes to a Uint8Array, then decode as UTF-8
   const binaryString = atob(normalized)
   // Each character is a single byte (0-255), so codePointAt works here too.
-  const bytes = Uint8Array.from(binaryString, char => char.codePointAt(0) ?? 0)
+  const bytes = Uint8Array.from(binaryString, char => char.codePointAt(0)!)
   return textDecoder.decode(bytes)
 }
 
