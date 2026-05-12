@@ -30,6 +30,7 @@ export default defineConfig({
         'src/lib/column-config.ts',
         'src/ui/primitives/chart.tsx',
         'src/ui/primitives/sidebar.tsx',
+        'src/ui/primitives/resizable.tsx',
         'src/adapters/api/github-client.ts',
         'src/components/FileUploader.tsx',
         'src/components/BoardView.tsx',
