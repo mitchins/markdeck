@@ -37,7 +37,7 @@ const ResizablePanelGroupPrimitive = (
     ? resizablePrimitives.Group
     : resizablePrimitives.PanelGroup
 ) as ResizablePanelGroupPrimitive
-const ResizablePanelPrimitive = resizablePrimitives.Panel as ResizablePanelPrimitive
+const ResizablePanelPrimitive = ResizablePrimitive.Panel
 const ResizableHandlePrimitive = (
   "Separator" in resizablePrimitives
     ? resizablePrimitives.Separator
