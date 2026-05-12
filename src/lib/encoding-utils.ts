@@ -18,8 +18,8 @@ export function decodeBase64ToUtf8(base64: string): string {
   // Browser path: atob returns a binary string where each character represents a byte
   // We need to convert these bytes to a Uint8Array, then decode as UTF-8
   const binaryString = atob(normalized)
-  // Note: Use charCodeAt (not codePointAt) since each char is a single byte (0-255)
-  const bytes = Uint8Array.from(binaryString, (char) => char.charCodeAt(0))
+  // Each character is a single byte (0-255), so codePointAt works here too.
+  const bytes = Uint8Array.from(binaryString, char => char.codePointAt(0)!)
   return textDecoder.decode(bytes)
 }
 
@@ -35,6 +35,6 @@ export function encodeUtf8ToBase64(str: string): string {
 
   // Browser path: encode string to UTF-8 bytes first, then to base64
   const utf8Bytes = new TextEncoder().encode(str)
-  const binaryString = Array.from(utf8Bytes, byte => String.fromCharCode(byte)).join('')
+  const binaryString = Array.from(utf8Bytes, byte => String.fromCodePoint(byte)).join('')
   return btoa(binaryString)
 }

@@ -119,6 +119,33 @@ describe('Swimlane', () => {
     // Button elements are naturally focusable, so tabIndex is not needed
   })
 
+  it('should support keyboard activation on cards', () => {
+    render(
+      <Swimlane
+        swimlane={mockSwimlane}
+        cards={mockCards}
+        {...mockHandlers}
+      />
+    )
+
+    const cardButton = screen.getByRole('button', { name: /Open card Test Card 1/i })
+    const dataTransfer = {
+      setData: vi.fn(),
+      getData: vi.fn(),
+    }
+
+    fireEvent.dragStart(cardButton, { dataTransfer })
+    fireEvent.click(cardButton)
+    fireEvent.keyDown(cardButton, { key: 'Enter' })
+    fireEvent.keyDown(cardButton, { key: ' ' })
+
+    expect(dataTransfer.setData).toHaveBeenCalledWith('cardId', mockCards[0].id)
+    expect(mockHandlers.onCardClick).toHaveBeenCalledTimes(3)
+    expect(mockHandlers.onCardClick).toHaveBeenNthCalledWith(1, mockCards[0])
+    expect(mockHandlers.onCardClick).toHaveBeenNthCalledWith(2, mockCards[0])
+    expect(mockHandlers.onCardClick).toHaveBeenNthCalledWith(3, mockCards[0])
+  })
+
   it('should toggle collapse on click', () => {
     render(
       <Swimlane
