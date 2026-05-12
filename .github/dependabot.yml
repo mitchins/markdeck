@@ -5,6 +5,18 @@ updates:
     schedule:
       interval: "daily"
     groups:
+      react-stack:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      frontend-stack:
+        patterns:
+          - "vite"
+          - "@vitejs/*"
+          - "tailwindcss"
+          - "@tailwindcss/*"
       vitest:
         patterns:
           - "vitest"
