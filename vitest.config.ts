@@ -28,6 +28,8 @@ export default defineConfig({
         'src/lib/encoding-utils.ts',
         'src/lib/board-utils.ts',
         'src/lib/column-config.ts',
+        'src/ui/primitives/chart.tsx',
+        'src/ui/primitives/sidebar.tsx',
         'src/adapters/api/github-client.ts',
         'src/components/FileUploader.tsx',
         'src/components/BoardView.tsx',
