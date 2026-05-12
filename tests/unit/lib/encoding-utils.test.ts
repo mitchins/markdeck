@@ -125,30 +125,32 @@ describe('encodeUtf8ToBase64', () => {
     const originalAtob = globalThis.atob
     const originalBtoa = globalThis.btoa
 
-    vi.stubGlobal('Buffer', undefined as unknown as typeof Buffer)
+    try {
+      vi.stubGlobal('Buffer', undefined as unknown as typeof Buffer)
 
-    if (!originalAtob) {
-      vi.stubGlobal(
-        'atob',
-        (input: string) => originalBuffer.from(input, 'base64').toString('binary')
-      )
+      if (!originalAtob) {
+        vi.stubGlobal(
+          'atob',
+          (input: string) => originalBuffer.from(input, 'base64').toString('binary')
+        )
+      }
+
+      if (!originalBtoa) {
+        vi.stubGlobal(
+          'btoa',
+          (input: string) => originalBuffer.from(input, 'binary').toString('base64')
+        )
+      }
+
+      const text = '🟢 Browser round trip — こんにちは'
+      const encoded = encodeUtf8ToBase64(text)
+      const decoded = decodeBase64ToUtf8(encoded)
+
+      expect(decoded).toBe(text)
+    } finally {
+      vi.stubGlobal('Buffer', originalBuffer)
+      vi.stubGlobal('atob', originalAtob)
+      vi.stubGlobal('btoa', originalBtoa)
     }
-
-    if (!originalBtoa) {
-      vi.stubGlobal(
-        'btoa',
-        (input: string) => originalBuffer.from(input, 'binary').toString('base64')
-      )
-    }
-
-    const text = '🟢 Browser round trip — こんにちは'
-    const encoded = encodeUtf8ToBase64(text)
-    const decoded = decodeBase64ToUtf8(encoded)
-
-    expect(decoded).toBe(text)
-
-    vi.stubGlobal('Buffer', originalBuffer)
-    vi.stubGlobal('atob', originalAtob)
-    vi.stubGlobal('btoa', originalBtoa)
   })
 })
