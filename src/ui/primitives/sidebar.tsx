@@ -2,7 +2,7 @@
 
 /* eslint-disable react-refresh/only-export-components */
 
-import { CSSProperties, ComponentProps, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { CSSProperties, ComponentProps, createContext, useCallback, useContext, useEffect, useId, useMemo, useState } from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
 import PanelLeftIcon from "lucide-react/dist/esm/icons/panel-left"
@@ -608,10 +608,17 @@ function SidebarMenuSkeleton({
 }: ComponentProps<"div"> & {
   showIcon?: boolean
 }) {
-  // Random width between 50 to 90%.
+  const skeletonSeed = useId()
+
+  // Deterministic width keeps the skeleton varied without PRNG usage.
   const width = useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
-  }, [])
+    const widths = ['50%', '58%', '66%', '74%', '82%', '90%']
+    let seed = 0
+    for (const char of skeletonSeed) {
+      seed += char.codePointAt(0) ?? 0
+    }
+    return widths[seed % widths.length]
+  }, [skeletonSeed])
 
   return (
     <div
