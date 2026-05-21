@@ -82,7 +82,7 @@ export class GitHubClient {
       throw new Error('File not found or is a directory')
     } catch (error: unknown) {
       if (isOctokitError(error) && error.status === 404) {
-        throw new Error('File not found')
+        throw Object.assign(new Error('File not found'), { cause: error })
       }
       throw error
     }

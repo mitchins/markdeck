@@ -124,7 +124,10 @@ export function FileUploader({ onFileLoad }: FileUploaderProps) {
         content = decodeBase64ToUtf8(data.content)
       } catch (decodeError) {
         console.error('Failed to decode base64 content:', decodeError)
-        throw new Error('Failed to decode file content - file may be corrupted')
+        throw Object.assign(
+          new Error('Failed to decode file content - file may be corrupted'),
+          { cause: decodeError }
+        )
       }
       
       onFileLoad(content)

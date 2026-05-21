@@ -1,6 +1,6 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
-import { defineConfig, PluginOption } from "vite";
+import { defineConfig } from "vite";
 
 import { resolve } from 'path'
 import { execSync } from 'node:child_process'
@@ -38,5 +38,8 @@ export default defineConfig({
   server: {
     host: true,
     allowedHosts: true,
+  },
+  build: {
+    cssMinify: 'esbuild',
   },
 });

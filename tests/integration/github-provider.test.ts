@@ -4,12 +4,7 @@
  * Uses MSW to mock GitHub API
  */
 
-import { describe, it, expect, beforeAll, afterEach, afterAll } from 'vitest'
-import { server } from '../helpers/msw-server'
-
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+import { describe, it, expect } from 'vitest'
 
 describe('GitHub Provider Integration', () => {
   describe('load', () => {
