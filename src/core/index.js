@@ -12,4 +12,3 @@ export * from './parsers';
 export * from './utils/emoji-mapper';
 export * from './utils/id-generator';
 export * from './utils/date-formatter';
-//# sourceMappingURL=index.js.map
